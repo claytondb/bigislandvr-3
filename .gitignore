@@ -1,0 +1,30 @@
+# Panorama data (large files)
+panoramas/original/
+panoramas/stitched/
+panoramas/upscaled/
+panoramas/depth/
+
+# Keep directory structure
+!panoramas/.gitkeep
+
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.env
+
+# Node
+node_modules/
+
+# Audio files (large)
+audio/*.mp3
+audio/*.wav
+!audio/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
