@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <title>Big Island VR - Explore Hawaii</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -12,6 +14,7 @@
             color: #fff;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             overflow: hidden;
+            touch-action: none;
         }
         
         #viewer {
@@ -89,6 +92,8 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
         
         .control-btn:hover {
@@ -101,6 +106,15 @@
             border-color: #48bb78;
         }
         
+        .control-btn.vr-btn {
+            background: rgba(138, 43, 226, 0.5);
+            border-color: rgba(138, 43, 226, 0.8);
+        }
+        
+        .control-btn.vr-btn:hover {
+            background: rgba(138, 43, 226, 0.7);
+        }
+        
         /* Info panel */
         #info {
             position: absolute;
@@ -111,6 +125,8 @@
             border-radius: 10px;
             z-index: 50;
             max-width: 300px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
         
         #info h2 {
@@ -138,6 +154,8 @@
             padding: 15px;
             border-radius: 10px;
             z-index: 50;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
         
         #effects h3 {
@@ -152,6 +170,7 @@
             justify-content: space-between;
             margin-bottom: 8px;
             font-size: 0.85rem;
+            min-width: 140px;
         }
         
         .toggle-switch {
@@ -184,20 +203,41 @@
             transform: translateX(18px);
         }
         
-        /* Rain effect */
-        #rain-canvas {
+        /* Sliders */
+        .effect-slider {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 0.8rem;
+        }
+        
+        .effect-slider input[type="range"] {
+            flex: 1;
+            height: 4px;
+            -webkit-appearance: none;
+            background: #4a5568;
+            border-radius: 2px;
+            outline: none;
+        }
+        
+        .effect-slider input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            background: #48bb78;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        /* Weather overlay canvas */
+        #weather-canvas {
             position: absolute;
             top: 0; left: 0;
             width: 100%;
             height: 100%;
             pointer-events: none;
             z-index: 10;
-            opacity: 0;
-            transition: opacity 0.5s;
-        }
-        
-        #rain-canvas.active {
-            opacity: 1;
         }
         
         /* Keyboard hints */
@@ -212,6 +252,8 @@
             font-size: 0.8rem;
             color: #a0aec0;
             z-index: 50;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
         
         kbd {
@@ -219,6 +261,52 @@
             padding: 2px 6px;
             border-radius: 4px;
             margin: 0 2px;
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            #info, #effects {
+                font-size: 0.75rem;
+                padding: 10px;
+            }
+            
+            #info h2 { font-size: 1rem; }
+            #effects h3 { font-size: 0.8rem; }
+            
+            .control-btn {
+                padding: 10px 15px;
+                font-size: 12px;
+            }
+            
+            #hints { display: none; }
+        }
+        
+        /* Gyro permission prompt */
+        #gyro-prompt {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.9);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            z-index: 200;
+            backdrop-filter: blur(10px);
+        }
+        
+        #gyro-prompt.show { display: block; }
+        
+        #gyro-prompt button {
+            margin-top: 20px;
+            padding: 15px 30px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            background: #48bb78;
+            color: #fff;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -234,8 +322,8 @@
         <!-- Three.js canvas -->
         <div id="canvas-container"></div>
         
-        <!-- Rain overlay -->
-        <canvas id="rain-canvas"></canvas>
+        <!-- Weather effects overlay -->
+        <canvas id="weather-canvas"></canvas>
         
         <!-- Info panel -->
         <div id="info">
@@ -256,12 +344,17 @@
                 <div class="toggle-switch" data-effect="wind"></div>
             </div>
             <div class="effect-toggle">
-                <span>Birds</span>
+                <span>🐦 Birds</span>
                 <div class="toggle-switch on" data-effect="birds"></div>
             </div>
             <div class="effect-toggle">
-                <span>Ocean</span>
+                <span>🌊 Ocean</span>
                 <div class="toggle-switch on" data-effect="ocean"></div>
+            </div>
+            <hr style="border-color: #4a5568; margin: 10px 0;">
+            <div class="effect-slider">
+                <span>Volume</span>
+                <input type="range" id="volume-slider" min="0" max="100" value="70">
             </div>
         </div>
         
@@ -270,6 +363,8 @@
             <button class="control-btn" id="prev-btn">⬅️ Previous</button>
             <button class="control-btn" id="play-btn">▶️ Auto Play</button>
             <button class="control-btn" id="next-btn">Next ➡️</button>
+            <button class="control-btn vr-btn" id="vr-btn" style="display: none;">🥽 Enter VR</button>
+            <button class="control-btn" id="gyro-btn" style="display: none;">📱 Gyro</button>
         </div>
         
         <!-- Keyboard hints -->
@@ -278,24 +373,48 @@
             <kbd>Space</kbd> Auto-play &nbsp;|&nbsp;
             Drag to look around
         </div>
+        
+        <!-- Gyro permission prompt (iOS) -->
+        <div id="gyro-prompt">
+            <h2>📱 Enable Motion Controls</h2>
+            <p>Allow motion access to look around with your device</p>
+            <button id="gyro-enable-btn">Enable Motion</button>
+        </div>
     </div>
     
     <!-- Three.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
+    <!-- Howler.js for audio -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
     
     <script>
         // =====================================================
-        // BIG ISLAND VR - PANORAMA VIEWER
+        // BIG ISLAND VR 3.0 - IMMERSIVE PANORAMA VIEWER
+        // =====================================================
+        // Features:
+        // - Depth-based parallax transitions
+        // - Equirectangular projection
+        // - Gyroscope support for mobile
+        // - WebXR for VR headsets
+        // - Ambient weather effects
+        // - Spatial audio system
         // =====================================================
         
         const CONFIG = {
-            transitionDuration: 1500,  // ms
-            autoPlayInterval: 5000,    // ms
-            rainIntensity: 0.5,
-            lookSensitivity: 0.002
+            transitionDuration: 2000,
+            autoPlayInterval: 8000,
+            fov: 75,
+            lookSensitivity: 0.15,
+            gyroSensitivity: 0.5,
+            depthParallaxStrength: 0.05,
+            windSwayAmount: 0.0015,
+            windSwaySpeed: 0.5
         };
         
-        // Demo locations (will be replaced with real data)
+        // =====================================================
+        // LOCATIONS DATA
+        // =====================================================
+        
         const LOCATIONS = [
             {
                 id: 1,
@@ -303,9 +422,10 @@
                 desc: "Downtown Hilo along Kamehameha Avenue",
                 lat: 19.7241,
                 lng: -155.0868,
-                // Using placeholder equirectangular image
                 panorama: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=4096&h=2048&fit=crop",
-                audio: { ocean: 0.8, birds: 0.6 }
+                depth: null,
+                audio: { ocean: 0.8, birds: 0.6, wind: 0.2, rain: 0 },
+                coastDistance: 50 // meters to ocean
             },
             {
                 id: 2,
@@ -314,7 +434,9 @@
                 lat: 19.7220,
                 lng: -155.0790,
                 panorama: "https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?w=4096&h=2048&fit=crop",
-                audio: { ocean: 0.5, birds: 0.8 }
+                depth: null,
+                audio: { ocean: 0.5, birds: 0.9, wind: 0.3, rain: 0 },
+                coastDistance: 200
             },
             {
                 id: 3,
@@ -323,7 +445,9 @@
                 lat: 19.6411,
                 lng: -155.0378,
                 panorama: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=4096&h=2048&fit=crop",
-                audio: { birds: 0.9, wind: 0.3 }
+                depth: null,
+                audio: { birds: 0.7, wind: 0.4, ocean: 0.1, rain: 0 },
+                coastDistance: 3000
             },
             {
                 id: 4,
@@ -332,7 +456,9 @@
                 lat: 19.7205,
                 lng: -155.0951,
                 panorama: "https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?w=4096&h=2048&fit=crop",
-                audio: { birds: 0.7, ocean: 0.2 }
+                depth: null,
+                audio: { birds: 0.8, ocean: 0.0, wind: 0.2, rain: 0.3 },
+                coastDistance: 5000
             },
             {
                 id: 5,
@@ -341,26 +467,50 @@
                 lat: 19.4400,
                 lng: -155.2364,
                 panorama: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=4096&h=2048&fit=crop",
-                audio: { birds: 0.6, rain: 0.4, wind: 0.5 }
+                depth: null,
+                audio: { birds: 0.6, rain: 0.5, wind: 0.6, ocean: 0 },
+                coastDistance: 15000
             }
         ];
         
         // =====================================================
-        // THREE.JS SETUP
+        // STATE
         // =====================================================
         
-        let scene, camera, renderer;
-        let currentSphere, nextSphere;
+        let scene, camera, renderer, xrSession;
+        let currentSphere, nextSphere, depthMaterial;
         let currentIndex = 0;
         let isTransitioning = false;
         let isAutoPlaying = false;
         let autoPlayTimer = null;
         
-        // Mouse controls
-        let isMouseDown = false;
-        let mouseX = 0, mouseY = 0;
+        // Controls
+        let isPointerDown = false;
+        let pointerX = 0, pointerY = 0;
         let lon = 0, lat = 0;
+        let targetLon = 0, targetLat = 0;
         let phi = 0, theta = 0;
+        
+        // Gyroscope
+        let gyroEnabled = false;
+        let gyroAlpha = 0, gyroBeta = 0, gyroGamma = 0;
+        let initialGyroAlpha = null;
+        
+        // Effects state
+        const effectsState = {
+            rain: false,
+            wind: false,
+            birds: true,
+            ocean: true
+        };
+        
+        // Wind animation
+        let windTime = 0;
+        let windDirection = { x: 1, y: 0 };
+        
+        // =====================================================
+        // THREE.JS INITIALIZATION
+        // =====================================================
         
         function init() {
             const container = document.getElementById('canvas-container');
@@ -369,45 +519,116 @@
             scene = new THREE.Scene();
             
             // Camera
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera = new THREE.PerspectiveCamera(
+                CONFIG.fov,
+                window.innerWidth / window.innerHeight,
+                0.1,
+                1000
+            );
             camera.position.set(0, 0, 0.1);
             
-            // Renderer
-            renderer = new THREE.WebGLRenderer({ antialias: true });
+            // Renderer with WebXR support
+            renderer = new THREE.WebGLRenderer({ 
+                antialias: true,
+                alpha: false,
+                powerPreference: 'high-performance'
+            });
             renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.xr.enabled = true;
             container.appendChild(renderer.domElement);
+            
+            // Check WebXR support
+            checkXRSupport();
+            
+            // Check gyroscope support
+            checkGyroSupport();
             
             // Load first panorama
             loadPanorama(LOCATIONS[0], true);
             
             // Events
-            window.addEventListener('resize', onResize);
-            renderer.domElement.addEventListener('mousedown', onMouseDown);
-            renderer.domElement.addEventListener('mousemove', onMouseMove);
-            renderer.domElement.addEventListener('mouseup', onMouseUp);
-            renderer.domElement.addEventListener('touchstart', onTouchStart);
-            renderer.domElement.addEventListener('touchmove', onTouchMove);
-            document.addEventListener('keydown', onKeyDown);
+            setupEventListeners();
+            
+            // Initialize effects
+            initWeatherSystem();
+            initAudioSystem();
             
             // Start render loop
-            animate();
+            renderer.setAnimationLoop(animate);
         }
+        
+        function setupEventListeners() {
+            window.addEventListener('resize', onResize);
+            
+            // Pointer events (unified mouse/touch)
+            renderer.domElement.addEventListener('pointerdown', onPointerDown);
+            renderer.domElement.addEventListener('pointermove', onPointerMove);
+            renderer.domElement.addEventListener('pointerup', onPointerUp);
+            renderer.domElement.addEventListener('pointercancel', onPointerUp);
+            
+            // Prevent context menu
+            renderer.domElement.addEventListener('contextmenu', e => e.preventDefault());
+            
+            // Keyboard
+            document.addEventListener('keydown', onKeyDown);
+            
+            // Touch gestures for zoom
+            renderer.domElement.addEventListener('wheel', onWheel, { passive: false });
+            
+            // UI buttons
+            document.getElementById('prev-btn').addEventListener('click', prevLocation);
+            document.getElementById('next-btn').addEventListener('click', nextLocation);
+            document.getElementById('play-btn').addEventListener('click', toggleAutoPlay);
+            document.getElementById('vr-btn').addEventListener('click', enterVR);
+            document.getElementById('gyro-btn').addEventListener('click', toggleGyro);
+            document.getElementById('gyro-enable-btn').addEventListener('click', requestGyroPermission);
+            
+            // Effect toggles
+            document.querySelectorAll('.toggle-switch').forEach(toggle => {
+                toggle.addEventListener('click', () => {
+                    toggle.classList.toggle('on');
+                    const effect = toggle.dataset.effect;
+                    effectsState[effect] = toggle.classList.contains('on');
+                    onEffectToggle(effect, effectsState[effect]);
+                });
+            });
+            
+            // Volume slider
+            document.getElementById('volume-slider').addEventListener('input', (e) => {
+                Howler.volume(e.target.value / 100);
+            });
+        }
+        
+        // =====================================================
+        // PANORAMA LOADING & TRANSITIONS
+        // =====================================================
         
         function loadPanorama(location, isFirst = false) {
             const textureLoader = new THREE.TextureLoader();
             
             textureLoader.load(location.panorama, (texture) => {
+                // Proper equirectangular mapping
                 texture.mapping = THREE.EquirectangularReflectionMapping;
+                texture.minFilter = THREE.LinearFilter;
+                texture.magFilter = THREE.LinearFilter;
                 
-                const geometry = new THREE.SphereGeometry(500, 60, 40);
+                // Create sphere with inverted normals for inside viewing
+                const geometry = new THREE.SphereGeometry(500, 64, 32);
                 geometry.scale(-1, 1, 1);
                 
-                const material = new THREE.MeshBasicMaterial({
-                    map: texture,
-                    transparent: true,
-                    opacity: isFirst ? 1 : 0
-                });
+                // Create material - use depth material if available
+                let material;
+                if (location.depth) {
+                    material = createDepthParallaxMaterial(texture, location.depth);
+                } else {
+                    material = new THREE.MeshBasicMaterial({
+                        map: texture,
+                        transparent: true,
+                        opacity: isFirst ? 1 : 0,
+                        side: THREE.BackSide
+                    });
+                }
                 
                 const sphere = new THREE.Mesh(geometry, material);
                 scene.add(sphere);
@@ -415,47 +636,129 @@
                 if (isFirst) {
                     currentSphere = sphere;
                     document.getElementById('loading').classList.add('hidden');
+                    updateAudioMix(location);
                 } else {
                     nextSphere = sphere;
-                    transitionTo(sphere);
+                    transitionTo(sphere, location);
                 }
                 
                 updateUI(location);
+            }, undefined, (err) => {
+                console.error('Failed to load panorama:', err);
             });
         }
         
-        function transitionTo(newSphere) {
+        function createDepthParallaxMaterial(colorTexture, depthTexture) {
+            // Custom shader for depth-based parallax
+            const vertexShader = `
+                varying vec2 vUv;
+                varying vec3 vWorldPosition;
+                
+                void main() {
+                    vUv = uv;
+                    vec4 worldPos = modelMatrix * vec4(position, 1.0);
+                    vWorldPosition = worldPos.xyz;
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+            `;
+            
+            const fragmentShader = `
+                uniform sampler2D colorMap;
+                uniform sampler2D depthMap;
+                uniform float parallaxStrength;
+                uniform float transitionProgress;
+                uniform vec2 viewDirection;
+                
+                varying vec2 vUv;
+                varying vec3 vWorldPosition;
+                
+                void main() {
+                    // Sample depth
+                    float depth = texture2D(depthMap, vUv).r;
+                    
+                    // Calculate parallax offset based on depth and view direction
+                    vec2 offset = viewDirection * depth * parallaxStrength * transitionProgress;
+                    
+                    // Sample color with offset
+                    vec2 parallaxUv = vUv + offset;
+                    vec4 color = texture2D(colorMap, parallaxUv);
+                    
+                    gl_FragColor = color;
+                }
+            `;
+            
+            return new THREE.ShaderMaterial({
+                uniforms: {
+                    colorMap: { value: colorTexture },
+                    depthMap: { value: depthTexture },
+                    parallaxStrength: { value: CONFIG.depthParallaxStrength },
+                    transitionProgress: { value: 0.0 },
+                    viewDirection: { value: new THREE.Vector2(0, 0) }
+                },
+                vertexShader,
+                fragmentShader,
+                side: THREE.BackSide,
+                transparent: true
+            });
+        }
+        
+        function transitionTo(newSphere, location) {
             if (isTransitioning) return;
             isTransitioning = true;
             
             const duration = CONFIG.transitionDuration;
             const startTime = performance.now();
             
+            // Start audio crossfade
+            crossfadeAudio(location, duration);
+            
             function animateTransition(time) {
                 const elapsed = time - startTime;
                 const progress = Math.min(elapsed / duration, 1);
                 
-                // Smooth easing
-                const eased = 1 - Math.pow(1 - progress, 3);
+                // Ease in-out cubic for smooth feel
+                const eased = progress < 0.5
+                    ? 4 * progress * progress * progress
+                    : 1 - Math.pow(-2 * progress + 2, 3) / 2;
                 
-                // Fade out old, fade in new
-                if (currentSphere) {
+                // Fade transition
+                if (currentSphere && currentSphere.material.opacity !== undefined) {
                     currentSphere.material.opacity = 1 - eased;
                 }
-                newSphere.material.opacity = eased;
+                if (newSphere.material.opacity !== undefined) {
+                    newSphere.material.opacity = eased;
+                }
+                
+                // Depth parallax effect during transition
+                if (currentSphere && currentSphere.material.uniforms) {
+                    currentSphere.material.uniforms.transitionProgress.value = eased;
+                    currentSphere.material.uniforms.viewDirection.value.set(
+                        Math.sin(theta) * 0.1,
+                        Math.cos(phi) * 0.1
+                    );
+                }
+                
+                // Subtle zoom effect
+                camera.fov = CONFIG.fov + (eased * (1 - eased) * 10);
+                camera.updateProjectionMatrix();
                 
                 if (progress < 1) {
                     requestAnimationFrame(animateTransition);
                 } else {
-                    // Cleanup old sphere
+                    // Cleanup
                     if (currentSphere) {
                         scene.remove(currentSphere);
+                        if (currentSphere.material.map) currentSphere.material.map.dispose();
                         currentSphere.material.dispose();
                         currentSphere.geometry.dispose();
                     }
                     currentSphere = newSphere;
                     nextSphere = null;
                     isTransitioning = false;
+                    
+                    // Reset FOV
+                    camera.fov = CONFIG.fov;
+                    camera.updateProjectionMatrix();
                 }
             }
             
@@ -469,84 +772,11 @@
         }
         
         function nextLocation() {
-            const next = (currentIndex + 1) % LOCATIONS.length;
-            goToLocation(next);
+            goToLocation((currentIndex + 1) % LOCATIONS.length);
         }
         
         function prevLocation() {
-            const prev = (currentIndex - 1 + LOCATIONS.length) % LOCATIONS.length;
-            goToLocation(prev);
-        }
-        
-        function updateUI(location) {
-            document.getElementById('location-name').textContent = location.name;
-            document.getElementById('location-desc').textContent = location.desc;
-            document.getElementById('location-counter').textContent = 
-                `Location ${location.id} of ${LOCATIONS.length}`;
-        }
-        
-        // =====================================================
-        // CONTROLS
-        // =====================================================
-        
-        function onMouseDown(e) {
-            isMouseDown = true;
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-        }
-        
-        function onMouseMove(e) {
-            if (!isMouseDown) return;
-            
-            const deltaX = e.clientX - mouseX;
-            const deltaY = e.clientY - mouseY;
-            
-            lon -= deltaX * 0.1;
-            lat += deltaY * 0.1;
-            lat = Math.max(-85, Math.min(85, lat));
-            
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-        }
-        
-        function onMouseUp() {
-            isMouseDown = false;
-        }
-        
-        function onTouchStart(e) {
-            if (e.touches.length === 1) {
-                mouseX = e.touches[0].clientX;
-                mouseY = e.touches[0].clientY;
-            }
-        }
-        
-        function onTouchMove(e) {
-            if (e.touches.length === 1) {
-                const deltaX = e.touches[0].clientX - mouseX;
-                const deltaY = e.touches[0].clientY - mouseY;
-                
-                lon -= deltaX * 0.1;
-                lat += deltaY * 0.1;
-                lat = Math.max(-85, Math.min(85, lat));
-                
-                mouseX = e.touches[0].clientX;
-                mouseY = e.touches[0].clientY;
-            }
-        }
-        
-        function onKeyDown(e) {
-            switch(e.key) {
-                case 'ArrowRight':
-                    nextLocation();
-                    break;
-                case 'ArrowLeft':
-                    prevLocation();
-                    break;
-                case ' ':
-                    e.preventDefault();
-                    toggleAutoPlay();
-                    break;
-            }
+            goToLocation((currentIndex - 1 + LOCATIONS.length) % LOCATIONS.length);
         }
         
         function toggleAutoPlay() {
@@ -564,124 +794,524 @@
             }
         }
         
+        function updateUI(location) {
+            document.getElementById('location-name').textContent = location.name;
+            document.getElementById('location-desc').textContent = location.desc;
+            document.getElementById('location-counter').textContent = 
+                `Location ${location.id} of ${LOCATIONS.length}`;
+        }
+        
+        // =====================================================
+        // CONTROLS
+        // =====================================================
+        
+        function onPointerDown(e) {
+            isPointerDown = true;
+            pointerX = e.clientX;
+            pointerY = e.clientY;
+            renderer.domElement.style.cursor = 'grabbing';
+        }
+        
+        function onPointerMove(e) {
+            if (!isPointerDown || gyroEnabled) return;
+            
+            const deltaX = e.clientX - pointerX;
+            const deltaY = e.clientY - pointerY;
+            
+            targetLon -= deltaX * CONFIG.lookSensitivity;
+            targetLat += deltaY * CONFIG.lookSensitivity;
+            targetLat = Math.max(-85, Math.min(85, targetLat));
+            
+            pointerX = e.clientX;
+            pointerY = e.clientY;
+        }
+        
+        function onPointerUp() {
+            isPointerDown = false;
+            renderer.domElement.style.cursor = 'grab';
+        }
+        
+        function onWheel(e) {
+            e.preventDefault();
+            const delta = e.deltaY * 0.05;
+            camera.fov = Math.max(30, Math.min(100, camera.fov + delta));
+            camera.updateProjectionMatrix();
+        }
+        
+        function onKeyDown(e) {
+            switch(e.key) {
+                case 'ArrowRight':
+                    nextLocation();
+                    break;
+                case 'ArrowLeft':
+                    prevLocation();
+                    break;
+                case ' ':
+                    e.preventDefault();
+                    toggleAutoPlay();
+                    break;
+                case 'f':
+                case 'F':
+                    toggleFullscreen();
+                    break;
+            }
+        }
+        
         function onResize() {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
+            resizeWeatherCanvas();
         }
         
-        // =====================================================
-        // RAIN EFFECT
-        // =====================================================
-        
-        const rainCanvas = document.getElementById('rain-canvas');
-        const rainCtx = rainCanvas.getContext('2d');
-        let raindrops = [];
-        let rainActive = false;
-        
-        function initRain() {
-            rainCanvas.width = window.innerWidth;
-            rainCanvas.height = window.innerHeight;
-            
-            for (let i = 0; i < 200; i++) {
-                raindrops.push({
-                    x: Math.random() * rainCanvas.width,
-                    y: Math.random() * rainCanvas.height,
-                    length: Math.random() * 20 + 10,
-                    speed: Math.random() * 10 + 15,
-                    opacity: Math.random() * 0.3 + 0.1
-                });
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
             }
         }
         
-        function updateRain() {
-            if (!rainActive) return;
+        // =====================================================
+        // GYROSCOPE SUPPORT
+        // =====================================================
+        
+        function checkGyroSupport() {
+            if (window.DeviceOrientationEvent) {
+                document.getElementById('gyro-btn').style.display = 'flex';
+            }
+        }
+        
+        function toggleGyro() {
+            if (gyroEnabled) {
+                disableGyro();
+            } else {
+                // Check if permission is needed (iOS 13+)
+                if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+                    document.getElementById('gyro-prompt').classList.add('show');
+                } else {
+                    enableGyro();
+                }
+            }
+        }
+        
+        function requestGyroPermission() {
+            DeviceOrientationEvent.requestPermission()
+                .then(response => {
+                    document.getElementById('gyro-prompt').classList.remove('show');
+                    if (response === 'granted') {
+                        enableGyro();
+                    }
+                })
+                .catch(console.error);
+        }
+        
+        function enableGyro() {
+            gyroEnabled = true;
+            initialGyroAlpha = null;
+            window.addEventListener('deviceorientation', onDeviceOrientation);
+            document.getElementById('gyro-btn').classList.add('active');
+            document.getElementById('gyro-btn').textContent = '📱 Gyro ON';
+        }
+        
+        function disableGyro() {
+            gyroEnabled = false;
+            window.removeEventListener('deviceorientation', onDeviceOrientation);
+            document.getElementById('gyro-btn').classList.remove('active');
+            document.getElementById('gyro-btn').textContent = '📱 Gyro';
+        }
+        
+        function onDeviceOrientation(e) {
+            if (e.alpha === null) return;
             
-            rainCtx.clearRect(0, 0, rainCanvas.width, rainCanvas.height);
+            // Store initial orientation for calibration
+            if (initialGyroAlpha === null) {
+                initialGyroAlpha = e.alpha;
+            }
+            
+            gyroAlpha = e.alpha - initialGyroAlpha;
+            gyroBeta = e.beta;
+            gyroGamma = e.gamma;
+        }
+        
+        function updateGyroCamera() {
+            if (!gyroEnabled) return;
+            
+            // Convert gyro data to camera look direction
+            // Alpha = compass heading (rotation around Z)
+            // Beta = front-back tilt (rotation around X)
+            // Gamma = left-right tilt (rotation around Y)
+            
+            targetLon = -gyroAlpha * CONFIG.gyroSensitivity;
+            targetLat = (gyroBeta - 90) * CONFIG.gyroSensitivity;
+            targetLat = Math.max(-85, Math.min(85, targetLat));
+        }
+        
+        // =====================================================
+        // WEBXR VR SUPPORT
+        // =====================================================
+        
+        async function checkXRSupport() {
+            if ('xr' in navigator) {
+                const isSupported = await navigator.xr.isSessionSupported('immersive-vr');
+                if (isSupported) {
+                    document.getElementById('vr-btn').style.display = 'flex';
+                }
+            }
+        }
+        
+        async function enterVR() {
+            if (!('xr' in navigator)) return;
+            
+            try {
+                xrSession = await navigator.xr.requestSession('immersive-vr', {
+                    optionalFeatures: ['local-floor', 'bounded-floor']
+                });
+                
+                renderer.xr.setReferenceSpaceType('local');
+                await renderer.xr.setSession(xrSession);
+                
+                // Hide UI in VR
+                document.querySelectorAll('#info, #effects, #controls, #hints').forEach(el => {
+                    el.style.display = 'none';
+                });
+                
+                xrSession.addEventListener('end', () => {
+                    xrSession = null;
+                    // Show UI again
+                    document.querySelectorAll('#info, #effects, #controls, #hints').forEach(el => {
+                        el.style.display = '';
+                    });
+                });
+                
+            } catch (err) {
+                console.error('Failed to enter VR:', err);
+            }
+        }
+        
+        // =====================================================
+        // WEATHER EFFECTS SYSTEM
+        // =====================================================
+        
+        const weatherCanvas = document.getElementById('weather-canvas');
+        const weatherCtx = weatherCanvas.getContext('2d');
+        let raindrops = [];
+        let windParticles = [];
+        
+        function initWeatherSystem() {
+            resizeWeatherCanvas();
+            
+            // Initialize raindrops
+            for (let i = 0; i < 300; i++) {
+                raindrops.push(createRaindrop());
+            }
+            
+            // Initialize wind particles
+            for (let i = 0; i < 100; i++) {
+                windParticles.push(createWindParticle());
+            }
+        }
+        
+        function resizeWeatherCanvas() {
+            weatherCanvas.width = window.innerWidth;
+            weatherCanvas.height = window.innerHeight;
+        }
+        
+        function createRaindrop() {
+            return {
+                x: Math.random() * weatherCanvas.width,
+                y: Math.random() * weatherCanvas.height,
+                length: Math.random() * 25 + 10,
+                speed: Math.random() * 15 + 20,
+                opacity: Math.random() * 0.3 + 0.1,
+                angle: Math.PI / 6 * (effectsState.wind ? 1.5 : 0.5)
+            };
+        }
+        
+        function createWindParticle() {
+            return {
+                x: Math.random() * weatherCanvas.width,
+                y: Math.random() * weatherCanvas.height,
+                size: Math.random() * 3 + 1,
+                speed: Math.random() * 3 + 2,
+                opacity: Math.random() * 0.15 + 0.05,
+                wobble: Math.random() * Math.PI * 2
+            };
+        }
+        
+        function updateWeather(deltaTime) {
+            weatherCtx.clearRect(0, 0, weatherCanvas.width, weatherCanvas.height);
+            
+            // Update rain
+            if (effectsState.rain) {
+                updateRain(deltaTime);
+            }
+            
+            // Update wind particles
+            if (effectsState.wind) {
+                updateWindParticles(deltaTime);
+            }
+        }
+        
+        function updateRain(deltaTime) {
+            const windOffset = effectsState.wind ? Math.sin(windTime) * 3 : 0;
             
             raindrops.forEach(drop => {
-                rainCtx.beginPath();
-                rainCtx.moveTo(drop.x, drop.y);
-                rainCtx.lineTo(drop.x + 1, drop.y + drop.length);
-                rainCtx.strokeStyle = `rgba(174, 194, 224, ${drop.opacity})`;
-                rainCtx.lineWidth = 1;
-                rainCtx.stroke();
+                // Draw raindrop
+                weatherCtx.beginPath();
+                weatherCtx.moveTo(drop.x, drop.y);
                 
+                const endX = drop.x + Math.sin(drop.angle) * drop.length + windOffset;
+                const endY = drop.y + Math.cos(drop.angle) * drop.length;
+                
+                weatherCtx.lineTo(endX, endY);
+                weatherCtx.strokeStyle = `rgba(174, 194, 224, ${drop.opacity})`;
+                weatherCtx.lineWidth = 1.5;
+                weatherCtx.stroke();
+                
+                // Update position
                 drop.y += drop.speed;
+                drop.x += windOffset * 0.5;
                 
-                if (drop.y > rainCanvas.height) {
+                // Reset when off screen
+                if (drop.y > weatherCanvas.height || drop.x < -50 || drop.x > weatherCanvas.width + 50) {
                     drop.y = -drop.length;
-                    drop.x = Math.random() * rainCanvas.width;
+                    drop.x = Math.random() * (weatherCanvas.width + 100) - 50;
+                }
+            });
+        }
+        
+        function updateWindParticles(deltaTime) {
+            windParticles.forEach(particle => {
+                particle.wobble += 0.05;
+                const wobbleY = Math.sin(particle.wobble) * 2;
+                
+                // Draw particle (leaf/debris)
+                weatherCtx.beginPath();
+                weatherCtx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                weatherCtx.fillStyle = `rgba(139, 90, 43, ${particle.opacity})`;
+                weatherCtx.fill();
+                
+                // Update position
+                particle.x += particle.speed * windDirection.x;
+                particle.y += wobbleY;
+                
+                // Wrap around
+                if (particle.x > weatherCanvas.width + 10) {
+                    particle.x = -10;
+                    particle.y = Math.random() * weatherCanvas.height;
+                }
+                if (particle.x < -10) {
+                    particle.x = weatherCanvas.width + 10;
+                    particle.y = Math.random() * weatherCanvas.height;
+                }
+            });
+        }
+        
+        function onEffectToggle(effect, enabled) {
+            console.log(`${effect}: ${enabled ? 'on' : 'off'}`);
+            
+            switch(effect) {
+                case 'rain':
+                    if (enabled && audioSources.rain) {
+                        audioSources.rain.play();
+                        audioSources.rain.fade(0, LOCATIONS[currentIndex].audio.rain || 0.5, 1000);
+                    } else if (audioSources.rain) {
+                        audioSources.rain.fade(audioSources.rain.volume(), 0, 1000);
+                    }
+                    break;
+                    
+                case 'wind':
+                    if (enabled && audioSources.wind) {
+                        audioSources.wind.play();
+                        audioSources.wind.fade(0, 0.4, 1000);
+                    } else if (audioSources.wind) {
+                        audioSources.wind.fade(audioSources.wind.volume(), 0, 1000);
+                    }
+                    break;
+                    
+                case 'birds':
+                    if (enabled && audioSources.birds) {
+                        audioSources.birds.play();
+                    } else if (audioSources.birds) {
+                        audioSources.birds.pause();
+                    }
+                    break;
+                    
+                case 'ocean':
+                    if (enabled && audioSources.ocean) {
+                        audioSources.ocean.play();
+                    } else if (audioSources.ocean) {
+                        audioSources.ocean.pause();
+                    }
+                    break;
+            }
+        }
+        
+        // =====================================================
+        // AUDIO SYSTEM (Howler.js)
+        // =====================================================
+        
+        const audioSources = {};
+        
+        // Ambient audio URLs (using free samples - replace with your own)
+        const AUDIO_URLS = {
+            ocean: 'https://cdn.freesound.org/previews/467/467116_9497060-lq.mp3',
+            birds: 'https://cdn.freesound.org/previews/531/531015_10204945-lq.mp3',
+            wind: 'https://cdn.freesound.org/previews/244/244640_4477379-lq.mp3',
+            rain: 'https://cdn.freesound.org/previews/401/401275_7865284-lq.mp3'
+        };
+        
+        function initAudioSystem() {
+            // Set global volume
+            Howler.volume(0.7);
+            
+            // Create audio sources
+            audioSources.ocean = new Howl({
+                src: [AUDIO_URLS.ocean],
+                loop: true,
+                volume: 0,
+                html5: true
+            });
+            
+            audioSources.birds = new Howl({
+                src: [AUDIO_URLS.birds],
+                loop: true,
+                volume: 0,
+                html5: true,
+                // Spatial audio for birds
+                pannerAttr: {
+                    panningModel: 'HRTF',
+                    distanceModel: 'inverse',
+                    refDistance: 1,
+                    maxDistance: 100
                 }
             });
             
-            requestAnimationFrame(updateRain);
-        }
-        
-        function toggleRain(on) {
-            rainActive = on;
-            rainCanvas.classList.toggle('active', on);
-            if (on) updateRain();
-        }
-        
-        // =====================================================
-        // EFFECT TOGGLES
-        // =====================================================
-        
-        document.querySelectorAll('.toggle-switch').forEach(toggle => {
-            toggle.addEventListener('click', () => {
-                toggle.classList.toggle('on');
-                const effect = toggle.dataset.effect;
-                const isOn = toggle.classList.contains('on');
-                
-                if (effect === 'rain') {
-                    toggleRain(isOn);
-                }
-                // Other effects would be handled here
-                console.log(`${effect}: ${isOn ? 'on' : 'off'}`);
+            audioSources.wind = new Howl({
+                src: [AUDIO_URLS.wind],
+                loop: true,
+                volume: 0,
+                html5: true
             });
-        });
+            
+            audioSources.rain = new Howl({
+                src: [AUDIO_URLS.rain],
+                loop: true,
+                volume: 0,
+                html5: true
+            });
+            
+            // Start ambient audio based on initial effect states
+            if (effectsState.ocean) audioSources.ocean.play();
+            if (effectsState.birds) audioSources.birds.play();
+        }
         
-        // =====================================================
-        // BUTTON CONTROLS
-        // =====================================================
+        function updateAudioMix(location) {
+            const audio = location.audio;
+            const duration = 2000;
+            
+            // Ocean volume based on distance to coast
+            if (effectsState.ocean && audioSources.ocean) {
+                const oceanVol = Math.max(0, 1 - (location.coastDistance / 5000)) * audio.ocean;
+                audioSources.ocean.fade(audioSources.ocean.volume(), oceanVol, duration);
+            }
+            
+            // Birds
+            if (effectsState.birds && audioSources.birds) {
+                audioSources.birds.fade(audioSources.birds.volume(), audio.birds, duration);
+            }
+            
+            // Wind
+            if (effectsState.wind && audioSources.wind) {
+                audioSources.wind.fade(audioSources.wind.volume(), audio.wind, duration);
+            }
+            
+            // Rain
+            if (effectsState.rain && audioSources.rain) {
+                audioSources.rain.fade(audioSources.rain.volume(), audio.rain, duration);
+            }
+        }
         
-        document.getElementById('prev-btn').addEventListener('click', prevLocation);
-        document.getElementById('next-btn').addEventListener('click', nextLocation);
-        document.getElementById('play-btn').addEventListener('click', toggleAutoPlay);
+        function crossfadeAudio(newLocation, duration) {
+            // Audio crossfade is handled in updateAudioMix
+            updateAudioMix(newLocation);
+        }
+        
+        // Bird sound spatial positioning
+        let birdSoundTimer = null;
+        
+        function startBirdSounds() {
+            if (!audioSources.birds) return;
+            
+            // Periodically change bird sound position for spatial effect
+            birdSoundTimer = setInterval(() => {
+                if (effectsState.birds && audioSources.birds.playing()) {
+                    const x = (Math.random() - 0.5) * 2; // -1 to 1
+                    const z = (Math.random() - 0.5) * 2;
+                    audioSources.birds.pos(x * 10, 5, z * 10);
+                }
+            }, 3000);
+        }
         
         // =====================================================
         // RENDER LOOP
         // =====================================================
         
-        function animate() {
-            requestAnimationFrame(animate);
+        let lastTime = performance.now();
+        
+        function animate(time) {
+            const deltaTime = (time - lastTime) / 1000;
+            lastTime = time;
             
-            // Update camera based on mouse look
+            // Update gyro if enabled
+            updateGyroCamera();
+            
+            // Smooth camera movement
+            lon += (targetLon - lon) * 0.1;
+            lat += (targetLat - lat) * 0.1;
+            
+            // Apply wind sway to camera
+            if (effectsState.wind) {
+                windTime += CONFIG.windSwaySpeed * deltaTime;
+                const swayX = Math.sin(windTime * 0.7) * CONFIG.windSwayAmount;
+                const swayY = Math.sin(windTime * 0.5) * CONFIG.windSwayAmount * 0.5;
+                lon += swayX;
+                lat += swayY;
+            }
+            
+            // Calculate look direction
             phi = THREE.MathUtils.degToRad(90 - lat);
             theta = THREE.MathUtils.degToRad(lon);
             
-            camera.lookAt(
-                500 * Math.sin(phi) * Math.cos(theta),
-                500 * Math.cos(phi),
-                500 * Math.sin(phi) * Math.sin(theta)
-            );
+            // Update camera look target
+            if (!renderer.xr.isPresenting) {
+                camera.lookAt(
+                    500 * Math.sin(phi) * Math.cos(theta),
+                    500 * Math.cos(phi),
+                    500 * Math.sin(phi) * Math.sin(theta)
+                );
+            }
             
+            // Update weather effects
+            updateWeather(deltaTime);
+            
+            // Render
             renderer.render(scene, camera);
         }
         
         // =====================================================
-        // INIT
+        // INITIALIZE
         // =====================================================
         
-        initRain();
         init();
+        startBirdSounds();
         
-        // Handle window resize for rain canvas
-        window.addEventListener('resize', () => {
-            rainCanvas.width = window.innerWidth;
-            rainCanvas.height = window.innerHeight;
-        });
+        // Set initial cursor
+        renderer.domElement.style.cursor = 'grab';
+        
+        console.log('🌴 Big Island VR 3.0 initialized');
+        console.log('Features: Depth parallax, Gyroscope, WebXR, Spatial Audio');
     </script>
 </body>
 </html>
