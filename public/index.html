@@ -1,0 +1,2200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="description" content="Explore the Big Island of Hawaii in immersive 360° VR - Visit Hilo, Volcanoes, Kona Coast and more">
+    <meta name="theme-color" content="#0D3B66">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Big Island VR">
+    
+    <title>Big Island VR - Explore Hawaiʻi</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌴</text></svg>">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=DM+Sans:wght@500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Colors - Ocean */
+            --color-kona-blue: #0D3B66;
+            --color-pacific-teal: #1A6B7C;
+            --color-shallow-water: #3DA5D9;
+            --color-seafoam: #7FCDCD;
+            
+            /* Colors - Volcanic */
+            --color-lava-black: #1A1A1A;
+            --color-pahoehoe: #2D2D2D;
+            --color-volcanic-ash: #4A4A4A;
+            --color-cinder: #6B6B6B;
+            
+            /* Colors - Flora */
+            --color-plumeria: #FAF8F5;
+            --color-hibiscus: #E63946;
+            --color-pikake: #F4A261;
+            --color-ti-leaf: #2A9D8F;
+            --color-orchid: #9B5DE5;
+            
+            /* Spacing */
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+            --space-5: 24px;
+            --space-6: 32px;
+            
+            /* Typography */
+            --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-display: 'DM Sans', var(--font-primary);
+            
+            /* Borders */
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            
+            /* Timing */
+            --duration-fast: 200ms;
+            --duration-normal: 300ms;
+            --duration-panorama: 1500ms;
+            
+            /* Easing */
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-natural: cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Safe area */
+            --safe-area-top: env(safe-area-inset-top, 0px);
+            --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+        }
+        
+        /* High Contrast Mode */
+        .high-contrast {
+            --color-lava-black: #000000;
+            --color-pahoehoe: #1A1A1A;
+            --color-plumeria: #FFFFFF;
+            --color-volcanic-ash: #666666;
+        }
+        
+        /* Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        
+        .reduced-motion *, .reduced-motion *::before, .reduced-motion *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: var(--font-primary);
+            background: var(--color-lava-black);
+            color: var(--color-plumeria);
+            touch-action: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Focus styles for accessibility */
+        *:focus-visible {
+            outline: 2px solid var(--color-shallow-water);
+            outline-offset: 2px;
+        }
+        
+        /* Skip to main content link */
+        .skip-link {
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: var(--space-3) var(--space-4);
+            background: var(--color-ti-leaf);
+            color: var(--color-plumeria);
+            border-radius: var(--radius-md);
+            z-index: 10000;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .skip-link:focus {
+            top: var(--space-4);
+        }
+        
+        /* Loading Screen */
+        #loading-screen {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, var(--color-kona-blue) 0%, var(--color-pacific-teal) 50%, var(--color-shallow-water) 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s var(--ease-out-expo);
+        }
+        
+        #loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .loading-logo {
+            font-size: 64px;
+            margin-bottom: var(--space-4);
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .loading-title {
+            font-family: var(--font-display);
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: var(--space-2);
+        }
+        
+        .loading-subtitle {
+            font-size: 16px;
+            opacity: 0.8;
+            margin-bottom: var(--space-6);
+            font-style: italic;
+        }
+        
+        .loading-bar-container {
+            width: 280px;
+            height: 6px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: var(--space-4);
+        }
+        
+        .loading-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--color-seafoam), var(--color-plumeria));
+            width: 0%;
+            transition: width 0.3s ease;
+            animation: loading-wave 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes loading-wave {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+        
+        .loading-status {
+            font-size: 14px;
+            opacity: 0.7;
+        }
+        
+        /* Main Container */
+        #app {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        
+        /* Panorama Viewer */
+        #panorama-container {
+            position: absolute;
+            inset: 0;
+            background: var(--color-lava-black);
+        }
+        
+        #panorama {
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* Screen Reader Announcements */
+        #sr-announcer {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+        
+        /* Panel Base Styles */
+        .panel {
+            background: rgba(26, 26, 26, 0.85);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+        
+        /* Info Panel */
+        #info-panel {
+            position: absolute;
+            top: calc(var(--space-5) + var(--safe-area-top));
+            left: var(--space-5);
+            width: 280px;
+            padding: var(--space-4);
+            z-index: 100;
+            animation: fadeIn 0.5s var(--ease-out-expo);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .panel-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            padding-bottom: var(--space-3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: var(--space-3);
+        }
+        
+        .panel-logo {
+            font-size: 24px;
+        }
+        
+        .panel-title {
+            font-family: var(--font-display);
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .location-name {
+            font-family: var(--font-display);
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: var(--space-1);
+        }
+        
+        .location-region {
+            font-size: 14px;
+            color: var(--color-seafoam);
+            margin-bottom: var(--space-3);
+        }
+        
+        .location-description {
+            font-size: 13px;
+            line-height: 1.5;
+            color: var(--color-cinder);
+            margin-bottom: var(--space-3);
+        }
+        
+        .location-dots {
+            display: flex;
+            gap: var(--space-1);
+            margin-bottom: var(--space-2);
+        }
+        
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--color-volcanic-ash);
+            transition: all var(--duration-fast) ease;
+        }
+        
+        .dot.active {
+            width: 10px;
+            height: 10px;
+            background: var(--color-ti-leaf);
+            box-shadow: 0 0 8px rgba(42, 157, 143, 0.5);
+        }
+        
+        .dot.visited {
+            background: var(--color-seafoam);
+        }
+        
+        .location-counter {
+            font-size: 12px;
+            color: var(--color-seafoam);
+        }
+        
+        /* Effects Panel */
+        #effects-panel {
+            position: absolute;
+            top: calc(var(--space-5) + var(--safe-area-top));
+            right: var(--space-5);
+            width: 220px;
+            padding: var(--space-4);
+            z-index: 100;
+            animation: fadeIn 0.5s var(--ease-out-expo) 0.1s both;
+        }
+        
+        .effect-control {
+            margin-bottom: var(--space-4);
+        }
+        
+        .effect-control:last-child {
+            margin-bottom: 0;
+        }
+        
+        .effect-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--space-2);
+        }
+        
+        .effect-icon {
+            font-size: 16px;
+        }
+        
+        .effect-name {
+            font-size: 14px;
+            flex: 1;
+            margin-left: var(--space-2);
+        }
+        
+        .effect-value {
+            font-size: 12px;
+            color: var(--color-cinder);
+        }
+        
+        /* Slider */
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: var(--color-volcanic-ash);
+            border-radius: 3px;
+            outline: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: linear-gradient(135deg, var(--color-plumeria), #E0E0E0);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            transition: transform var(--duration-fast) ease;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            background: linear-gradient(135deg, var(--color-plumeria), #E0E0E0);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+        
+        /* Controls Bar */
+        #controls-bar {
+            position: absolute;
+            bottom: calc(var(--space-5) + var(--safe-area-bottom));
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-3) var(--space-5);
+            z-index: 100;
+            animation: fadeIn 0.5s var(--ease-out-expo) 0.2s both;
+        }
+        
+        /* Buttons */
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-3) var(--space-4);
+            background: rgba(26, 26, 26, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-md);
+            color: var(--color-plumeria);
+            font-family: var(--font-primary);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--duration-fast) ease;
+            white-space: nowrap;
+            min-width: 44px;
+            min-height: 44px;
+        }
+        
+        .btn:hover {
+            background: rgba(42, 157, 143, 0.2);
+            border-color: rgba(42, 157, 143, 0.4);
+        }
+        
+        .btn:active {
+            transform: scale(0.98);
+        }
+        
+        .btn-icon {
+            padding: var(--space-3);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--color-pacific-teal), var(--color-ti-leaf));
+            border: none;
+            box-shadow: 0 4px 14px rgba(26, 107, 124, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(26, 107, 124, 0.4);
+        }
+        
+        .btn-vr {
+            background: linear-gradient(135deg, var(--color-orchid), #7B4FBF);
+            border: none;
+            gap: var(--space-2);
+        }
+        
+        .btn .icon {
+            font-size: 18px;
+        }
+        
+        /* Keyboard Hints */
+        .keyboard-hints {
+            position: absolute;
+            bottom: calc(100px + var(--safe-area-bottom));
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: var(--space-4);
+            font-size: 12px;
+            color: var(--color-cinder);
+            z-index: 50;
+        }
+        
+        .keyboard-hint {
+            display: flex;
+            align-items: center;
+            gap: var(--space-1);
+        }
+        
+        .key {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 24px;
+            height: 24px;
+            padding: 0 var(--space-2);
+            background: var(--color-pahoehoe);
+            border: 1px solid var(--color-volcanic-ash);
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        
+        /* Hide keyboard hints on touch devices */
+        .is-touch .keyboard-hints {
+            display: none;
+        }
+        
+        /* Performance Mode Toggle */
+        #performance-toggle {
+            position: absolute;
+            top: calc(var(--space-5) + var(--safe-area-top));
+            right: calc(240px + var(--space-5) + var(--space-3));
+            z-index: 100;
+        }
+        
+        /* Bottom Sheet (Mobile) */
+        #bottom-sheet {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            max-height: 70vh;
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+            transform: translateY(100%);
+            transition: transform 0.3s var(--ease-out-expo);
+            z-index: 200;
+            padding-bottom: var(--safe-area-bottom);
+            display: none;
+        }
+        
+        #bottom-sheet.open {
+            transform: translateY(0);
+        }
+        
+        .sheet-handle {
+            width: 40px;
+            height: 4px;
+            background: var(--color-volcanic-ash);
+            border-radius: 2px;
+            margin: var(--space-3) auto;
+        }
+        
+        .sheet-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 var(--space-4) var(--space-3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .sheet-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .sheet-close {
+            font-size: 24px;
+            background: none;
+            border: none;
+            color: var(--color-plumeria);
+            cursor: pointer;
+            padding: var(--space-2);
+        }
+        
+        .sheet-content {
+            padding: var(--space-4);
+            max-height: calc(70vh - 100px);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        /* Location List */
+        .location-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+        }
+        
+        .location-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-3);
+            background: var(--color-pahoehoe);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--duration-fast) ease;
+        }
+        
+        .location-item:hover, .location-item:focus {
+            background: var(--color-volcanic-ash);
+        }
+        
+        .location-item.active {
+            border: 2px solid var(--color-ti-leaf);
+        }
+        
+        .location-item-icon {
+            font-size: 24px;
+        }
+        
+        .location-item-info {
+            flex: 1;
+        }
+        
+        .location-item-name {
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+        
+        .location-item-region {
+            font-size: 12px;
+            color: var(--color-seafoam);
+        }
+        
+        /* Route Groups */
+        .route-group {
+            margin-bottom: var(--space-5);
+        }
+        
+        .route-group-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--color-seafoam);
+            margin-bottom: var(--space-3);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        /* VR UI */
+        #vr-ui {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 300;
+            display: none;
+        }
+        
+        #vr-ui.active {
+            display: block;
+        }
+        
+        .vr-panel {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(26, 26, 26, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius-lg);
+            padding: var(--space-5);
+            text-align: center;
+            pointer-events: auto;
+        }
+        
+        .vr-location-name {
+            font-family: var(--font-display);
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: var(--space-2);
+        }
+        
+        .vr-location-region {
+            color: var(--color-seafoam);
+            margin-bottom: var(--space-4);
+        }
+        
+        .vr-teleport-hint {
+            font-size: 14px;
+            color: var(--color-cinder);
+        }
+        
+        #vr-exit-btn {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            pointer-events: auto;
+        }
+        
+        /* Gaze Cursor (VR fallback) */
+        #gaze-cursor {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid var(--color-plumeria);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 350;
+            display: none;
+        }
+        
+        #gaze-cursor.active {
+            display: block;
+        }
+        
+        #gaze-cursor .progress {
+            position: absolute;
+            inset: -2px;
+            border: 2px solid var(--color-ti-leaf);
+            border-radius: 50%;
+            clip-path: polygon(50% 50%, 50% 0%, 100% 0%);
+            transform: rotate(0deg);
+            transition: transform 0.1s linear;
+        }
+        
+        /* Particle Effects */
+        #particles-container {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 50;
+            overflow: hidden;
+        }
+        
+        .particle {
+            position: absolute;
+            opacity: 0.3;
+        }
+        
+        .rain-drop {
+            width: 2px;
+            height: 20px;
+            background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.5));
+            transform: rotate(15deg);
+        }
+        
+        .mist-blob {
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(20px);
+        }
+        
+        /* Accessibility Panel */
+        #accessibility-panel {
+            position: fixed;
+            top: calc(var(--space-5) + var(--safe-area-top));
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            display: none;
+        }
+        
+        #accessibility-panel.open {
+            display: block;
+        }
+        
+        .accessibility-options {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+            padding: var(--space-4);
+            min-width: 250px;
+        }
+        
+        .toggle-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .toggle-label {
+            font-size: 14px;
+        }
+        
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            width: 52px;
+            height: 28px;
+            background: linear-gradient(135deg, var(--color-pahoehoe), var(--color-volcanic-ash));
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s var(--ease-natural);
+            border: none;
+        }
+        
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            background: linear-gradient(135deg, var(--color-plumeria), #E0E0E0);
+            border-radius: 50%;
+            top: 3px;
+            left: 3px;
+            transition: transform 0.3s var(--ease-natural);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .toggle-switch.active {
+            background: linear-gradient(135deg, var(--color-pacific-teal), var(--color-ti-leaf));
+        }
+        
+        .toggle-switch.active::after {
+            transform: translateX(24px);
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            #info-panel {
+                top: auto;
+                bottom: calc(130px + var(--safe-area-bottom));
+                left: var(--space-3);
+                right: var(--space-3);
+                width: auto;
+                padding: var(--space-3);
+            }
+            
+            #effects-panel {
+                display: none;
+            }
+            
+            #performance-toggle {
+                top: calc(var(--space-3) + var(--safe-area-top));
+                right: var(--space-3);
+            }
+            
+            #controls-bar {
+                bottom: calc(var(--space-3) + var(--safe-area-bottom));
+                left: var(--space-3);
+                right: var(--space-3);
+                transform: none;
+                justify-content: center;
+            }
+            
+            .btn {
+                flex: 1;
+                max-width: 100px;
+            }
+            
+            .btn-vr {
+                max-width: 140px;
+            }
+            
+            #bottom-sheet {
+                display: block;
+            }
+            
+            .panel-header {
+                display: none;
+            }
+            
+            .location-description {
+                display: none;
+            }
+        }
+        
+        /* Tablet */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            #info-panel {
+                width: 240px;
+            }
+            
+            #effects-panel {
+                width: 180px;
+            }
+        }
+        
+        /* PWA Splash / Install Prompt */
+        #install-prompt {
+            position: fixed;
+            bottom: calc(20px + var(--safe-area-bottom));
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-3) var(--space-4);
+            z-index: 500;
+        }
+        
+        #install-prompt.show {
+            display: flex;
+            animation: fadeIn 0.5s var(--ease-out-expo);
+        }
+        
+        /* Fullscreen styles */
+        .fullscreen #info-panel,
+        .fullscreen #effects-panel {
+            opacity: 0;
+            transition: opacity var(--duration-normal) ease;
+        }
+        
+        .fullscreen:hover #info-panel,
+        .fullscreen:hover #effects-panel {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <a href="#panorama-container" class="skip-link">Skip to panorama viewer</a>
+    
+    <!-- Screen Reader Announcements -->
+    <div id="sr-announcer" role="status" aria-live="polite" aria-atomic="true"></div>
+    
+    <!-- Loading Screen -->
+    <div id="loading-screen" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Loading Big Island VR">
+        <div class="loading-logo">🌴</div>
+        <h1 class="loading-title">Big Island VR</h1>
+        <p class="loading-subtitle">"E komo mai" — Welcome</p>
+        <div class="loading-bar-container">
+            <div class="loading-bar" id="loading-bar"></div>
+        </div>
+        <p class="loading-status" id="loading-status">Initializing...</p>
+    </div>
+    
+    <!-- Main App -->
+    <div id="app" role="main">
+        <!-- Panorama Container -->
+        <div id="panorama-container" tabindex="0" aria-label="360 degree panorama viewer. Use arrow keys or drag to look around.">
+            <div id="panorama"></div>
+        </div>
+        
+        <!-- Particle Effects -->
+        <div id="particles-container" aria-hidden="true"></div>
+        
+        <!-- Info Panel -->
+        <aside id="info-panel" class="panel" aria-label="Location information">
+            <div class="panel-header">
+                <span class="panel-logo">🌴</span>
+                <span class="panel-title">Big Island VR</span>
+            </div>
+            <h2 class="location-name" id="location-name">Loading...</h2>
+            <p class="location-region" id="location-region"></p>
+            <p class="location-description" id="location-description"></p>
+            <div class="location-dots" id="location-dots" role="group" aria-label="Location progress"></div>
+            <p class="location-counter" id="location-counter"></p>
+        </aside>
+        
+        <!-- Effects Panel (Desktop) -->
+        <aside id="effects-panel" class="panel" aria-label="Ambient effects controls">
+            <h2 class="panel-title" style="margin-bottom: var(--space-4);">🎛️ Ambient Effects</h2>
+            
+            <div class="effect-control">
+                <div class="effect-label">
+                    <span class="effect-icon">🌧️</span>
+                    <span class="effect-name">Rain</span>
+                    <span class="effect-value" id="rain-value">0%</span>
+                </div>
+                <input type="range" id="rain-slider" min="0" max="100" value="0" aria-label="Rain intensity">
+            </div>
+            
+            <div class="effect-control">
+                <div class="effect-label">
+                    <span class="effect-icon">💨</span>
+                    <span class="effect-name">Wind</span>
+                    <span class="effect-value" id="wind-value">0%</span>
+                </div>
+                <input type="range" id="wind-slider" min="0" max="100" value="0" aria-label="Wind intensity">
+            </div>
+            
+            <div class="effect-control">
+                <div class="effect-label">
+                    <span class="effect-icon">🐦</span>
+                    <span class="effect-name">Birds</span>
+                    <span class="effect-value" id="birds-value">0%</span>
+                </div>
+                <input type="range" id="birds-slider" min="0" max="100" value="0" aria-label="Bird sounds intensity">
+            </div>
+            
+            <div class="effect-control">
+                <div class="effect-label">
+                    <span class="effect-icon">🌊</span>
+                    <span class="effect-name">Ocean</span>
+                    <span class="effect-value" id="ocean-value">0%</span>
+                </div>
+                <input type="range" id="ocean-slider" min="0" max="100" value="0" aria-label="Ocean sounds intensity">
+            </div>
+            
+            <div class="effect-control" style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: var(--space-3); margin-top: var(--space-2);">
+                <div class="effect-label">
+                    <span class="effect-icon">🔊</span>
+                    <span class="effect-name">Master</span>
+                    <span class="effect-value" id="master-value">80%</span>
+                </div>
+                <input type="range" id="master-slider" min="0" max="100" value="80" aria-label="Master volume">
+            </div>
+        </aside>
+        
+        <!-- Performance Toggle -->
+        <button id="performance-toggle" class="btn btn-icon" aria-label="Toggle performance mode" title="Performance Mode">
+            <span class="icon">⚡</span>
+        </button>
+        
+        <!-- Keyboard Hints -->
+        <div class="keyboard-hints" aria-hidden="true">
+            <div class="keyboard-hint"><span class="key">←</span><span class="key">→</span> Navigate</div>
+            <div class="keyboard-hint"><span class="key">Space</span> Auto-play</div>
+            <div class="keyboard-hint"><span class="key">F</span> Fullscreen</div>
+            <div class="keyboard-hint"><span class="key">L</span> Locations</div>
+        </div>
+        
+        <!-- Controls Bar -->
+        <nav id="controls-bar" class="panel" aria-label="Navigation controls">
+            <button class="btn btn-icon" id="prev-btn" aria-label="Previous location">
+                <span class="icon">⬅️</span>
+            </button>
+            <button class="btn btn-primary" id="play-btn" aria-label="Auto-play tour">
+                <span class="icon">▶️</span>
+                <span class="btn-text">Auto</span>
+            </button>
+            <button class="btn btn-icon" id="next-btn" aria-label="Next location">
+                <span class="icon">➡️</span>
+            </button>
+            <button class="btn" id="locations-btn" aria-label="Open location selector">
+                <span class="icon">📍</span>
+            </button>
+            <button class="btn btn-vr" id="vr-btn" aria-label="Enter VR mode">
+                <span class="icon">🥽</span>
+                <span class="btn-text">VR</span>
+            </button>
+        </nav>
+        
+        <!-- Bottom Sheet (Mobile) -->
+        <div id="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+            <div class="sheet-handle"></div>
+            <div class="sheet-header">
+                <h2 class="sheet-title" id="sheet-title">Locations</h2>
+                <button class="sheet-close" id="sheet-close" aria-label="Close">&times;</button>
+            </div>
+            <div class="sheet-content" id="sheet-content">
+                <!-- Dynamic content -->
+            </div>
+        </div>
+        
+        <!-- VR UI Overlay -->
+        <div id="vr-ui" aria-hidden="true">
+            <div class="vr-panel">
+                <h2 class="vr-location-name" id="vr-location-name"></h2>
+                <p class="vr-location-region" id="vr-location-region"></p>
+                <p class="vr-teleport-hint">Point controller and pull trigger to teleport</p>
+            </div>
+            <button id="vr-exit-btn" class="btn btn-primary">🏠 Exit VR</button>
+        </div>
+        
+        <!-- Gaze Cursor (VR fallback) -->
+        <div id="gaze-cursor">
+            <div class="progress"></div>
+        </div>
+        
+        <!-- Accessibility Panel -->
+        <div id="accessibility-panel" class="panel" role="dialog" aria-modal="true" aria-labelledby="a11y-title">
+            <div class="accessibility-options">
+                <h2 id="a11y-title" style="margin-bottom: var(--space-3);">♿ Accessibility</h2>
+                
+                <div class="toggle-option">
+                    <span class="toggle-label">High Contrast</span>
+                    <button class="toggle-switch" id="high-contrast-toggle" role="switch" aria-checked="false" aria-label="High contrast mode"></button>
+                </div>
+                
+                <div class="toggle-option">
+                    <span class="toggle-label">Reduced Motion</span>
+                    <button class="toggle-switch" id="reduced-motion-toggle" role="switch" aria-checked="false" aria-label="Reduced motion"></button>
+                </div>
+                
+                <div class="toggle-option">
+                    <span class="toggle-label">Screen Reader Mode</span>
+                    <button class="toggle-switch" id="sr-mode-toggle" role="switch" aria-checked="false" aria-label="Enhanced screen reader announcements"></button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Install Prompt -->
+        <div id="install-prompt" class="panel">
+            <span>📱 Add to Home Screen</span>
+            <button class="btn btn-primary" id="install-btn">Install</button>
+            <button class="btn btn-icon" id="install-dismiss" aria-label="Dismiss">&times;</button>
+        </div>
+    </div>
+    
+    <script>
+        // ==========================================
+        // Big Island VR - Main Application
+        // ==========================================
+        
+        (function() {
+            'use strict';
+            
+            // ==========================================
+            // Configuration & State
+            // ==========================================
+            
+            const CONFIG = {
+                GOOGLE_MAPS_API_KEY: 'AIzaSyBmSDHrsQunVjxhZ4UHQ0asdUY6vZVFszY',
+                PANORAMA_TRANSITION_MS: 1500,
+                AUTO_PLAY_INTERVAL_MS: 8000,
+                GAZE_DWELL_MS: 2000,
+                FOV_MIN: 30,
+                FOV_MAX: 120,
+                FOV_DEFAULT: 75
+            };
+            
+            const state = {
+                currentIndex: 0,
+                locations: [],
+                visitedIndices: new Set([0]),
+                isPlaying: false,
+                playTimer: null,
+                isVRMode: false,
+                isPerformanceMode: false,
+                isMobile: false,
+                isTouch: false,
+                panorama: null,
+                streetViewService: null,
+                audioContext: null,
+                audioGains: {},
+                particles: [],
+                fov: CONFIG.FOV_DEFAULT,
+                xrSession: null,
+                deferredInstallPrompt: null
+            };
+            
+            // ==========================================
+            // Locations Data
+            // ==========================================
+            
+            const LOCATIONS_DATA = [
+                {
+                    name: "Coconut Island Viewpoint",
+                    description: "View of Moku Ola (Coconut Island) from Liliuokalani Gardens bridge",
+                    region: "Hilo",
+                    route: "hilo_bayfront",
+                    panoId: "mbqeC_kUxjsPZxcLlbqOFg",
+                    lat: 19.7235,
+                    lng: -155.078,
+                    audio: { ocean: 0.5, birds: 0.4, wind: 0.2 },
+                    atmosphere: { mist: false, volcanic: false }
+                },
+                {
+                    name: "Hilo Bay Pier",
+                    description: "Historic pier with views of Hilo Bay and Mauna Kea",
+                    region: "Hilo",
+                    route: "hilo_bayfront",
+                    panoId: "tdkSC9MEMErekDComm0iCg",
+                    lat: 19.729,
+                    lng: -155.087,
+                    audio: { ocean: 0.7, birds: 0.2, wind: 0.3 },
+                    atmosphere: { mist: false, volcanic: false }
+                },
+                {
+                    name: "Downtown Hilo",
+                    description: "Historic downtown with classic Hawaiian storefronts",
+                    region: "Hilo",
+                    route: "hilo_bayfront",
+                    panoId: "-Xv9-rbq2rw4KSyZoNCyag",
+                    lat: 19.7241,
+                    lng: -155.0868,
+                    audio: { birds: 0.3, wind: 0.1 },
+                    atmosphere: { mist: false, volcanic: false }
+                },
+                {
+                    name: "Steam Vents",
+                    description: "Geothermal steam rising from volcanic fissures",
+                    region: "Volcano",
+                    route: "hawaii_volcanoes",
+                    panoId: "LwhblGlGuH7iVJp7uD7qwg",
+                    lat: 19.429,
+                    lng: -155.261,
+                    audio: { volcanic: 0.6, wind: 0.5 },
+                    atmosphere: { mist: true, volcanic: true }
+                },
+                {
+                    name: "Jaggar Museum Overlook",
+                    description: "Overlook of Kilauea caldera",
+                    region: "Volcano",
+                    route: "hawaii_volcanoes",
+                    panoId: "t3o3vDEgI14Jqq16F0n0wg",
+                    lat: 19.4207,
+                    lng: -155.2879,
+                    audio: { wind: 0.6, volcanic: 0.5 },
+                    atmosphere: { mist: true, volcanic: true }
+                }
+            ];
+            
+            // ==========================================
+            // DOM Elements
+            // ==========================================
+            
+            const elements = {};
+            
+            function cacheElements() {
+                elements.loadingScreen = document.getElementById('loading-screen');
+                elements.loadingBar = document.getElementById('loading-bar');
+                elements.loadingStatus = document.getElementById('loading-status');
+                elements.panoramaContainer = document.getElementById('panorama-container');
+                elements.panorama = document.getElementById('panorama');
+                elements.locationName = document.getElementById('location-name');
+                elements.locationRegion = document.getElementById('location-region');
+                elements.locationDescription = document.getElementById('location-description');
+                elements.locationDots = document.getElementById('location-dots');
+                elements.locationCounter = document.getElementById('location-counter');
+                elements.prevBtn = document.getElementById('prev-btn');
+                elements.nextBtn = document.getElementById('next-btn');
+                elements.playBtn = document.getElementById('play-btn');
+                elements.vrBtn = document.getElementById('vr-btn');
+                elements.locationsBtn = document.getElementById('locations-btn');
+                elements.bottomSheet = document.getElementById('bottom-sheet');
+                elements.sheetContent = document.getElementById('sheet-content');
+                elements.sheetClose = document.getElementById('sheet-close');
+                elements.performanceToggle = document.getElementById('performance-toggle');
+                elements.particlesContainer = document.getElementById('particles-container');
+                elements.vrUI = document.getElementById('vr-ui');
+                elements.vrLocationName = document.getElementById('vr-location-name');
+                elements.vrLocationRegion = document.getElementById('vr-location-region');
+                elements.vrExitBtn = document.getElementById('vr-exit-btn');
+                elements.gazeCursor = document.getElementById('gaze-cursor');
+                elements.srAnnouncer = document.getElementById('sr-announcer');
+                elements.installPrompt = document.getElementById('install-prompt');
+                elements.installBtn = document.getElementById('install-btn');
+                elements.installDismiss = document.getElementById('install-dismiss');
+                elements.accessibilityPanel = document.getElementById('accessibility-panel');
+                elements.highContrastToggle = document.getElementById('high-contrast-toggle');
+                elements.reducedMotionToggle = document.getElementById('reduced-motion-toggle');
+                elements.srModeToggle = document.getElementById('sr-mode-toggle');
+                
+                // Effect sliders
+                elements.rainSlider = document.getElementById('rain-slider');
+                elements.windSlider = document.getElementById('wind-slider');
+                elements.birdsSlider = document.getElementById('birds-slider');
+                elements.oceanSlider = document.getElementById('ocean-slider');
+                elements.masterSlider = document.getElementById('master-slider');
+            }
+            
+            // ==========================================
+            // Utility Functions
+            // ==========================================
+            
+            function detectDeviceCapabilities() {
+                state.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                state.isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+                
+                if (state.isTouch) {
+                    document.body.classList.add('is-touch');
+                }
+                
+                if (state.isMobile) {
+                    document.body.classList.add('is-mobile');
+                }
+            }
+            
+            function announce(message) {
+                elements.srAnnouncer.textContent = message;
+            }
+            
+            function updateLoadingProgress(percent, status) {
+                elements.loadingBar.style.width = `${percent}%`;
+                elements.loadingScreen.setAttribute('aria-valuenow', percent);
+                if (status) {
+                    elements.loadingStatus.textContent = status;
+                }
+            }
+            
+            // ==========================================
+            // Google Maps / Street View
+            // ==========================================
+            
+            function loadGoogleMapsAPI() {
+                return new Promise((resolve, reject) => {
+                    if (window.google && window.google.maps) {
+                        resolve();
+                        return;
+                    }
+                    
+                    const script = document.createElement('script');
+                    script.src = `https://maps.googleapis.com/maps/api/js?key=${CONFIG.GOOGLE_MAPS_API_KEY}&libraries=geometry`;
+                    script.async = true;
+                    script.defer = true;
+                    script.onload = resolve;
+                    script.onerror = reject;
+                    document.head.appendChild(script);
+                });
+            }
+            
+            function initPanorama() {
+                state.locations = LOCATIONS_DATA;
+                
+                state.streetViewService = new google.maps.StreetViewService();
+                
+                state.panorama = new google.maps.StreetViewPanorama(elements.panorama, {
+                    pov: { heading: 0, pitch: 0 },
+                    zoom: 1,
+                    addressControl: false,
+                    fullscreenControl: false,
+                    motionTracking: false,
+                    motionTrackingControl: false,
+                    showRoadLabels: false,
+                    zoomControl: !state.isMobile,
+                    panControl: false,
+                    linksControl: false,
+                    enableCloseButton: false
+                });
+                
+                // Load first location
+                loadLocation(0);
+                
+                // Set up POV change listener for FOV
+                state.panorama.addListener('pov_changed', () => {
+                    // Sync FOV if needed
+                });
+            }
+            
+            function loadLocation(index, instant = false) {
+                if (index < 0 || index >= state.locations.length) return;
+                
+                const location = state.locations[index];
+                state.currentIndex = index;
+                state.visitedIndices.add(index);
+                
+                // Update UI immediately
+                updateLocationUI(location);
+                
+                // Lazy load panorama
+                if (location.panoId) {
+                    if (!instant && !state.isPerformanceMode) {
+                        // Smooth transition effect (simplified)
+                        elements.panorama.style.opacity = '0.5';
+                        setTimeout(() => {
+                            state.panorama.setPano(location.panoId);
+                            elements.panorama.style.opacity = '1';
+                        }, 300);
+                    } else {
+                        state.panorama.setPano(location.panoId);
+                    }
+                } else {
+                    // Fallback to coordinates
+                    state.streetViewService.getPanorama({
+                        location: { lat: location.lat, lng: location.lng },
+                        radius: 100
+                    }, (data, status) => {
+                        if (status === 'OK') {
+                            state.panorama.setPano(data.location.pano);
+                        }
+                    });
+                }
+                
+                // Update audio based on location
+                updateAmbientAudio(location.audio);
+                
+                // Update particles based on atmosphere
+                updateParticles(location.atmosphere);
+                
+                // Screen reader announcement
+                announce(`Now viewing ${location.name} in ${location.region}. ${location.description}`);
+                
+                // Update VR UI if active
+                if (state.isVRMode) {
+                    elements.vrLocationName.textContent = location.name;
+                    elements.vrLocationRegion.textContent = location.region;
+                }
+            }
+            
+            function updateLocationUI(location) {
+                elements.locationName.textContent = location.name;
+                elements.locationRegion.textContent = `📍 ${location.region}`;
+                elements.locationDescription.textContent = location.description;
+                
+                // Update dots
+                elements.locationDots.innerHTML = state.locations.map((_, i) => {
+                    const classes = ['dot'];
+                    if (i === state.currentIndex) classes.push('active');
+                    else if (state.visitedIndices.has(i)) classes.push('visited');
+                    return `<button class="${classes.join(' ')}" aria-label="Go to location ${i + 1}: ${state.locations[i].name}" data-index="${i}"></button>`;
+                }).join('');
+                
+                // Add click handlers to dots
+                elements.locationDots.querySelectorAll('.dot').forEach(dot => {
+                    dot.addEventListener('click', () => {
+                        loadLocation(parseInt(dot.dataset.index));
+                    });
+                });
+                
+                elements.locationCounter.textContent = `${state.currentIndex + 1} of ${state.locations.length} locations`;
+            }
+            
+            // ==========================================
+            // Navigation
+            // ==========================================
+            
+            function navigatePrevious() {
+                const newIndex = state.currentIndex > 0 ? state.currentIndex - 1 : state.locations.length - 1;
+                loadLocation(newIndex);
+            }
+            
+            function navigateNext() {
+                const newIndex = (state.currentIndex + 1) % state.locations.length;
+                loadLocation(newIndex);
+            }
+            
+            function toggleAutoPlay() {
+                state.isPlaying = !state.isPlaying;
+                
+                if (state.isPlaying) {
+                    elements.playBtn.innerHTML = '<span class="icon">⏸️</span><span class="btn-text">Pause</span>';
+                    elements.playBtn.setAttribute('aria-label', 'Pause auto-play');
+                    state.playTimer = setInterval(navigateNext, CONFIG.AUTO_PLAY_INTERVAL_MS);
+                    announce('Auto-play started');
+                } else {
+                    elements.playBtn.innerHTML = '<span class="icon">▶️</span><span class="btn-text">Auto</span>';
+                    elements.playBtn.setAttribute('aria-label', 'Auto-play tour');
+                    clearInterval(state.playTimer);
+                    announce('Auto-play paused');
+                }
+            }
+            
+            // ==========================================
+            // Mobile Touch Gestures
+            // ==========================================
+            
+            let touchState = {
+                startX: 0,
+                startY: 0,
+                startDistance: 0,
+                startFov: CONFIG.FOV_DEFAULT
+            };
+            
+            function initTouchGestures() {
+                const container = elements.panoramaContainer;
+                
+                container.addEventListener('touchstart', handleTouchStart, { passive: false });
+                container.addEventListener('touchmove', handleTouchMove, { passive: false });
+                container.addEventListener('touchend', handleTouchEnd);
+            }
+            
+            function handleTouchStart(e) {
+                if (e.touches.length === 1) {
+                    touchState.startX = e.touches[0].clientX;
+                    touchState.startY = e.touches[0].clientY;
+                } else if (e.touches.length === 2) {
+                    // Pinch start
+                    touchState.startDistance = getTouchDistance(e.touches);
+                    touchState.startFov = state.fov;
+                }
+            }
+            
+            function handleTouchMove(e) {
+                if (e.touches.length === 2) {
+                    e.preventDefault();
+                    // Pinch to zoom
+                    const currentDistance = getTouchDistance(e.touches);
+                    const scale = touchState.startDistance / currentDistance;
+                    state.fov = Math.max(CONFIG.FOV_MIN, Math.min(CONFIG.FOV_MAX, touchState.startFov * scale));
+                    
+                    // Apply FOV to panorama
+                    if (state.panorama) {
+                        const zoom = mapFovToZoom(state.fov);
+                        state.panorama.setZoom(zoom);
+                    }
+                }
+            }
+            
+            function handleTouchEnd(e) {
+                if (e.changedTouches.length === 1 && touchState.startX !== 0) {
+                    const deltaX = e.changedTouches[0].clientX - touchState.startX;
+                    const deltaY = e.changedTouches[0].clientY - touchState.startY;
+                    
+                    // Swipe detection (horizontal swipe > 100px, less than 50px vertical)
+                    if (Math.abs(deltaX) > 100 && Math.abs(deltaY) < 50) {
+                        if (deltaX > 0) {
+                            navigatePrevious();
+                        } else {
+                            navigateNext();
+                        }
+                    }
+                }
+                
+                touchState.startX = 0;
+                touchState.startY = 0;
+            }
+            
+            function getTouchDistance(touches) {
+                const dx = touches[0].clientX - touches[1].clientX;
+                const dy = touches[0].clientY - touches[1].clientY;
+                return Math.sqrt(dx * dx + dy * dy);
+            }
+            
+            function mapFovToZoom(fov) {
+                // Map FOV 30-120 to zoom 4-0
+                return 4 - ((fov - CONFIG.FOV_MIN) / (CONFIG.FOV_MAX - CONFIG.FOV_MIN)) * 4;
+            }
+            
+            // ==========================================
+            // Bottom Sheet (Mobile)
+            // ==========================================
+            
+            function openBottomSheet(content = 'locations') {
+                if (content === 'locations') {
+                    renderLocationList();
+                } else if (content === 'effects') {
+                    renderEffectsSheet();
+                }
+                
+                elements.bottomSheet.classList.add('open');
+                elements.sheetClose.focus();
+            }
+            
+            function closeBottomSheet() {
+                elements.bottomSheet.classList.remove('open');
+            }
+            
+            function renderLocationList() {
+                const groupedByRoute = {};
+                state.locations.forEach((loc, idx) => {
+                    if (!groupedByRoute[loc.route]) {
+                        groupedByRoute[loc.route] = [];
+                    }
+                    groupedByRoute[loc.route].push({ ...loc, index: idx });
+                });
+                
+                const routeNames = {
+                    hilo_bayfront: '🌊 Hilo Bayfront',
+                    hawaii_volcanoes: '🌋 Hawaii Volcanoes',
+                    saddle_road: '🏔️ Saddle Road',
+                    kona_coast: '🏖️ Kona Coast',
+                    hamakua_coast: '🌿 Hamakua Coast',
+                    south_point: '🐢 South Point'
+                };
+                
+                let html = '';
+                for (const route in groupedByRoute) {
+                    html += `<div class="route-group">
+                        <h3 class="route-group-title">${routeNames[route] || route}</h3>
+                        <div class="location-list">`;
+                    
+                    groupedByRoute[route].forEach(loc => {
+                        const isActive = loc.index === state.currentIndex;
+                        html += `<button class="location-item ${isActive ? 'active' : ''}" data-index="${loc.index}" tabindex="0">
+                            <span class="location-item-icon">${getLocationIcon(loc.atmosphere)}</span>
+                            <div class="location-item-info">
+                                <div class="location-item-name">${loc.name}</div>
+                                <div class="location-item-region">${loc.region}</div>
+                            </div>
+                        </button>`;
+                    });
+                    
+                    html += '</div></div>';
+                }
+                
+                elements.sheetContent.innerHTML = html;
+                
+                // Add click handlers
+                elements.sheetContent.querySelectorAll('.location-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        loadLocation(parseInt(item.dataset.index));
+                        closeBottomSheet();
+                    });
+                });
+            }
+            
+            function renderEffectsSheet() {
+                elements.sheetContent.innerHTML = `
+                    <div class="effect-control">
+                        <div class="effect-label">
+                            <span class="effect-icon">🌧️</span>
+                            <span class="effect-name">Rain</span>
+                            <span class="effect-value" id="mobile-rain-value">0%</span>
+                        </div>
+                        <input type="range" id="mobile-rain-slider" min="0" max="100" value="0" aria-label="Rain intensity">
+                    </div>
+                    <div class="effect-control">
+                        <div class="effect-label">
+                            <span class="effect-icon">💨</span>
+                            <span class="effect-name">Wind</span>
+                            <span class="effect-value" id="mobile-wind-value">0%</span>
+                        </div>
+                        <input type="range" id="mobile-wind-slider" min="0" max="100" value="0" aria-label="Wind intensity">
+                    </div>
+                    <div class="effect-control">
+                        <div class="effect-label">
+                            <span class="effect-icon">🐦</span>
+                            <span class="effect-name">Birds</span>
+                            <span class="effect-value" id="mobile-birds-value">0%</span>
+                        </div>
+                        <input type="range" id="mobile-birds-slider" min="0" max="100" value="0" aria-label="Bird sounds">
+                    </div>
+                    <div class="effect-control">
+                        <div class="effect-label">
+                            <span class="effect-icon">🌊</span>
+                            <span class="effect-name">Ocean</span>
+                            <span class="effect-value" id="mobile-ocean-value">0%</span>
+                        </div>
+                        <input type="range" id="mobile-ocean-slider" min="0" max="100" value="0" aria-label="Ocean sounds">
+                    </div>
+                    <div class="effect-control" style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 16px; margin-top: 8px;">
+                        <div class="effect-label">
+                            <span class="effect-icon">🔊</span>
+                            <span class="effect-name">Master Volume</span>
+                            <span class="effect-value" id="mobile-master-value">80%</span>
+                        </div>
+                        <input type="range" id="mobile-master-slider" min="0" max="100" value="80" aria-label="Master volume">
+                    </div>
+                `;
+                
+                // Wire up mobile sliders (sync with desktop)
+                ['rain', 'wind', 'birds', 'ocean', 'master'].forEach(effect => {
+                    const slider = document.getElementById(`mobile-${effect}-slider`);
+                    const value = document.getElementById(`mobile-${effect}-value`);
+                    if (slider && elements[`${effect}Slider`]) {
+                        slider.value = elements[`${effect}Slider`].value;
+                        value.textContent = slider.value + '%';
+                        
+                        slider.addEventListener('input', () => {
+                            value.textContent = slider.value + '%';
+                            elements[`${effect}Slider`].value = slider.value;
+                            elements[`${effect}Slider`].dispatchEvent(new Event('input'));
+                        });
+                    }
+                });
+            }
+            
+            function getLocationIcon(atmosphere) {
+                if (atmosphere.volcanic) return '🌋';
+                if (atmosphere.mist) return '🌿';
+                return '🌴';
+            }
+            
+            // ==========================================
+            // WebXR VR Mode
+            // ==========================================
+            
+            async function checkVRSupport() {
+                if (!navigator.xr) {
+                    elements.vrBtn.style.display = 'none';
+                    return false;
+                }
+                
+                try {
+                    const supported = await navigator.xr.isSessionSupported('immersive-vr');
+                    if (!supported) {
+                        elements.vrBtn.style.display = 'none';
+                    }
+                    return supported;
+                } catch (e) {
+                    elements.vrBtn.style.display = 'none';
+                    return false;
+                }
+            }
+            
+            async function enterVRMode() {
+                if (!navigator.xr) {
+                    // Fallback: Simple fullscreen + gaze control
+                    enterFallbackVRMode();
+                    return;
+                }
+                
+                try {
+                    state.xrSession = await navigator.xr.requestSession('immersive-vr', {
+                        requiredFeatures: ['local-floor'],
+                        optionalFeatures: ['hand-tracking']
+                    });
+                    
+                    state.isVRMode = true;
+                    elements.vrUI.classList.add('active');
+                    elements.vrLocationName.textContent = state.locations[state.currentIndex].name;
+                    elements.vrLocationRegion.textContent = state.locations[state.currentIndex].region;
+                    
+                    announce('Entered VR mode. Look around to explore. Point and click to teleport.');
+                    
+                    // Set up VR rendering
+                    setupVRSession(state.xrSession);
+                    
+                    state.xrSession.addEventListener('end', () => {
+                        exitVRMode();
+                    });
+                    
+                } catch (e) {
+                    console.error('Failed to enter VR:', e);
+                    enterFallbackVRMode();
+                }
+            }
+            
+            function setupVRSession(session) {
+                // Simplified VR setup - in production would integrate with Three.js/A-Frame
+                // For now, we use Google's Street View which handles VR internally on supported browsers
+                
+                // Enable motion tracking
+                if (state.panorama) {
+                    state.panorama.setOptions({
+                        motionTracking: true,
+                        motionTrackingControl: true
+                    });
+                }
+            }
+            
+            function enterFallbackVRMode() {
+                // Fullscreen + gaze cursor for mobile VR (Cardboard-style)
+                state.isVRMode = true;
+                elements.vrUI.classList.add('active');
+                elements.gazeCursor.classList.add('active');
+                elements.vrLocationName.textContent = state.locations[state.currentIndex].name;
+                elements.vrLocationRegion.textContent = state.locations[state.currentIndex].region;
+                
+                // Request fullscreen
+                const elem = document.documentElement;
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen();
+                } else if (elem.webkitRequestFullscreen) {
+                    elem.webkitRequestFullscreen();
+                }
+                
+                // Enable motion tracking for mobile
+                if (state.panorama) {
+                    state.panorama.setOptions({
+                        motionTracking: true,
+                        motionTrackingControl: true
+                    });
+                }
+                
+                announce('Entered VR mode. Look at buttons to select. Keep looking to activate.');
+                
+                // Start gaze detection
+                startGazeDetection();
+            }
+            
+            function exitVRMode() {
+                state.isVRMode = false;
+                elements.vrUI.classList.remove('active');
+                elements.gazeCursor.classList.remove('active');
+                
+                if (state.xrSession) {
+                    state.xrSession.end();
+                    state.xrSession = null;
+                }
+                
+                // Exit fullscreen
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                }
+                
+                // Disable motion tracking
+                if (state.panorama) {
+                    state.panorama.setOptions({
+                        motionTracking: false,
+                        motionTrackingControl: false
+                    });
+                }
+                
+                stopGazeDetection();
+                announce('Exited VR mode');
+            }
+            
+            let gazeTarget = null;
+            let gazeStartTime = 0;
+            let gazeAnimationFrame = null;
+            
+            function startGazeDetection() {
+                function checkGaze() {
+                    if (!state.isVRMode) return;
+                    
+                    const centerX = window.innerWidth / 2;
+                    const centerY = window.innerHeight / 2;
+                    const element = document.elementFromPoint(centerX, centerY);
+                    
+                    if (element && (element.tagName === 'BUTTON' || element.closest('button'))) {
+                        const btn = element.tagName === 'BUTTON' ? element : element.closest('button');
+                        
+                        if (gazeTarget !== btn) {
+                            gazeTarget = btn;
+                            gazeStartTime = Date.now();
+                        }
+                        
+                        const elapsed = Date.now() - gazeStartTime;
+                        const progress = Math.min(elapsed / CONFIG.GAZE_DWELL_MS, 1);
+                        
+                        // Update cursor progress
+                        const cursorProgress = elements.gazeCursor.querySelector('.progress');
+                        cursorProgress.style.transform = `rotate(${progress * 360}deg)`;
+                        
+                        if (progress >= 1) {
+                            // Activate button
+                            btn.click();
+                            gazeTarget = null;
+                            gazeStartTime = 0;
+                        }
+                    } else {
+                        gazeTarget = null;
+                        gazeStartTime = 0;
+                        const cursorProgress = elements.gazeCursor.querySelector('.progress');
+                        cursorProgress.style.transform = 'rotate(0deg)';
+                    }
+                    
+                    gazeAnimationFrame = requestAnimationFrame(checkGaze);
+                }
+                
+                checkGaze();
+            }
+            
+            function stopGazeDetection() {
+                if (gazeAnimationFrame) {
+                    cancelAnimationFrame(gazeAnimationFrame);
+                    gazeAnimationFrame = null;
+                }
+            }
+            
+            // ==========================================
+            // Audio System
+            // ==========================================
+            
+            function initAudioContext() {
+                if (state.audioContext) return;
+                
+                try {
+                    state.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    
+                    // Create gain nodes for each track
+                    ['ocean', 'birds', 'wind', 'rain', 'volcanic', 'waterfall'].forEach(track => {
+                        const gainNode = state.audioContext.createGain();
+                        gainNode.connect(state.audioContext.destination);
+                        gainNode.gain.value = 0;
+                        state.audioGains[track] = gainNode;
+                    });
+                    
+                    // Master gain
+                    state.audioGains.master = state.audioContext.createGain();
+                    state.audioGains.master.gain.value = 0.8;
+                    
+                } catch (e) {
+                    console.warn('Web Audio API not supported:', e);
+                }
+            }
+            
+            function updateAmbientAudio(audioLevels) {
+                if (!state.audioContext) return;
+                
+                // In a full implementation, this would load and play actual audio files
+                // For now, we just update the slider UI
+                
+                if (audioLevels.ocean !== undefined && elements.oceanSlider) {
+                    elements.oceanSlider.value = audioLevels.ocean * 100;
+                    document.getElementById('ocean-value').textContent = Math.round(audioLevels.ocean * 100) + '%';
+                }
+                if (audioLevels.birds !== undefined && elements.birdsSlider) {
+                    elements.birdsSlider.value = audioLevels.birds * 100;
+                    document.getElementById('birds-value').textContent = Math.round(audioLevels.birds * 100) + '%';
+                }
+                if (audioLevels.wind !== undefined && elements.windSlider) {
+                    elements.windSlider.value = audioLevels.wind * 100;
+                    document.getElementById('wind-value').textContent = Math.round(audioLevels.wind * 100) + '%';
+                }
+            }
+            
+            // ==========================================
+            // Particle Effects
+            // ==========================================
+            
+            function updateParticles(atmosphere) {
+                if (state.isPerformanceMode) {
+                    clearParticles();
+                    return;
+                }
+                
+                clearParticles();
+                
+                if (atmosphere.mist) {
+                    createMistParticles();
+                }
+                
+                if (atmosphere.volcanic) {
+                    // Could add volcanic ash particles
+                }
+            }
+            
+            function createMistParticles() {
+                const count = state.isMobile ? 5 : 10;
+                
+                for (let i = 0; i < count; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle mist-blob';
+                    particle.style.left = Math.random() * 100 + '%';
+                    particle.style.top = Math.random() * 100 + '%';
+                    particle.style.animationDelay = Math.random() * 5 + 's';
+                    particle.style.opacity = 0.05 + Math.random() * 0.1;
+                    
+                    // Drift animation
+                    particle.style.animation = `mistDrift ${10 + Math.random() * 10}s ease-in-out infinite`;
+                    
+                    elements.particlesContainer.appendChild(particle);
+                    state.particles.push(particle);
+                }
+                
+                // Add CSS animation if not exists
+                if (!document.getElementById('mist-style')) {
+                    const style = document.createElement('style');
+                    style.id = 'mist-style';
+                    style.textContent = `
+                        @keyframes mistDrift {
+                            0%, 100% { transform: translate(0, 0); }
+                            25% { transform: translate(30px, -20px); }
+                            50% { transform: translate(-20px, 10px); }
+                            75% { transform: translate(10px, 30px); }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
+            }
+            
+            function clearParticles() {
+                state.particles.forEach(p => p.remove());
+                state.particles = [];
+            }
+            
+            // ==========================================
+            // Performance Mode
+            // ==========================================
+            
+            function togglePerformanceMode() {
+                state.isPerformanceMode = !state.isPerformanceMode;
+                
+                elements.performanceToggle.classList.toggle('active', state.isPerformanceMode);
+                
+                if (state.isPerformanceMode) {
+                    clearParticles();
+                    document.body.classList.add('performance-mode');
+                    announce('Performance mode enabled. Visual effects reduced.');
+                } else {
+                    document.body.classList.remove('performance-mode');
+                    updateParticles(state.locations[state.currentIndex].atmosphere);
+                    announce('Performance mode disabled. Visual effects restored.');
+                }
+            }
+            
+            // ==========================================
+            // Keyboard Navigation
+            // ==========================================
+            
+            function initKeyboardNavigation() {
+                document.addEventListener('keydown', (e) => {
+                    // Skip if typing in input
+                    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+                    
+                    switch (e.key) {
+                        case 'ArrowLeft':
+                            navigatePrevious();
+                            break;
+                        case 'ArrowRight':
+                            navigateNext();
+                            break;
+                        case ' ':
+                            e.preventDefault();
+                            toggleAutoPlay();
+                            break;
+                        case 'f':
+                        case 'F':
+                            toggleFullscreen();
+                            break;
+                        case 'l':
+                        case 'L':
+                            openBottomSheet('locations');
+                            break;
+                        case 'Escape':
+                            if (state.isVRMode) {
+                                exitVRMode();
+                            } else if (elements.bottomSheet.classList.contains('open')) {
+                                closeBottomSheet();
+                            }
+                            break;
+                        case 'v':
+                        case 'V':
+                            enterVRMode();
+                            break;
+                        case 'a':
+                        case 'A':
+                            elements.accessibilityPanel.classList.toggle('open');
+                            break;
+                    }
+                });
+            }
+            
+            function toggleFullscreen() {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen?.() || document.documentElement.webkitRequestFullscreen?.();
+                    document.body.classList.add('fullscreen');
+                } else {
+                    document.exitFullscreen?.() || document.webkitExitFullscreen?.();
+                    document.body.classList.remove('fullscreen');
+                }
+            }
+            
+            // ==========================================
+            // Accessibility
+            // ==========================================
+            
+            function initAccessibility() {
+                // High contrast toggle
+                elements.highContrastToggle.addEventListener('click', () => {
+                    const isActive = !elements.highContrastToggle.classList.contains('active');
+                    elements.highContrastToggle.classList.toggle('active', isActive);
+                    elements.highContrastToggle.setAttribute('aria-checked', isActive);
+                    document.body.classList.toggle('high-contrast', isActive);
+                    localStorage.setItem('highContrast', isActive);
+                });
+                
+                // Reduced motion toggle
+                elements.reducedMotionToggle.addEventListener('click', () => {
+                    const isActive = !elements.reducedMotionToggle.classList.contains('active');
+                    elements.reducedMotionToggle.classList.toggle('active', isActive);
+                    elements.reducedMotionToggle.setAttribute('aria-checked', isActive);
+                    document.body.classList.toggle('reduced-motion', isActive);
+                    localStorage.setItem('reducedMotion', isActive);
+                });
+                
+                // SR mode toggle
+                elements.srModeToggle.addEventListener('click', () => {
+                    const isActive = !elements.srModeToggle.classList.contains('active');
+                    elements.srModeToggle.classList.toggle('active', isActive);
+                    elements.srModeToggle.setAttribute('aria-checked', isActive);
+                    localStorage.setItem('srMode', isActive);
+                });
+                
+                // Load saved preferences
+                if (localStorage.getItem('highContrast') === 'true') {
+                    elements.highContrastToggle.click();
+                }
+                if (localStorage.getItem('reducedMotion') === 'true') {
+                    elements.reducedMotionToggle.click();
+                }
+                if (localStorage.getItem('srMode') === 'true') {
+                    elements.srModeToggle.click();
+                }
+            }
+            
+            // ==========================================
+            // PWA / Service Worker
+            // ==========================================
+            
+            function initPWA() {
+                // Register service worker
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.register('sw.js')
+                        .then(reg => console.log('SW registered:', reg.scope))
+                        .catch(err => console.warn('SW registration failed:', err));
+                }
+                
+                // Install prompt
+                window.addEventListener('beforeinstallprompt', (e) => {
+                    e.preventDefault();
+                    state.deferredInstallPrompt = e;
+                    
+                    // Show install prompt after a delay
+                    setTimeout(() => {
+                        elements.installPrompt.classList.add('show');
+                    }, 30000); // 30 seconds
+                });
+                
+                elements.installBtn.addEventListener('click', async () => {
+                    if (!state.deferredInstallPrompt) return;
+                    
+                    state.deferredInstallPrompt.prompt();
+                    const result = await state.deferredInstallPrompt.userChoice;
+                    
+                    if (result.outcome === 'accepted') {
+                        console.log('PWA installed');
+                    }
+                    
+                    state.deferredInstallPrompt = null;
+                    elements.installPrompt.classList.remove('show');
+                });
+                
+                elements.installDismiss.addEventListener('click', () => {
+                    elements.installPrompt.classList.remove('show');
+                });
+            }
+            
+            // ==========================================
+            // Slider Event Handlers
+            // ==========================================
+            
+            function initSliders() {
+                const sliders = [
+                    { id: 'rain', icon: '🌧️' },
+                    { id: 'wind', icon: '💨' },
+                    { id: 'birds', icon: '🐦' },
+                    { id: 'ocean', icon: '🌊' },
+                    { id: 'master', icon: '🔊' }
+                ];
+                
+                sliders.forEach(({ id }) => {
+                    const slider = document.getElementById(`${id}-slider`);
+                    const value = document.getElementById(`${id}-value`);
+                    
+                    if (slider && value) {
+                        slider.addEventListener('input', () => {
+                            value.textContent = slider.value + '%';
+                            // Update audio gain in a real implementation
+                        });
+                    }
+                });
+            }
+            
+            // ==========================================
+            // Event Listeners
+            // ==========================================
+            
+            function initEventListeners() {
+                // Navigation buttons
+                elements.prevBtn.addEventListener('click', navigatePrevious);
+                elements.nextBtn.addEventListener('click', navigateNext);
+                elements.playBtn.addEventListener('click', toggleAutoPlay);
+                
+                // VR button
+                elements.vrBtn.addEventListener('click', enterVRMode);
+                elements.vrExitBtn.addEventListener('click', exitVRMode);
+                
+                // Locations button
+                elements.locationsBtn.addEventListener('click', () => openBottomSheet('locations'));
+                
+                // Bottom sheet
+                elements.sheetClose.addEventListener('click', closeBottomSheet);
+                
+                // Performance toggle
+                elements.performanceToggle.addEventListener('click', togglePerformanceMode);
+                
+                // Initialize audio on first user interaction
+                document.addEventListener('click', () => {
+                    initAudioContext();
+                }, { once: true });
+            }
+            
+            // ==========================================
+            // Initialization
+            // ==========================================
+            
+            async function init() {
+                cacheElements();
+                detectDeviceCapabilities();
+                
+                updateLoadingProgress(10, 'Detecting device...');
+                
+                // Check VR support
+                await checkVRSupport();
+                updateLoadingProgress(20, 'Loading maps API...');
+                
+                // Load Google Maps
+                try {
+                    await loadGoogleMapsAPI();
+                    updateLoadingProgress(50, 'Initializing panorama...');
+                } catch (e) {
+                    console.error('Failed to load Google Maps:', e);
+                    elements.loadingStatus.textContent = 'Failed to load. Please refresh.';
+                    return;
+                }
+                
+                // Initialize panorama
+                initPanorama();
+                updateLoadingProgress(70, 'Setting up controls...');
+                
+                // Initialize features
+                initEventListeners();
+                initKeyboardNavigation();
+                initTouchGestures();
+                initSliders();
+                initAccessibility();
+                initPWA();
+                
+                updateLoadingProgress(90, 'Almost ready...');
+                
+                // Small delay for smooth transition
+                await new Promise(r => setTimeout(r, 500));
+                updateLoadingProgress(100, 'Welcome!');
+                
+                // Hide loading screen
+                await new Promise(r => setTimeout(r, 300));
+                elements.loadingScreen.classList.add('hidden');
+                
+                // Focus panorama for keyboard navigation
+                elements.panoramaContainer.focus();
+                
+                announce('Big Island VR loaded. Viewing ' + state.locations[0].name);
+            }
+            
+            // Start the app
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+            
+        })();
+    </script>
+</body>
+</html>

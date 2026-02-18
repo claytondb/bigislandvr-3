@@ -1,0 +1,78 @@
+{
+    "name": "Big Island VR - Explore Hawaiʻi",
+    "short_name": "Big Island VR",
+    "description": "Immersive 360° virtual reality experience of the Big Island of Hawaii",
+    "start_url": "/",
+    "display": "standalone",
+    "orientation": "any",
+    "background_color": "#0D3B66",
+    "theme_color": "#0D3B66",
+    "categories": ["travel", "entertainment", "education"],
+    "lang": "en-US",
+    "dir": "ltr",
+    "icons": [
+        {
+            "src": "icons/icon-192.svg",
+            "sizes": "192x192",
+            "type": "image/svg+xml",
+            "purpose": "any"
+        },
+        {
+            "src": "icons/icon-512.svg",
+            "sizes": "512x512",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "screenshots/desktop-1.png",
+            "sizes": "1920x1080",
+            "type": "image/png",
+            "form_factor": "wide",
+            "label": "Big Island VR Desktop View"
+        },
+        {
+            "src": "screenshots/mobile-1.png",
+            "sizes": "750x1334",
+            "type": "image/png",
+            "form_factor": "narrow",
+            "label": "Big Island VR Mobile View"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "Hilo Bayfront",
+            "short_name": "Hilo",
+            "description": "Start exploring from Hilo Bay",
+            "url": "/?route=hilo_bayfront",
+            "icons": [{ "src": "icons/shortcut-hilo.png", "sizes": "96x96" }]
+        },
+        {
+            "name": "Volcanoes",
+            "short_name": "Volcano",
+            "description": "Visit Hawaii Volcanoes National Park",
+            "url": "/?route=hawaii_volcanoes",
+            "icons": [{ "src": "icons/shortcut-volcano.png", "sizes": "96x96" }]
+        }
+    ],
+    "related_applications": [],
+    "prefer_related_applications": false,
+    "display_override": ["window-controls-overlay", "standalone", "browser"],
+    "share_target": {
+        "action": "/share",
+        "method": "GET",
+        "params": {
+            "title": "title",
+            "text": "text",
+            "url": "url"
+        }
+    },
+    "handle_links": "preferred",
+    "launch_handler": {
+        "client_mode": "navigate-existing"
+    },
+    "edge_side_panel": {
+        "preferred_width": 400
+    }
+}

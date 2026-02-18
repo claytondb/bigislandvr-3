@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate PWA Icons</title>
+    <style>
+        body { font-family: system-ui; padding: 40px; background: #1a1a1a; color: white; }
+        canvas { display: block; margin: 20px 0; background: #333; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; margin: 10px; }
+        .icons { display: flex; flex-wrap: wrap; gap: 20px; }
+        .icon-item { text-align: center; }
+    </style>
+</head>
+<body>
+    <h1>🌴 Big Island VR - Icon Generator</h1>
+    <p>Click to generate and download PWA icons</p>
+    <button onclick="generateAll()">Generate All Icons</button>
+    <div class="icons" id="icons"></div>
+    
+    <script>
+        const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+        
+        function generateIcon(size) {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            
+            // Background gradient
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#0D3B66');
+            gradient.addColorStop(0.5, '#1A6B7C');
+            gradient.addColorStop(1, '#3DA5D9');
+            
+            // Rounded rectangle
+            const radius = size * 0.15;
+            ctx.beginPath();
+            ctx.moveTo(radius, 0);
+            ctx.lineTo(size - radius, 0);
+            ctx.quadraticCurveTo(size, 0, size, radius);
+            ctx.lineTo(size, size - radius);
+            ctx.quadraticCurveTo(size, size, size - radius, size);
+            ctx.lineTo(radius, size);
+            ctx.quadraticCurveTo(0, size, 0, size - radius);
+            ctx.lineTo(0, radius);
+            ctx.quadraticCurveTo(0, 0, radius, 0);
+            ctx.closePath();
+            ctx.fillStyle = gradient;
+            ctx.fill();
+            
+            // Palm tree emoji
+            ctx.font = `${size * 0.5}px serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('🌴', size / 2, size / 2);
+            
+            return canvas;
+        }
+        
+        function downloadIcon(canvas, size) {
+            const link = document.createElement('a');
+            link.download = `icon-${size}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+        
+        function generateAll() {
+            const container = document.getElementById('icons');
+            container.innerHTML = '';
+            
+            sizes.forEach(size => {
+                const canvas = generateIcon(size);
+                const div = document.createElement('div');
+                div.className = 'icon-item';
+                div.innerHTML = `<p>${size}x${size}</p>`;
+                div.appendChild(canvas);
+                
+                const btn = document.createElement('button');
+                btn.textContent = 'Download';
+                btn.onclick = () => downloadIcon(canvas, size);
+                div.appendChild(btn);
+                
+                container.appendChild(div);
+            });
+        }
+        
+        generateAll();
+    </script>
+</body>
+</html>
