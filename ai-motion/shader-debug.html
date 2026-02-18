@@ -160,25 +160,37 @@
                 float water = texture2D(waterMask, uv).r;
                 float veg = texture2D(vegMask, uv).r;
                 
-                // Apply effects if enabled
+                // Apply effects with smooth edge blending
                 if (showEffects) {
-                    if (sky > 0.1 && skyIntensity > 0.0) {
-                        float drift = snoise(uv * 2.0 + time * 0.03) * 0.004;
-                        float morph = snoise(uv * 3.0 + time * 0.05) * 0.003;
-                        distortion += vec2(drift, morph * 0.3) * skyIntensity * sky;
+                    // Sky/cloud drift - slow, gentle movement
+                    float skyBlend = smoothstep(0.05, 0.3, sky);
+                    if (skyBlend > 0.0 && skyIntensity > 0.0) {
+                        // Multi-layer cloud drift for natural look
+                        float drift1 = snoise(uv * 1.5 + time * 0.02) * 0.003;
+                        float drift2 = snoise(uv * 2.5 + time * 0.035) * 0.002;
+                        float morph = snoise(uv * 4.0 + time * 0.04) * 0.0015;
+                        distortion += vec2(drift1 + drift2, morph) * skyIntensity * skyBlend;
                     }
                     
-                    if (water > 0.1 && waterIntensity > 0.0) {
-                        float wave1 = sin(uv.x * 30.0 + time * 1.5) * 0.002;
-                        float wave2 = sin(uv.y * 25.0 + time * 1.2) * 0.0015;
-                        float ripple = snoise(uv * 15.0 + time * 0.5) * 0.003;
-                        distortion += vec2(wave1 + ripple, wave2 + ripple) * waterIntensity * water;
+                    // Water - gentle waves with organic ripples
+                    float waterBlend = smoothstep(0.05, 0.4, water);
+                    if (waterBlend > 0.0 && waterIntensity > 0.0) {
+                        // Layered wave frequencies for realistic water
+                        float wave1 = sin(uv.x * 20.0 + time * 0.8) * 0.0015;
+                        float wave2 = sin(uv.x * 35.0 - time * 1.1) * 0.001;
+                        float wave3 = sin(uv.y * 15.0 + time * 0.6) * 0.001;
+                        float ripple = snoise(uv * 12.0 + time * 0.3) * 0.002;
+                        distortion += vec2(wave1 + wave2 + ripple, wave3 + ripple * 0.5) * waterIntensity * waterBlend;
                     }
                     
-                    if (veg > 0.1 && vegIntensity > 0.0) {
-                        float sway = sin(time * 0.6 + uv.x * 10.0) * 0.003;
-                        float rustle = snoise(uv * 12.0 + time * 0.4) * 0.002;
-                        distortion += vec2(sway + rustle, rustle * 0.2) * vegIntensity * veg;
+                    // Vegetation - gentle swaying with rustling leaves
+                    float vegBlend = smoothstep(0.05, 0.35, veg);
+                    if (vegBlend > 0.0 && vegIntensity > 0.0) {
+                        // Wind sway with varying speeds
+                        float sway1 = sin(time * 0.4 + uv.x * 8.0) * 0.002;
+                        float sway2 = sin(time * 0.55 + uv.x * 12.0 + 1.5) * 0.0015;
+                        float rustle = snoise(uv * 10.0 + time * 0.25) * 0.0015;
+                        distortion += vec2(sway1 + sway2 + rustle, rustle * 0.3) * vegIntensity * vegBlend;
                     }
                 }
                 
@@ -217,9 +229,12 @@
         let onPointerDownLon = 0, onPointerDownLat = 0, onPointerDownX = 0, onPointerDownY = 0;
         
         const settings = { 
-            skyIntensity: 1.0, waterIntensity: 0.5, vegIntensity: 0.3,
+            skyIntensity: 0.7, waterIntensity: 0.6, vegIntensity: 0.4,
             showOutlines: true, showEffects: true
         };
+        
+        // FPS counter
+        let frameCount = 0, lastFpsUpdate = 0, fps = 0;
         
         function init() {
             const container = document.getElementById('container');

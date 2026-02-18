@@ -200,6 +200,10 @@
         #rain-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 20; opacity: 0; transition: opacity var(--duration-slow) var(--ease-natural); }
         #rain-canvas.active { opacity: 1; }
         
+        /* Scene Animation Shader Overlay */
+        #shader-animation-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 12; opacity: 0; transition: opacity 0.5s ease; mix-blend-mode: normal; }
+        #shader-animation-canvas.active { opacity: 1; }
+        
         /* =====================================================
            PARTICLE SYSTEMS
            ===================================================== */
@@ -407,6 +411,7 @@
         </div>
         <div id="mist-layer"></div>
         <div id="street-view-container"></div>
+        <canvas id="shader-animation-canvas"></canvas>
         <canvas id="rain-canvas"></canvas>
         <canvas id="particles-canvas"></canvas>
         <div id="fireflies-container"></div>
@@ -490,6 +495,10 @@
                     <div class="slider-label"><span>🌧️ Rain</span><span class="slider-value" id="rain-value">0%</span></div>
                     <input type="range" class="effect-slider" id="rain-slider" min="0" max="100" value="0" aria-label="Rain intensity">
                 </div>
+                <div class="slider-row">
+                    <div class="slider-label"><span>💨 Wind Strength</span><span class="slider-value" id="wind-value">20%</span></div>
+                    <input type="range" class="effect-slider" id="wind-slider" min="0" max="100" value="20" aria-label="Wind strength">
+                </div>
                 <div class="effect-row"><span class="effect-label"><span class="effect-icon">🌫️</span><span>Mist/Fog</span></span><div class="toggle-switch" data-effect="mist" role="switch" aria-checked="false" tabindex="0"></div></div>
             </div>
             
@@ -536,16 +545,24 @@
                 <div class="effect-row"><span class="effect-label"><span class="effect-icon">🌊</span><span>Ocean Spray</span></span><div class="toggle-switch" data-effect="spray" role="switch" aria-checked="false" tabindex="0"></div></div>
             </div>
             
-            <!-- VISUAL: SCENE ANIMATION (COMING SOON) -->
+            <!-- VISUAL: SCENE ANIMATION -->
             <div class="effects-section">
-                <div class="section-title">🎬 Scene Animation <span style="opacity:0.5;font-size:0.6rem">(coming soon)</span></div>
-                <div class="ai-coming-soon" style="padding:10px;background:linear-gradient(135deg,rgba(155,93,229,0.1),rgba(42,157,143,0.1));border-radius:8px;font-size:0.75rem;color:rgba(255,255,255,0.7);line-height:1.5;">
-                    <div style="margin-bottom:6px;color:var(--color-orchid);font-weight:500;">🤖 AI-Powered Motion</div>
-                    <div>• Trees swaying in breeze</div>
-                    <div>• Clouds drifting across sky</div>
-                    <div>• Water rippling & waves</div>
-                    <div>• Leaves rustling in wind</div>
-                    <div style="margin-top:6px;font-size:0.65rem;opacity:0.6;">Requires pre-processing with Stable Video Diffusion</div>
+                <div class="section-title">🎬 Scene Animation</div>
+                <div class="effect-row"><span class="effect-label"><span class="effect-icon">✨</span><span>Enable Animation</span></span><div class="toggle-switch" data-effect="scene-animation" role="switch" aria-checked="false" tabindex="0"></div></div>
+                <div class="slider-row" id="scene-anim-sliders" style="opacity: 0.5; pointer-events: none;">
+                    <div class="slider-label"><span>☁️ Cloud Drift</span><span class="slider-value" id="cloud-drift-value">100%</span></div>
+                    <input type="range" class="effect-slider" id="cloud-drift-slider" min="0" max="100" value="100" aria-label="Cloud drift intensity">
+                </div>
+                <div class="slider-row" id="water-ripple-row" style="opacity: 0.5; pointer-events: none;">
+                    <div class="slider-label"><span>🌊 Water Ripples</span><span class="slider-value" id="water-ripple-value">50%</span></div>
+                    <input type="range" class="effect-slider" id="water-ripple-slider" min="0" max="100" value="50" aria-label="Water ripple intensity">
+                </div>
+                <div class="slider-row" id="veg-sway-row" style="opacity: 0.5; pointer-events: none;">
+                    <div class="slider-label"><span>🌿 Vegetation Sway</span><span class="slider-value" id="veg-sway-value">30%</span></div>
+                    <input type="range" class="effect-slider" id="veg-sway-slider" min="0" max="100" value="30" aria-label="Vegetation sway intensity">
+                </div>
+                <div class="scene-anim-status" id="scene-anim-status" style="margin-top:8px;padding:6px 8px;background:rgba(42,157,143,0.1);border-radius:6px;font-size:0.7rem;color:var(--color-seafoam);display:none;">
+                    <span id="scene-anim-status-text">Loading masks...</span>
                 </div>
             </div>
             
@@ -1812,6 +1829,477 @@
         }
         
         // =====================================================
+        // SHADER ANIMATION MANAGER
+        // =====================================================
+        class ShaderAnimationManager {
+            constructor() {
+                this.canvas = document.getElementById('shader-animation-canvas');
+                this.gl = null;
+                this.program = null;
+                this.enabled = false;
+                this.animating = false;
+                this.startTime = 0;
+                this.animationFrame = null;
+                
+                // Intensity settings (David's preferences)
+                this.cloudDrift = 1.0;      // 100%
+                this.waterRipple = 0.5;     // 50%
+                this.vegSway = 0.3;         // 30%
+                
+                // Textures
+                this.skyMask = null;
+                this.waterMask = null;
+                this.vegMask = null;
+                this.hasMasks = false;
+                
+                // Location-to-mask mapping (location name to mask filename)
+                // Maps full location names to mask file prefixes
+                this.maskMappings = {
+                    "Aliʻi Drive, Kailua-Kona": "alii-drive",
+                    "Hilo Bayfront": "hilo-bayfront", 
+                    "Punalu'u Black Sand Beach": "punaluu-beach",
+                    "Keaʻau Town Center": "keaau"
+                };
+                
+                this.currentLocationSlug = null;
+                this.statusEl = document.getElementById('scene-anim-status');
+                this.statusTextEl = document.getElementById('scene-anim-status-text');
+            }
+            
+            init() {
+                if (!this.canvas) return false;
+                
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+                
+                try {
+                    this.gl = this.canvas.getContext('webgl', { 
+                        alpha: true, 
+                        premultipliedAlpha: false,
+                        preserveDrawingBuffer: true
+                    });
+                    if (!this.gl) {
+                        console.warn('WebGL not supported for shader animations');
+                        return false;
+                    }
+                    
+                    this.createShaderProgram();
+                    this.createGeometry();
+                    this.setupUniforms();
+                    
+                    window.addEventListener('resize', () => this.handleResize());
+                    
+                    console.log('🎬 ShaderAnimationManager initialized');
+                    return true;
+                } catch (e) {
+                    console.warn('Shader animation init failed:', e);
+                    return false;
+                }
+            }
+            
+            createShaderProgram() {
+                const gl = this.gl;
+                
+                // Vertex shader - simple pass-through
+                const vertexSource = `
+                    attribute vec2 a_position;
+                    attribute vec2 a_texCoord;
+                    varying vec2 v_texCoord;
+                    void main() {
+                        gl_Position = vec4(a_position, 0.0, 1.0);
+                        v_texCoord = a_texCoord;
+                    }
+                `;
+                
+                // Fragment shader - creates displacement overlay effect
+                const fragmentSource = `
+                    precision mediump float;
+                    varying vec2 v_texCoord;
+                    
+                    uniform float u_time;
+                    uniform float u_cloudIntensity;
+                    uniform float u_waterIntensity;
+                    uniform float u_vegIntensity;
+                    uniform sampler2D u_skyMask;
+                    uniform sampler2D u_waterMask;
+                    uniform sampler2D u_vegMask;
+                    uniform vec2 u_resolution;
+                    uniform bool u_hasMasks;
+                    
+                    // Simplex noise functions
+                    vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+                    vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+                    vec3 permute(vec3 x) { return mod289(((x*34.0)+1.0)*x); }
+                    
+                    float snoise(vec2 v) {
+                        const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);
+                        vec2 i = floor(v + dot(v, C.yy));
+                        vec2 x0 = v - i + dot(i, C.xx);
+                        vec2 i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+                        vec4 x12 = x0.xyxy + C.xxzz;
+                        x12.xy -= i1;
+                        i = mod289(i);
+                        vec3 p = permute(permute(i.y + vec3(0.0, i1.y, 1.0)) + i.x + vec3(0.0, i1.x, 1.0));
+                        vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);
+                        m = m*m; m = m*m;
+                        vec3 x = 2.0 * fract(p * C.www) - 1.0;
+                        vec3 h = abs(x) - 0.5;
+                        vec3 ox = floor(x + 0.5);
+                        vec3 a0 = x - ox;
+                        m *= 1.79284291400159 - 0.85373472095314 * (a0*a0 + h*h);
+                        vec3 g;
+                        g.x = a0.x * x0.x + h.x * x0.y;
+                        g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+                        return 130.0 * dot(m, g);
+                    }
+                    
+                    void main() {
+                        vec2 uv = v_texCoord;
+                        
+                        // Sample masks (or use fallback gradients)
+                        float skyMaskVal, waterMaskVal, vegMaskVal;
+                        
+                        if (u_hasMasks) {
+                            skyMaskVal = texture2D(u_skyMask, uv).r;
+                            waterMaskVal = texture2D(u_waterMask, uv).r;
+                            vegMaskVal = texture2D(u_vegMask, uv).r;
+                        } else {
+                            // Fallback gradient masks
+                            // Sky: top 40% of screen
+                            skyMaskVal = smoothstep(0.6, 0.4, uv.y);
+                            // Water: bottom 30% (if coastal - we apply everywhere subtly)
+                            waterMaskVal = smoothstep(0.3, 0.0, uv.y) * 0.5;
+                            // Vegetation: sides and middle-lower area
+                            vegMaskVal = (1.0 - abs(uv.x - 0.5) * 1.5) * smoothstep(0.7, 0.4, uv.y) * 0.3;
+                        }
+                        
+                        // Calculate distortions for each element
+                        vec2 totalDistortion = vec2(0.0);
+                        float alpha = 0.0;
+                        
+                        // Cloud drift - slow, flowing motion
+                        if (skyMaskVal > 0.05 && u_cloudIntensity > 0.0) {
+                            float drift = snoise(uv * 2.0 + u_time * 0.02) * 0.006;
+                            float morph = snoise(uv * 3.0 + u_time * 0.03) * 0.004;
+                            totalDistortion += vec2(drift, morph * 0.3) * u_cloudIntensity * skyMaskVal;
+                            alpha += skyMaskVal * u_cloudIntensity * 0.02;
+                        }
+                        
+                        // Water ripples - faster, wave-like
+                        if (waterMaskVal > 0.05 && u_waterIntensity > 0.0) {
+                            float wave1 = sin(uv.x * 25.0 + u_time * 1.2) * 0.003;
+                            float wave2 = sin(uv.y * 20.0 + u_time * 0.9) * 0.002;
+                            float ripple = snoise(uv * 12.0 + u_time * 0.4) * 0.004;
+                            totalDistortion += vec2(wave1 + ripple, wave2 + ripple * 0.5) * u_waterIntensity * waterMaskVal;
+                            alpha += waterMaskVal * u_waterIntensity * 0.03;
+                        }
+                        
+                        // Vegetation sway - gentle, rhythmic
+                        if (vegMaskVal > 0.05 && u_vegIntensity > 0.0) {
+                            float sway = sin(u_time * 0.5 + uv.x * 8.0) * 0.004;
+                            float rustle = snoise(uv * 10.0 + u_time * 0.3) * 0.003;
+                            totalDistortion += vec2(sway + rustle, rustle * 0.2) * u_vegIntensity * vegMaskVal;
+                            alpha += vegMaskVal * u_vegIntensity * 0.015;
+                        }
+                        
+                        // Create a subtle shimmer/heat-wave effect
+                        // This creates displacement illusion via color shifting
+                        float distortMagnitude = length(totalDistortion);
+                        
+                        // Create a subtle chromatic aberration / shimmer effect
+                        vec3 color = vec3(0.5 + totalDistortion.x * 30.0, 0.5 + totalDistortion.y * 30.0, 0.5);
+                        
+                        // Very subtle tint based on region type
+                        vec3 tint = vec3(0.0);
+                        tint += vec3(0.9, 0.95, 1.0) * skyMaskVal * u_cloudIntensity * 0.01;    // Slight blue for sky
+                        tint += vec3(0.8, 0.95, 1.0) * waterMaskVal * u_waterIntensity * 0.02;  // Cyan for water
+                        tint += vec3(0.85, 1.0, 0.85) * vegMaskVal * u_vegIntensity * 0.01;     // Green for veg
+                        
+                        // Output with very low alpha for subtle overlay effect
+                        gl_FragColor = vec4(tint, alpha * distortMagnitude * 15.0);
+                    }
+                `;
+                
+                const vertexShader = this.compileShader(gl.VERTEX_SHADER, vertexSource);
+                const fragmentShader = this.compileShader(gl.FRAGMENT_SHADER, fragmentSource);
+                
+                this.program = gl.createProgram();
+                gl.attachShader(this.program, vertexShader);
+                gl.attachShader(this.program, fragmentShader);
+                gl.linkProgram(this.program);
+                
+                if (!gl.getProgramParameter(this.program, gl.LINK_STATUS)) {
+                    console.error('Shader program link failed:', gl.getProgramInfoLog(this.program));
+                }
+            }
+            
+            compileShader(type, source) {
+                const gl = this.gl;
+                const shader = gl.createShader(type);
+                gl.shaderSource(shader, source);
+                gl.compileShader(shader);
+                
+                if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+                    console.error('Shader compile failed:', gl.getShaderInfoLog(shader));
+                }
+                return shader;
+            }
+            
+            createGeometry() {
+                const gl = this.gl;
+                
+                // Full-screen quad
+                const positions = new Float32Array([
+                    -1, -1,  1, -1,  -1, 1,
+                    -1,  1,  1, -1,   1, 1
+                ]);
+                
+                const texCoords = new Float32Array([
+                    0, 0,  1, 0,  0, 1,
+                    0, 1,  1, 0,  1, 1
+                ]);
+                
+                const posBuffer = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
+                gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
+                
+                const posLocation = gl.getAttribLocation(this.program, 'a_position');
+                gl.enableVertexAttribArray(posLocation);
+                gl.vertexAttribPointer(posLocation, 2, gl.FLOAT, false, 0, 0);
+                
+                const texBuffer = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, texBuffer);
+                gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW);
+                
+                const texLocation = gl.getAttribLocation(this.program, 'a_texCoord');
+                gl.enableVertexAttribArray(texLocation);
+                gl.vertexAttribPointer(texLocation, 2, gl.FLOAT, false, 0, 0);
+            }
+            
+            setupUniforms() {
+                const gl = this.gl;
+                gl.useProgram(this.program);
+                
+                this.uniforms = {
+                    time: gl.getUniformLocation(this.program, 'u_time'),
+                    cloudIntensity: gl.getUniformLocation(this.program, 'u_cloudIntensity'),
+                    waterIntensity: gl.getUniformLocation(this.program, 'u_waterIntensity'),
+                    vegIntensity: gl.getUniformLocation(this.program, 'u_vegIntensity'),
+                    skyMask: gl.getUniformLocation(this.program, 'u_skyMask'),
+                    waterMask: gl.getUniformLocation(this.program, 'u_waterMask'),
+                    vegMask: gl.getUniformLocation(this.program, 'u_vegMask'),
+                    resolution: gl.getUniformLocation(this.program, 'u_resolution'),
+                    hasMasks: gl.getUniformLocation(this.program, 'u_hasMasks')
+                };
+                
+                // Create placeholder textures
+                this.skyMask = this.createEmptyTexture(0);
+                this.waterMask = this.createEmptyTexture(1);
+                this.vegMask = this.createEmptyTexture(2);
+            }
+            
+            createEmptyTexture(unit) {
+                const gl = this.gl;
+                const texture = gl.createTexture();
+                gl.activeTexture(gl.TEXTURE0 + unit);
+                gl.bindTexture(gl.TEXTURE_2D, texture);
+                
+                // 1x1 transparent pixel
+                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 0]));
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                
+                return texture;
+            }
+            
+            async loadMasksForLocation(locationName) {
+                if (!this.gl) return;
+                
+                const maskPrefix = this.maskMappings[locationName];
+                const hasMasks = !!maskPrefix;
+                
+                this.showStatus(hasMasks ? `Loading masks for ${locationName.split(',')[0]}...` : 'Using gradient effects');
+                
+                if (hasMasks) {
+                    try {
+                        const basePath = 'ai-motion/masks/';
+                        await Promise.all([
+                            this.loadTexture(`${basePath}${maskPrefix}-sky.png`, 0, this.skyMask),
+                            this.loadTexture(`${basePath}${maskPrefix}-water.png`, 1, this.waterMask),
+                            this.loadTexture(`${basePath}${maskPrefix}-veg.png`, 2, this.vegMask)
+                        ]);
+                        this.hasMasks = true;
+                        this.showStatus('✓ Custom masks active');
+                        setTimeout(() => this.hideStatus(), 2000);
+                    } catch (e) {
+                        console.warn('Failed to load masks for', locationName, e);
+                        this.hasMasks = false;
+                        this.showStatus('Using gradient effects');
+                        setTimeout(() => this.hideStatus(), 2000);
+                    }
+                } else {
+                    this.hasMasks = false;
+                    // Don't show status for locations without masks - gradient fallback works silently
+                    this.hideStatus();
+                }
+            }
+            
+            loadTexture(url, unit, existingTexture) {
+                return new Promise((resolve, reject) => {
+                    const gl = this.gl;
+                    const img = new Image();
+                    img.crossOrigin = 'anonymous';
+                    
+                    img.onload = () => {
+                        gl.activeTexture(gl.TEXTURE0 + unit);
+                        gl.bindTexture(gl.TEXTURE_2D, existingTexture);
+                        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+                        gl.generateMipmap(gl.TEXTURE_2D);
+                        resolve();
+                    };
+                    
+                    img.onerror = () => reject(new Error(`Failed to load ${url}`));
+                    img.src = url;
+                });
+            }
+            
+            showStatus(text) {
+                if (this.statusEl && this.statusTextEl) {
+                    this.statusTextEl.textContent = text;
+                    this.statusEl.style.display = 'block';
+                }
+            }
+            
+            hideStatus() {
+                if (this.statusEl) {
+                    this.statusEl.style.display = 'none';
+                }
+            }
+            
+            setIntensities(cloud, water, veg) {
+                this.cloudDrift = cloud;
+                this.waterRipple = water;
+                this.vegSway = veg;
+            }
+            
+            enable() {
+                if (!this.gl) {
+                    if (!this.init()) return;
+                }
+                
+                this.enabled = true;
+                this.canvas.classList.add('active');
+                
+                // Enable sliders
+                document.getElementById('scene-anim-sliders').style.opacity = '1';
+                document.getElementById('scene-anim-sliders').style.pointerEvents = 'auto';
+                document.getElementById('water-ripple-row').style.opacity = '1';
+                document.getElementById('water-ripple-row').style.pointerEvents = 'auto';
+                document.getElementById('veg-sway-row').style.opacity = '1';
+                document.getElementById('veg-sway-row').style.pointerEvents = 'auto';
+                
+                if (!this.animating) {
+                    this.startTime = performance.now();
+                    this.animating = true;
+                    this.animate();
+                }
+                
+                // Load masks for current location if we have one
+                if (typeof currentIndex !== 'undefined' && typeof LOCATIONS !== 'undefined') {
+                    const loc = LOCATIONS[currentIndex];
+                    this.loadMasksForLocation(loc.name);
+                }
+            }
+            
+            disable() {
+                this.enabled = false;
+                this.canvas.classList.remove('active');
+                
+                // Disable sliders
+                document.getElementById('scene-anim-sliders').style.opacity = '0.5';
+                document.getElementById('scene-anim-sliders').style.pointerEvents = 'none';
+                document.getElementById('water-ripple-row').style.opacity = '0.5';
+                document.getElementById('water-ripple-row').style.pointerEvents = 'none';
+                document.getElementById('veg-sway-row').style.opacity = '0.5';
+                document.getElementById('veg-sway-row').style.pointerEvents = 'none';
+                
+                if (this.animationFrame) {
+                    cancelAnimationFrame(this.animationFrame);
+                    this.animationFrame = null;
+                }
+                this.animating = false;
+                this.hideStatus();
+            }
+            
+            animate() {
+                if (!this.enabled || !this.animating) return;
+                
+                const gl = this.gl;
+                const time = (performance.now() - this.startTime) / 1000;
+                
+                gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+                gl.clearColor(0, 0, 0, 0);
+                gl.clear(gl.COLOR_BUFFER_BIT);
+                
+                gl.useProgram(this.program);
+                
+                // Enable blending for overlay effect
+                gl.enable(gl.BLEND);
+                gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+                
+                // Set uniforms
+                gl.uniform1f(this.uniforms.time, time);
+                gl.uniform1f(this.uniforms.cloudIntensity, this.cloudDrift);
+                gl.uniform1f(this.uniforms.waterIntensity, this.waterRipple);
+                gl.uniform1f(this.uniforms.vegIntensity, this.vegSway);
+                gl.uniform2f(this.uniforms.resolution, this.canvas.width, this.canvas.height);
+                gl.uniform1i(this.uniforms.hasMasks, this.hasMasks ? 1 : 0);
+                
+                // Bind textures
+                gl.activeTexture(gl.TEXTURE0);
+                gl.bindTexture(gl.TEXTURE_2D, this.skyMask);
+                gl.uniform1i(this.uniforms.skyMask, 0);
+                
+                gl.activeTexture(gl.TEXTURE1);
+                gl.bindTexture(gl.TEXTURE_2D, this.waterMask);
+                gl.uniform1i(this.uniforms.waterMask, 1);
+                
+                gl.activeTexture(gl.TEXTURE2);
+                gl.bindTexture(gl.TEXTURE_2D, this.vegMask);
+                gl.uniform1i(this.uniforms.vegMask, 2);
+                
+                // Draw
+                gl.drawArrays(gl.TRIANGLES, 0, 6);
+                
+                this.animationFrame = requestAnimationFrame(() => this.animate());
+            }
+            
+            handleResize() {
+                if (this.canvas) {
+                    this.canvas.width = window.innerWidth;
+                    this.canvas.height = window.innerHeight;
+                }
+            }
+            
+            getLocationSlug(locationName) {
+                // Convert location name to slug format
+                return locationName
+                    .toLowerCase()
+                    .replace(/[ʻ']/g, '')
+                    .replace(/[āēīōū]/g, c => ({ 'ā': 'a', 'ē': 'e', 'ī': 'i', 'ō': 'o', 'ū': 'u' })[c] || c)
+                    .replace(/[^a-z0-9]+/g, '-')
+                    .replace(/^-|-$/g, '');
+            }
+            
+            onLocationChange(location) {
+                if (!this.enabled) return;
+                this.loadMasksForLocation(location.name);
+            }
+        }
+        
+        // =====================================================
         // LOADING MANAGER
         // =====================================================
         class LoadingManager {
@@ -1861,7 +2349,8 @@
         const screenshotManager = new ScreenshotManager();
         const transitionManager = new TransitionManager();
         const loadingManager = new LoadingManager();
-        let effectStates = { ocean: true, birds: true, wind: false, volcanic: false, mist: false, vignette: true, lensflare: false, bloom: false, butterflies: false, fireflies: false, leaves: false, ash: false, spray: false, watermark: false, stamp: false };
+        const shaderAnimationManager = new ShaderAnimationManager();
+        let effectStates = { ocean: true, birds: true, wind: false, volcanic: false, mist: false, vignette: true, lensflare: false, bloom: false, butterflies: false, fireflies: false, leaves: false, ash: false, spray: false, watermark: false, stamp: false, 'scene-animation': false };
         
         // =====================================================
         // HELPERS
@@ -2038,6 +2527,7 @@
                         const foundLat = data.location.latLng.lat(), foundLng = data.location.latLng.lng();
                         const distance = getDistanceFromLatLng(location.lat, location.lng, foundLat, foundLng);
                         distance > 100 ? showCoverageStatus() : hideCoverageStatus();
+                        shaderAnimationManager.onLocationChange(location);
                         transitionManager.complete().then(() => { isTransitioning = false; });
                     } else {
                         streetViewService.getPanorama({ location: searchLocation, radius: 1000, preference: google.maps.StreetViewPreference.NEAREST }, (data2, status2) => {
@@ -2053,6 +2543,7 @@
                                 atmosphereManager.applyLocationAtmosphere(location);
                                 achievementsManager.visitLocation(location);
                                 showCoverageStatus();
+                                shaderAnimationManager.onLocationChange(location);
                                 transitionManager.complete().then(() => { isTransitioning = false; });
                             } else {
                                 showError(`No Street View coverage near ${location.name}`);
@@ -2156,6 +2647,13 @@
                         case 'stamp':
                             screenshotManager.setStamp(isOn);
                             break;
+                        case 'scene-animation':
+                            if (isOn) {
+                                shaderAnimationManager.enable();
+                            } else {
+                                shaderAnimationManager.disable();
+                            }
+                            break;
                         default:
                             // Audio tracks
                             audioManager.toggleTrack(effect, isOn);
@@ -2163,6 +2661,25 @@
                 };
                 toggle.addEventListener('click', handleToggle);
                 toggle.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleToggle(); } });
+            });
+            
+            // Scene Animation sliders
+            document.getElementById('cloud-drift-slider').addEventListener('input', (e) => {
+                const value = parseInt(e.target.value);
+                document.getElementById('cloud-drift-value').textContent = `${value}%`;
+                shaderAnimationManager.cloudDrift = value / 100;
+            });
+            
+            document.getElementById('water-ripple-slider').addEventListener('input', (e) => {
+                const value = parseInt(e.target.value);
+                document.getElementById('water-ripple-value').textContent = `${value}%`;
+                shaderAnimationManager.waterRipple = value / 100;
+            });
+            
+            document.getElementById('veg-sway-slider').addEventListener('input', (e) => {
+                const value = parseInt(e.target.value);
+                document.getElementById('veg-sway-value').textContent = `${value}%`;
+                shaderAnimationManager.vegSway = value / 100;
             });
             
             // Color grade selector

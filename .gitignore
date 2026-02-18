@@ -28,3 +28,5 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+ai-motion/*.py
+ai-motion/*.mjs
