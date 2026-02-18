@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Panorama Test</title>
+    <style>
+        body { margin: 0; background: #000; }
+        #info { position: fixed; top: 10px; left: 10px; color: white; font-family: sans-serif; z-index: 100; }
+    </style>
+</head>
+<body>
+    <div id="info">Loading panorama...</div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1100);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Load panorama
+        new THREE.TextureLoader().load('panoramas/alii-drive.jpg', 
+            (texture) => {
+                document.getElementById('info').textContent = 'Panorama loaded! Drag to look around.';
+                const geometry = new THREE.SphereGeometry(500, 60, 40);
+                const material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.BackSide });
+                scene.add(new THREE.Mesh(geometry, material));
+            },
+            undefined,
+            (err) => {
+                document.getElementById('info').textContent = 'Error loading: ' + err;
+            }
+        );
+
+        // Controls
+        let lon = 0, lat = 0, isDown = false, startX, startY, startLon, startLat;
+        
+        document.addEventListener('pointerdown', (e) => {
+            isDown = true;
+            startX = e.clientX; startY = e.clientY;
+            startLon = lon; startLat = lat;
+        });
+        document.addEventListener('pointermove', (e) => {
+            if (isDown) {
+                lon = (startX - e.clientX) * 0.1 + startLon;
+                lat = (e.clientY - startY) * 0.1 + startLat;
+            }
+        });
+        document.addEventListener('pointerup', () => isDown = false);
+
+        function animate() {
+            requestAnimationFrame(animate);
+            lat = Math.max(-85, Math.min(85, lat));
+            const phi = THREE.MathUtils.degToRad(90 - lat);
+            const theta = THREE.MathUtils.degToRad(lon);
+            camera.position.set(
+                100 * Math.sin(phi) * Math.cos(theta),
+                100 * Math.cos(phi),
+                100 * Math.sin(phi) * Math.sin(theta)
+            );
+            camera.lookAt(0, 0, 0);
+            renderer.render(scene, camera);
+        }
+        animate();
+    </script>
+</body>
+</html>

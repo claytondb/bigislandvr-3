@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Segmentation Masks</title>
+    <style>
+        body { font-family: system-ui; padding: 20px; background: #1a1a1a; color: white; }
+        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 20px; }
+        .item { background: #2d2d2d; padding: 10px; border-radius: 8px; }
+        .item h4 { margin: 0 0 10px 0; font-size: 0.9rem; }
+        canvas { width: 100%; border-radius: 4px; }
+        button { padding: 10px 20px; font-size: 1rem; cursor: pointer; margin: 5px; }
+        #status { margin: 20px 0; padding: 15px; background: #333; border-radius: 8px; }
+        a { color: #7fcdcd; }
+    </style>
+</head>
+<body>
+    <h1>🎨 Create Segmentation Masks</h1>
+    <p>This tool analyzes panorama colors to create sky/water/vegetation masks.</p>
+    
+    <button onclick="processAll()">Generate All Masks</button>
+    <button onclick="downloadAll()">Download All Masks</button>
+    
+    <div id="status">Ready. Click "Generate All Masks" to start.</div>
+    
+    <div class="grid" id="results"></div>
+
+    <script>
+        const PANORAMAS = [
+            { file: 'panoramas/alii-drive.jpg', name: "Ali'i Drive" },
+            { file: 'panoramas/hilo-bayfront.jpg', name: "Hilo Bayfront" },
+            { file: 'panoramas/punaluu-beach.jpg', name: "Punalu'u Beach" },
+            { file: 'panoramas/keaau.jpg', name: "Keaʻau" }
+        ];
+        
+        const masks = {};
+        
+        function isSkyColor(r, g, b, y, height) {
+            const isBlue = b > r && b > g * 0.8;
+            const isLight = (r + g + b) > 350;
+            const isUpperHalf = y < height * 0.55;
+            const isBlueSky = b > 100 && b > r * 1.05;
+            const isWhiteClouds = r > 180 && g > 180 && b > 180;
+            return (isBlue || isLight || isBlueSky || isWhiteClouds) && isUpperHalf;
+        }
+        
+        function isWaterColor(r, g, b, y, height) {
+            const isBlueGreen = (b > 70 && g > 70) && (b + g > r * 1.3);
+            const isCyan = b > 90 && g > 90 && r < 140;
+            const isDeepBlue = b > 100 && b > r * 1.2 && b > g * 0.85;
+            const notSky = y > height * 0.3;
+            return (isBlueGreen || isCyan || isDeepBlue) && notSky;
+        }
+        
+        function isVegetationColor(r, g, b) {
+            const isGreen = g > r * 1.1 && g > b * 0.9;
+            const isDarkGreen = g > 40 && g > r && g > b && (r + g + b) < 400;
+            return isGreen || isDarkGreen;
+        }
+        
+        async function processImage(pano) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.onload = () => {
+                    const w = img.width;
+                    const h = img.height;
+                    
+                    // Source canvas
+                    const srcCanvas = document.createElement('canvas');
+                    srcCanvas.width = w;
+                    srcCanvas.height = h;
+                    const srcCtx = srcCanvas.getContext('2d');
+                    srcCtx.drawImage(img, 0, 0);
+                    const imageData = srcCtx.getImageData(0, 0, w, h);
+                    const pixels = imageData.data;
+                    
+                    // Mask canvases
+                    const skyCanvas = document.createElement('canvas');
+                    const waterCanvas = document.createElement('canvas');
+                    const vegCanvas = document.createElement('canvas');
+                    [skyCanvas, waterCanvas, vegCanvas].forEach(c => { c.width = w; c.height = h; });
+                    
+                    const skyCtx = skyCanvas.getContext('2d');
+                    const waterCtx = waterCanvas.getContext('2d');
+                    const vegCtx = vegCanvas.getContext('2d');
+                    
+                    // Fill black
+                    [skyCtx, waterCtx, vegCtx].forEach(ctx => {
+                        ctx.fillStyle = 'black';
+                        ctx.fillRect(0, 0, w, h);
+                    });
+                    
+                    // Analyze pixels
+                    for (let y = 0; y < h; y++) {
+                        for (let x = 0; x < w; x++) {
+                            const i = (y * w + x) * 4;
+                            const r = pixels[i], g = pixels[i+1], b = pixels[i+2];
+                            
+                            if (isSkyColor(r, g, b, y, h)) {
+                                skyCtx.fillStyle = 'white';
+                                skyCtx.fillRect(x, y, 1, 1);
+                            }
+                            if (isWaterColor(r, g, b, y, h)) {
+                                waterCtx.fillStyle = 'white';
+                                waterCtx.fillRect(x, y, 1, 1);
+                            }
+                            if (isVegetationColor(r, g, b)) {
+                                vegCtx.fillStyle = 'white';
+                                vegCtx.fillRect(x, y, 1, 1);
+                            }
+                        }
+                    }
+                    
+                    const basename = pano.file.split('/').pop().replace('.jpg', '');
+                    masks[basename] = { sky: skyCanvas, water: waterCanvas, veg: vegCanvas, src: srcCanvas };
+                    
+                    resolve({ name: pano.name, basename, skyCanvas, waterCanvas, vegCanvas, srcCanvas });
+                };
+                img.src = pano.file;
+            });
+        }
+        
+        async function processAll() {
+            const status = document.getElementById('status');
+            const results = document.getElementById('results');
+            results.innerHTML = '';
+            
+            for (const pano of PANORAMAS) {
+                status.textContent = `Processing: ${pano.name}...`;
+                const result = await processImage(pano);
+                
+                const html = `
+                    <div class="item">
+                        <h4>${result.name} - Original</h4>
+                        <canvas id="${result.basename}-src"></canvas>
+                    </div>
+                    <div class="item">
+                        <h4>Sky Mask</h4>
+                        <canvas id="${result.basename}-sky"></canvas>
+                    </div>
+                    <div class="item">
+                        <h4>Water Mask</h4>
+                        <canvas id="${result.basename}-water"></canvas>
+                    </div>
+                    <div class="item">
+                        <h4>Vegetation Mask</h4>
+                        <canvas id="${result.basename}-veg"></canvas>
+                    </div>
+                `;
+                results.innerHTML += html;
+                
+                // Copy canvases
+                setTimeout(() => {
+                    copyCanvas(result.srcCanvas, document.getElementById(`${result.basename}-src`));
+                    copyCanvas(result.skyCanvas, document.getElementById(`${result.basename}-sky`));
+                    copyCanvas(result.waterCanvas, document.getElementById(`${result.basename}-water`));
+                    copyCanvas(result.vegCanvas, document.getElementById(`${result.basename}-veg`));
+                }, 100);
+            }
+            
+            status.innerHTML = '✅ Done! Click "Download All Masks" to save them, or right-click any canvas to save individually.';
+        }
+        
+        function copyCanvas(src, dest) {
+            dest.width = src.width;
+            dest.height = src.height;
+            dest.getContext('2d').drawImage(src, 0, 0);
+        }
+        
+        function downloadAll() {
+            for (const [basename, m] of Object.entries(masks)) {
+                downloadCanvas(m.sky, `${basename}-sky.png`);
+                downloadCanvas(m.water, `${basename}-water.png`);
+                downloadCanvas(m.veg, `${basename}-veg.png`);
+            }
+        }
+        
+        function downloadCanvas(canvas, filename) {
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+    </script>
+</body>
+</html>

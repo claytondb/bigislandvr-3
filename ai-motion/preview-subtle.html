@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Big Island VR - SUBTLE Motion Preview</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: #1a1a1a; 
+            color: white; 
+            font-family: system-ui, sans-serif;
+            padding: 20px;
+        }
+        h1 { text-align: center; margin-bottom: 10px; font-size: 2rem; }
+        .subtitle { text-align: center; color: #888; margin-bottom: 30px; }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .card {
+            background: #2d2d2d;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .card h3 {
+            padding: 15px;
+            background: #333;
+            font-size: 1.1rem;
+        }
+        video {
+            width: 100%;
+            display: block;
+        }
+        .info {
+            padding: 10px 15px;
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+        .badge {
+            display: inline-block;
+            background: #2a9d8f;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-left: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🌴 Big Island VR - Subtle Motion</h1>
+    <p class="subtitle">Low motion values (15-25) for gentle, camera-stable animation</p>
+    <div class="grid">
+        <div class="card">
+            <h3>📍 Keaʻau Town Center <span class="badge">motion: 15</span></h3>
+            <video src="output/keaau-subtle.mp4" autoplay loop muted playsinline></video>
+            <div class="info">Gentle tree sway, minimal movement</div>
+        </div>
+        <div class="card">
+            <h3>🏖️ Aliʻi Drive <span class="badge">motion: 20</span></h3>
+            <video src="output/alii-drive-subtle.mp4" autoplay loop muted playsinline></video>
+            <div class="info">Subtle ocean, palm movement</div>
+        </div>
+        <div class="card">
+            <h3>🌊 Hilo Bayfront <span class="badge">motion: 18</span></h3>
+            <video src="output/hilo-bayfront-subtle.mp4" autoplay loop muted playsinline></video>
+            <div class="info">Soft water ripples, downtown Hilo</div>
+        </div>
+        <div class="card">
+            <h3>🏖️ Punalu'u Beach <span class="badge">motion: 25</span></h3>
+            <video src="output/punaluu-beach-subtle.mp4" autoplay loop muted playsinline></video>
+            <div class="info">Black sand beach, gentle waves</div>
+        </div>
+    </div>
+</body>
+</html>

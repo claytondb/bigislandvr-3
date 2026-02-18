@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Shader-Based Panorama Animation Demo</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #1a1a1a; color: white; font-family: system-ui, sans-serif; overflow: hidden; }
+        #container { width: 100vw; height: 100vh; }
+        #controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            padding: 20px;
+            border-radius: 12px;
+            width: 280px;
+            z-index: 100;
+        }
+        h2 { margin-bottom: 15px; font-size: 1.1rem; }
+        .control-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-size: 0.85rem; color: #aaa; }
+        input[type="range"] { width: 100%; }
+        .value { float: right; color: #7fcdcd; }
+        .info { 
+            position: fixed; 
+            bottom: 20px; 
+            left: 20px; 
+            background: rgba(0,0,0,0.7); 
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        .location-btn {
+            display: block;
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            background: #333;
+            border: none;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: left;
+        }
+        .location-btn:hover { background: #444; }
+        .location-btn.active { background: #2a9d8f; }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+    
+    <div id="controls">
+        <h2>🌊 Shader Animation</h2>
+        
+        <div class="control-group">
+            <label>Water Ripples <span class="value" id="water-val">80%</span></label>
+            <input type="range" id="water" min="0" max="100" value="80">
+        </div>
+        
+        <div class="control-group">
+            <label>Cloud Drift <span class="value" id="sky-val">50%</span></label>
+            <input type="range" id="sky" min="0" max="100" value="50">
+        </div>
+        
+        <div class="control-group">
+            <label>Vegetation Sway <span class="value" id="veg-val">30%</span></label>
+            <input type="range" id="veg" min="0" max="100" value="30">
+        </div>
+        
+        <hr style="border-color: #333; margin: 15px 0;">
+        
+        <label>Location:</label>
+        <button class="location-btn active" data-img="panoramas/alii-drive.jpg">🏖️ Ali'i Drive</button>
+        <button class="location-btn" data-img="panoramas/hilo-bayfront.jpg">🌊 Hilo Bayfront</button>
+        <button class="location-btn" data-img="panoramas/punaluu-beach.jpg">🐢 Punalu'u Beach</button>
+        <button class="location-btn" data-img="panoramas/keaau.jpg">📍 Keaʻau</button>
+    </div>
+    
+    <div class="info">
+        <strong>🎮 Controls:</strong> Drag to look around • Scroll to zoom<br>
+        <strong>✨ Effect:</strong> Real-time GPU shaders, no video needed!
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Shaders
+        const vertexShader = `
+            varying vec2 vUv;
+            void main() {
+                vUv = uv;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+        `;
+        
+        const fragmentShader = `
+            uniform sampler2D panorama;
+            uniform float time;
+            uniform float waterIntensity;
+            uniform float skyIntensity;
+            uniform float vegIntensity;
+            varying vec2 vUv;
+            
+            // Noise function
+            vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+            vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+            vec3 permute(vec3 x) { return mod289(((x*34.0)+1.0)*x); }
+            
+            float snoise(vec2 v) {
+                const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);
+                vec2 i = floor(v + dot(v, C.yy));
+                vec2 x0 = v - i + dot(i, C.xx);
+                vec2 i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+                vec4 x12 = x0.xyxy + C.xxzz;
+                x12.xy -= i1;
+                i = mod289(i);
+                vec3 p = permute(permute(i.y + vec3(0.0, i1.y, 1.0)) + i.x + vec3(0.0, i1.x, 1.0));
+                vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);
+                m = m*m; m = m*m;
+                vec3 x = 2.0 * fract(p * C.www) - 1.0;
+                vec3 h = abs(x) - 0.5;
+                vec3 ox = floor(x + 0.5);
+                vec3 a0 = x - ox;
+                m *= 1.79284291400159 - 0.85373472095314 * (a0*a0 + h*h);
+                vec3 g;
+                g.x = a0.x * x0.x + h.x * x0.y;
+                g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+                return 130.0 * dot(m, g);
+            }
+            
+            void main() {
+                vec2 uv = vUv;
+                vec2 distortion = vec2(0.0);
+                
+                // Determine region based on vertical position (simple heuristic)
+                // Top = sky, bottom portion could be water
+                float skyRegion = smoothstep(0.4, 0.55, uv.y);  // Upper part
+                float waterRegion = smoothstep(0.45, 0.35, uv.y); // Lower part (for beach scenes)
+                
+                // Water effect - ripples and waves
+                if (waterIntensity > 0.0) {
+                    float wave1 = sin(uv.x * 25.0 + time * 1.2) * 0.002;
+                    float wave2 = sin(uv.y * 20.0 + time * 0.9) * 0.0015;
+                    float ripple = snoise(uv * 12.0 + time * 0.4) * 0.003;
+                    distortion += vec2(wave1 + ripple, wave2 + ripple) * waterIntensity * waterRegion;
+                }
+                
+                // Sky/cloud effect - gentle drift and morph
+                if (skyIntensity > 0.0) {
+                    float drift = snoise(uv * 2.0 + time * 0.05) * 0.003;
+                    float morph = snoise(uv * 4.0 + time * 0.08) * 0.002;
+                    distortion += vec2(drift, morph * 0.5) * skyIntensity * skyRegion;
+                }
+                
+                // Vegetation effect - swaying
+                if (vegIntensity > 0.0) {
+                    float midRegion = 1.0 - skyRegion - waterRegion;
+                    float sway = sin(time * 0.7 + uv.x * 8.0) * 0.002;
+                    float rustle = snoise(uv * 10.0 + time * 0.6) * 0.0015;
+                    distortion += vec2(sway + rustle, rustle * 0.3) * vegIntensity * midRegion;
+                }
+                
+                vec4 color = texture2D(panorama, uv + distortion);
+                gl_FragColor = color;
+            }
+        `;
+        
+        // Setup
+        let scene, camera, renderer, material;
+        let isUserInteracting = false, lon = 0, lat = 0, phi = 0, theta = 0;
+        let onPointerDownLon = 0, onPointerDownLat = 0, onPointerDownX = 0, onPointerDownY = 0;
+        
+        const settings = {
+            waterIntensity: 0.8,
+            skyIntensity: 0.5,
+            vegIntensity: 0.3
+        };
+        
+        function init() {
+            const container = document.getElementById('container');
+            
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1100);
+            
+            renderer = new THREE.WebGLRenderer();
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            container.appendChild(renderer.domElement);
+            
+            // Load initial panorama
+            loadPanorama('panoramas/alii-drive.jpg');
+            
+            // Events
+            container.addEventListener('pointerdown', onPointerDown);
+            container.addEventListener('pointermove', onPointerMove);
+            container.addEventListener('pointerup', onPointerUp);
+            container.addEventListener('wheel', onWheel);
+            window.addEventListener('resize', onResize);
+            
+            // Controls
+            document.getElementById('water').addEventListener('input', (e) => {
+                settings.waterIntensity = e.target.value / 100;
+                document.getElementById('water-val').textContent = e.target.value + '%';
+            });
+            document.getElementById('sky').addEventListener('input', (e) => {
+                settings.skyIntensity = e.target.value / 100;
+                document.getElementById('sky-val').textContent = e.target.value + '%';
+            });
+            document.getElementById('veg').addEventListener('input', (e) => {
+                settings.vegIntensity = e.target.value / 100;
+                document.getElementById('veg-val').textContent = e.target.value + '%';
+            });
+            
+            // Location buttons
+            document.querySelectorAll('.location-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.location-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    loadPanorama(btn.dataset.img);
+                });
+            });
+            
+            animate();
+        }
+        
+        function loadPanorama(url) {
+            new THREE.TextureLoader().load(url, (texture) => {
+                // Remove old mesh
+                const oldMesh = scene.getObjectByName('panorama');
+                if (oldMesh) scene.remove(oldMesh);
+                
+                material = new THREE.ShaderMaterial({
+                    uniforms: {
+                        panorama: { value: texture },
+                        time: { value: 0 },
+                        waterIntensity: { value: settings.waterIntensity },
+                        skyIntensity: { value: settings.skyIntensity },
+                        vegIntensity: { value: settings.vegIntensity }
+                    },
+                    vertexShader,
+                    fragmentShader,
+                    side: THREE.BackSide
+                });
+                
+                const geometry = new THREE.SphereGeometry(500, 60, 40);
+                const mesh = new THREE.Mesh(geometry, material);
+                mesh.name = 'panorama';
+                scene.add(mesh);
+            });
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            if (material) {
+                material.uniforms.time.value = performance.now() / 1000;
+                material.uniforms.waterIntensity.value = settings.waterIntensity;
+                material.uniforms.skyIntensity.value = settings.skyIntensity;
+                material.uniforms.vegIntensity.value = settings.vegIntensity;
+            }
+            
+            lat = Math.max(-85, Math.min(85, lat));
+            phi = THREE.MathUtils.degToRad(90 - lat);
+            theta = THREE.MathUtils.degToRad(lon);
+            
+            camera.position.x = 100 * Math.sin(phi) * Math.cos(theta);
+            camera.position.y = 100 * Math.cos(phi);
+            camera.position.z = 100 * Math.sin(phi) * Math.sin(theta);
+            camera.lookAt(0, 0, 0);
+            
+            renderer.render(scene, camera);
+        }
+        
+        function onPointerDown(e) {
+            isUserInteracting = true;
+            onPointerDownX = e.clientX;
+            onPointerDownY = e.clientY;
+            onPointerDownLon = lon;
+            onPointerDownLat = lat;
+        }
+        
+        function onPointerMove(e) {
+            if (isUserInteracting) {
+                lon = (onPointerDownX - e.clientX) * 0.1 + onPointerDownLon;
+                lat = (e.clientY - onPointerDownY) * 0.1 + onPointerDownLat;
+            }
+        }
+        
+        function onPointerUp() { isUserInteracting = false; }
+        
+        function onWheel(e) {
+            camera.fov = Math.max(30, Math.min(90, camera.fov + e.deltaY * 0.05));
+            camera.updateProjectionMatrix();
+        }
+        
+        function onResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+        
+        init();
+    </script>
+</body>
+</html>
