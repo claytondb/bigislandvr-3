@@ -60,18 +60,22 @@
         <hr style="border-color: #333; margin: 15px 0;">
         
         <div class="control-group">
-            <label>☁️ Cloud Drift <span class="value" id="sky-val" style="color:#FF1493">100%</span></label>
-            <input type="range" id="sky" min="0" max="100" value="100">
+            <label>☁️ Cloud Drift <span class="value" id="sky-val" style="color:#FF1493">70%</span></label>
+            <input type="range" id="sky" min="0" max="100" value="70">
         </div>
         
         <div class="control-group">
-            <label>🌊 Water Ripples <span class="value" id="water-val" style="color:#FF8C00">50%</span></label>
-            <input type="range" id="water" min="0" max="100" value="50">
+            <label>🌊 Water Ripples <span class="value" id="water-val" style="color:#FF8C00">60%</span></label>
+            <input type="range" id="water" min="0" max="100" value="60">
         </div>
         
         <div class="control-group">
-            <label>🌿 Vegetation Sway <span class="value" id="veg-val" style="color:#9932CC">30%</span></label>
-            <input type="range" id="veg" min="0" max="100" value="30">
+            <label>🌿 Vegetation Sway <span class="value" id="veg-val" style="color:#9932CC">40%</span></label>
+            <input type="range" id="veg" min="0" max="100" value="40">
+        </div>
+        
+        <div style="margin-top: 15px; padding: 8px; background: #222; border-radius: 6px; font-size: 0.8rem;">
+            <span id="fps-display">FPS: --</span>
         </div>
         
         <hr style="border-color: #333; margin: 15px 0;">
@@ -321,8 +325,19 @@
         
         function animate() {
             requestAnimationFrame(animate);
+            
+            // FPS counter
+            frameCount++;
+            const now = performance.now();
+            if (now - lastFpsUpdate >= 1000) {
+                fps = frameCount;
+                frameCount = 0;
+                lastFpsUpdate = now;
+                document.getElementById('fps-display').textContent = `FPS: ${fps}`;
+            }
+            
             if (material) {
-                material.uniforms.time.value = performance.now() / 1000;
+                material.uniforms.time.value = now / 1000;
                 material.uniforms.skyIntensity.value = settings.skyIntensity;
                 material.uniforms.waterIntensity.value = settings.waterIntensity;
                 material.uniforms.vegIntensity.value = settings.vegIntensity;
