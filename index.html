@@ -3,2152 +3,540 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <meta name="description" content="Explore the Big Island of Hawaii through immersive 360° Street View panoramas">
+    <meta name="description" content="Explore the Big Island of Hawaii through immersive 360° Street View panoramas with ambient audio">
     <meta name="theme-color" content="#0D3B66">
     <title>Big Island VR - Explore Hawaiʻi</title>
     
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Inter:wght@400;500;600&family=Lora:ital@1&display=swap" rel="stylesheet">
     
     <style>
-        /* =====================================================
-           CSS VARIABLES - Hawaiian Design Tokens
-           ===================================================== */
         :root {
-            /* Ocean Blues */
             --color-kona-blue: #0D3B66;
             --color-pacific-teal: #1A6B7C;
             --color-shallow-water: #3DA5D9;
             --color-seafoam: #7FCDCD;
-            
-            /* Volcanic Earth */
             --color-lava-black: #1A1A1A;
             --color-pahoehoe: #2D2D2D;
             --color-volcanic-ash: #4A4A4A;
             --color-cinder: #6B6B6B;
-            
-            /* Tropical Flora */
             --color-plumeria: #FAF8F5;
             --color-hibiscus: #E63946;
             --color-pikake: #F4A261;
             --color-ti-leaf: #2A9D8F;
             --color-orchid: #9B5DE5;
-            
-            /* Typography */
             --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             --font-display: 'DM Sans', var(--font-primary);
             --font-accent: 'Lora', Georgia, serif;
-            
-            /* Spacing */
-            --space-1: 4px;
-            --space-2: 8px;
-            --space-3: 12px;
-            --space-4: 16px;
-            --space-5: 24px;
-            --space-6: 32px;
-            
-            /* Borders */
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 16px;
-            --radius-xl: 24px;
-            
-            /* Timing */
-            --duration-fast: 200ms;
-            --duration-normal: 300ms;
-            --duration-slow: 500ms;
-            --duration-panorama: 1500ms;
-            
-            /* Easing */
+            --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-5: 24px; --space-6: 32px;
+            --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px; --radius-xl: 24px;
+            --duration-fast: 200ms; --duration-normal: 300ms; --duration-slow: 500ms;
             --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
             --ease-natural: cubic-bezier(0.4, 0, 0.2, 1);
         }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--color-lava-black); color: var(--color-plumeria); font-family: var(--font-primary); overflow: hidden; -webkit-font-smoothing: antialiased; }
+        #viewer { width: 100vw; height: 100vh; position: relative; }
+        #street-view-container { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+        
+        #loading { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, var(--color-kona-blue) 0%, var(--color-pacific-teal) 50%, var(--color-lava-black) 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; transition: opacity var(--duration-slow) var(--ease-out-expo); }
+        #loading.hidden { opacity: 0; pointer-events: none; }
+        .loading-logo { font-size: 4rem; margin-bottom: var(--space-4); animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        #loading h1 { font-family: var(--font-display); font-size: 2.5rem; font-weight: 600; margin-bottom: var(--space-2); background: linear-gradient(135deg, var(--color-plumeria), var(--color-seafoam)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .loading-subtitle { font-family: var(--font-accent); font-style: italic; color: var(--color-seafoam); font-size: 1.1rem; margin-bottom: var(--space-6); opacity: 0.9; }
+        .loading-progress { width: 280px; height: 4px; background: rgba(255, 255, 255, 0.1); border-radius: 2px; overflow: hidden; margin-bottom: var(--space-4); }
+        .loading-progress-bar { height: 100%; background: linear-gradient(90deg, var(--color-pacific-teal), var(--color-ti-leaf), var(--color-seafoam)); border-radius: 2px; width: 0%; animation: progress 2s ease-out forwards, shimmer 1.5s ease-in-out infinite; background-size: 200% 100%; }
+        @keyframes progress { 0% { width: 0%; } 50% { width: 70%; } 100% { width: 100%; } }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        .loading-location { color: rgba(255, 255, 255, 0.6); font-size: 0.875rem; }
+        
+        #transition-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: var(--color-lava-black); z-index: 15; opacity: 0; pointer-events: none; transition: opacity 0.5s ease-in-out; }
+        #transition-overlay.active { opacity: 1; }
+        
+        #atmosphere-layer { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 18; transition: all 0.8s ease; }
+        .time-dawn { background: linear-gradient(180deg, rgba(255, 180, 120, 0.15) 0%, rgba(255, 100, 50, 0.1) 30%, transparent 60%); }
+        .time-day { background: transparent; }
+        .time-dusk { background: linear-gradient(180deg, rgba(255, 120, 80, 0.2) 0%, rgba(180, 80, 120, 0.15) 40%, rgba(60, 40, 80, 0.1) 100%); }
+        .time-night { background: linear-gradient(180deg, rgba(10, 15, 40, 0.5) 0%, rgba(20, 25, 50, 0.4) 100%); }
+        
+        #mist-layer { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 17; opacity: 0; transition: opacity 1s ease; background: radial-gradient(ellipse at 50% 120%, rgba(200, 210, 220, 0.6) 0%, rgba(180, 190, 200, 0.3) 40%, transparent 70%); }
+        #mist-layer.active { opacity: 1; animation: mistDrift 20s ease-in-out infinite; }
+        @keyframes mistDrift { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-20px) scale(1.05); } }
+        #mist-layer.volcanic { background: radial-gradient(ellipse at 50% 100%, rgba(150, 140, 130, 0.5) 0%, rgba(120, 115, 110, 0.3) 50%, transparent 80%); }
+        
+        #info { position: absolute; top: var(--space-5); left: var(--space-5); background: rgba(26, 26, 26, 0.85); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); padding: var(--space-4) var(--space-5); border-radius: var(--radius-lg); border: 1px solid rgba(255, 255, 255, 0.08); z-index: 50; max-width: 320px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05); animation: fadeUp var(--duration-slow) var(--ease-out-expo); }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .info-brand { display: flex; align-items: center; gap: var(--space-2); font-family: var(--font-display); font-size: 0.875rem; font-weight: 500; color: var(--color-seafoam); margin-bottom: var(--space-3); padding-bottom: var(--space-3); border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+        #location-name { font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; margin-bottom: var(--space-1); line-height: 1.2; }
+        #location-desc { font-size: 0.875rem; color: rgba(255, 255, 255, 0.6); line-height: 1.4; margin-bottom: var(--space-3); }
+        .location-dots { display: flex; gap: var(--space-1); margin-bottom: var(--space-2); flex-wrap: wrap; }
+        .location-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--color-volcanic-ash); cursor: pointer; transition: all var(--duration-fast) var(--ease-natural); }
+        .location-dot:hover { transform: scale(1.3); background: var(--color-seafoam); }
+        .location-dot.active { width: 10px; height: 10px; background: var(--color-ti-leaf); box-shadow: 0 0 10px rgba(42, 157, 143, 0.5); }
+        .location-dot.visited { background: var(--color-seafoam); }
+        #location-counter { font-size: 0.75rem; color: var(--color-seafoam); font-weight: 500; letter-spacing: 0.02em; }
+        
+        #location-selector { position: absolute; top: var(--space-5); left: 50%; transform: translateX(-50%); z-index: 50; animation: fadeUp var(--duration-slow) var(--ease-out-expo) 0.1s both; }
+        #location-dropdown { background: rgba(26, 26, 26, 0.85); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: var(--radius-md); color: var(--color-plumeria); padding: var(--space-3) var(--space-5); padding-right: var(--space-6); font-family: var(--font-primary); font-size: 0.95rem; cursor: pointer; min-width: 280px; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237FCDCD' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; transition: all var(--duration-fast) var(--ease-natural); }
+        #location-dropdown:hover { border-color: var(--color-seafoam); }
+        #location-dropdown:focus { outline: 2px solid var(--color-shallow-water); outline-offset: 2px; }
+        #location-dropdown option { background: var(--color-pahoehoe); color: var(--color-plumeria); padding: var(--space-2); }
+        #location-dropdown optgroup { background: var(--color-lava-black); color: var(--color-seafoam); font-weight: 600; }
+        
+        #mini-map-container { position: absolute; bottom: var(--space-5); left: var(--space-5); width: 200px; height: 150px; background: rgba(26, 26, 26, 0.85); backdrop-filter: blur(20px); border-radius: var(--radius-lg); border: 1px solid rgba(255, 255, 255, 0.08); overflow: hidden; z-index: 50; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4); animation: fadeUp var(--duration-slow) var(--ease-out-expo) 0.2s both; }
+        #mini-map { width: 100%; height: 100%; }
+        .mini-map-label { position: absolute; bottom: 0; left: 0; right: 0; padding: var(--space-2); background: linear-gradient(transparent, rgba(0,0,0,0.7)); font-size: 0.7rem; color: var(--color-seafoam); text-align: center; pointer-events: none; }
+        
+        #effects { position: absolute; top: var(--space-5); right: var(--space-5); background: rgba(26, 26, 26, 0.85); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); padding: var(--space-4); border-radius: var(--radius-lg); border: 1px solid rgba(255, 255, 255, 0.08); z-index: 50; min-width: 240px; max-height: 80vh; overflow-y: auto; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05); animation: fadeUp var(--duration-slow) var(--ease-out-expo) 0.1s both; }
+        .effects-header { display: flex; align-items: center; gap: var(--space-2); font-size: 0.875rem; font-weight: 500; color: var(--color-seafoam); margin-bottom: var(--space-3); padding-bottom: var(--space-3); border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+        .effects-section { margin-bottom: var(--space-4); padding-bottom: var(--space-3); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .effects-section:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+        .section-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-seafoam); margin-bottom: var(--space-2); opacity: 0.7; }
+        .effect-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-3); gap: var(--space-3); }
+        .effect-row:last-child { margin-bottom: 0; }
+        .effect-label { display: flex; align-items: center; gap: var(--space-2); font-size: 0.875rem; color: var(--color-plumeria); }
+        .effect-icon { font-size: 1rem; }
+        
+        .toggle-switch { width: 52px; height: 28px; background: linear-gradient(135deg, var(--color-pahoehoe), var(--color-volcanic-ash)); border-radius: 14px; position: relative; cursor: pointer; transition: all var(--duration-fast) var(--ease-natural); flex-shrink: 0; }
+        .toggle-switch::after { content: ''; position: absolute; width: 22px; height: 22px; background: linear-gradient(135deg, var(--color-plumeria), #E0E0E0); border-radius: 50%; top: 3px; left: 3px; transition: transform var(--duration-fast) var(--ease-out-expo); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); }
+        .toggle-switch.on { background: linear-gradient(135deg, var(--color-pacific-teal), var(--color-ti-leaf)); }
+        .toggle-switch.on::after { transform: translateX(24px); }
+        
+        .slider-row { margin-bottom: var(--space-3); }
+        .slider-label { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-2); font-size: 0.8rem; color: rgba(255, 255, 255, 0.8); }
+        .slider-value { color: var(--color-seafoam); font-weight: 500; font-size: 0.75rem; }
+        .effect-slider { -webkit-appearance: none; width: 100%; height: 6px; background: var(--color-volcanic-ash); border-radius: 3px; outline: none; }
+        .effect-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: linear-gradient(135deg, var(--color-plumeria), #E0E0E0); border-radius: 50%; cursor: pointer; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); transition: transform var(--duration-fast) var(--ease-natural); }
+        .effect-slider::-webkit-slider-thumb:hover { transform: scale(1.15); }
+        
+        .time-selector { display: flex; gap: var(--space-2); justify-content: space-between; }
+        .time-btn { flex: 1; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: var(--radius-sm); padding: var(--space-2) var(--space-1); cursor: pointer; font-size: 0.75rem; color: var(--color-plumeria); transition: all var(--duration-fast) var(--ease-natural); text-align: center; }
+        .time-btn:hover { background: rgba(255, 255, 255, 0.1); border-color: var(--color-seafoam); }
+        .time-btn.active { background: rgba(42, 157, 143, 0.3); border-color: var(--color-ti-leaf); }
+        .time-btn-icon { font-size: 1.2rem; display: block; margin-bottom: 2px; }
+        
+        .volume-section { margin-top: var(--space-3); padding-top: var(--space-3); border-top: 1px solid rgba(255, 255, 255, 0.08); }
+        .volume-label { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-2); font-size: 0.75rem; color: rgba(255, 255, 255, 0.6); }
+        .volume-slider { -webkit-appearance: none; width: 100%; height: 6px; background: linear-gradient(90deg, var(--color-ti-leaf) 0%, var(--color-volcanic-ash) 100%); border-radius: 3px; outline: none; }
+        .volume-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: linear-gradient(135deg, var(--color-plumeria), #E0E0E0); border-radius: 50%; cursor: pointer; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); }
+        
+        #audio-unlock { display: none; position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, var(--color-ti-leaf), var(--color-pacific-teal)); border: none; padding: var(--space-3) var(--space-5); border-radius: var(--radius-xl); color: white; font-family: var(--font-primary); font-size: 0.9rem; font-weight: 500; cursor: pointer; z-index: 200; box-shadow: 0 4px 20px rgba(42, 157, 143, 0.4); animation: pulse 2s ease-in-out infinite; }
+        #audio-unlock.visible { display: flex; align-items: center; gap: var(--space-2); }
+        @keyframes pulse { 0%, 100% { transform: translateX(-50%) scale(1); } 50% { transform: translateX(-50%) scale(1.05); } }
+        
+        #controls { position: absolute; bottom: var(--space-5); left: 50%; transform: translateX(-50%); display: flex; gap: var(--space-3); z-index: 50; animation: fadeUp var(--duration-slow) var(--ease-out-expo) 0.2s both; }
+        .control-btn { background: rgba(26, 26, 26, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--color-plumeria); padding: var(--space-3) var(--space-5); border-radius: var(--radius-md); cursor: pointer; font-family: var(--font-primary); font-size: 0.875rem; font-weight: 500; transition: all var(--duration-fast) var(--ease-natural); display: flex; align-items: center; gap: var(--space-2); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3); }
+        .control-btn:hover { background: rgba(42, 157, 143, 0.2); border-color: rgba(42, 157, 143, 0.4); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4); }
+        .control-btn:active { transform: translateY(0); }
+        .control-btn.active { background: rgba(42, 157, 143, 0.3); border-color: var(--color-ti-leaf); box-shadow: 0 0 20px rgba(42, 157, 143, 0.3); }
+        
+        #hints { position: absolute; bottom: 90px; left: 50%; transform: translateX(-50%); background: rgba(26, 26, 26, 0.6); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: var(--space-2) var(--space-4); border-radius: var(--radius-xl); font-size: 0.75rem; color: rgba(255, 255, 255, 0.6); z-index: 50; white-space: nowrap; animation: fadeUp var(--duration-slow) var(--ease-out-expo) 0.3s both; }
+        kbd { background: rgba(255, 255, 255, 0.1); padding: 2px 8px; border-radius: var(--radius-sm); margin: 0 2px; font-family: var(--font-primary); font-size: 0.75rem; border: 1px solid rgba(255, 255, 255, 0.1); }
+        
+        #rain-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 20; opacity: 0; transition: opacity var(--duration-slow) var(--ease-natural); }
+        #rain-canvas.active { opacity: 1; }
         
-        /* =====================================================
-           BASE STYLES
-           ===================================================== */
-        * { 
-            margin: 0; 
-            padding: 0; 
-            box-sizing: border-box; 
-        }
+        #fullscreen-btn { position: absolute; bottom: var(--space-5); right: var(--space-5); background: linear-gradient(135deg, var(--color-orchid), #7B4BC4); border: none; color: var(--color-plumeria); padding: var(--space-3) var(--space-5); border-radius: var(--radius-md); cursor: pointer; font-family: var(--font-primary); font-size: 0.875rem; font-weight: 500; display: flex; align-items: center; gap: var(--space-2); z-index: 50; box-shadow: 0 4px 20px rgba(155, 93, 229, 0.4); transition: all var(--duration-fast) var(--ease-natural); animation: fadeUp var(--duration-slow) var(--ease-out-expo) 0.3s both; }
+        #fullscreen-btn:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 6px 25px rgba(155, 93, 229, 0.5); }
         
-        body {
-            background: var(--color-lava-black);
-            color: var(--color-plumeria);
-            font-family: var(--font-primary);
-            overflow: hidden;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
+        #error-message { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(230, 57, 70, 0.9); color: white; padding: var(--space-5); border-radius: var(--radius-lg); text-align: center; z-index: 200; display: none; max-width: 400px; }
+        #error-message h3 { margin-bottom: var(--space-2); }
+        #error-message.visible { display: block; }
         
-        /* =====================================================
-           VIEWER CONTAINER
-           ===================================================== */
-        #viewer {
-            width: 100vw;
-            height: 100vh;
-            position: relative;
-        }
+        #coverage-status { position: absolute; top: 80px; left: 50%; transform: translateX(-50%); background: rgba(244, 162, 97, 0.9); color: var(--color-lava-black); padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); font-size: 0.8rem; z-index: 60; display: none; }
+        #coverage-status.visible { display: block; }
         
-        #street-view-container {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-        
-        /* =====================================================
-           LOADING SCREEN - Hawaiian Welcome
-           ===================================================== */
-        #loading {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(135deg, var(--color-kona-blue) 0%, var(--color-pacific-teal) 50%, var(--color-lava-black) 100%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
-            transition: opacity var(--duration-slow) var(--ease-out-expo);
-        }
-        
-        #loading.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-        
-        .loading-logo {
-            font-size: 4rem;
-            margin-bottom: var(--space-4);
-            animation: float 3s ease-in-out infinite;
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-        
-        #loading h1 {
-            font-family: var(--font-display);
-            font-size: 2.5rem;
-            font-weight: 600;
-            margin-bottom: var(--space-2);
-            background: linear-gradient(135deg, var(--color-plumeria), var(--color-seafoam));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .loading-subtitle {
-            font-family: var(--font-accent);
-            font-style: italic;
-            color: var(--color-seafoam);
-            font-size: 1.1rem;
-            margin-bottom: var(--space-6);
-            opacity: 0.9;
-        }
-        
-        .loading-progress {
-            width: 280px;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 2px;
-            overflow: hidden;
-            margin-bottom: var(--space-4);
-        }
-        
-        .loading-progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, var(--color-pacific-teal), var(--color-ti-leaf), var(--color-seafoam));
-            border-radius: 2px;
-            width: 0%;
-            animation: progress 2s ease-out forwards, shimmer 1.5s ease-in-out infinite;
-            background-size: 200% 100%;
-        }
-        
-        @keyframes progress {
-            0% { width: 0%; }
-            50% { width: 70%; }
-            100% { width: 100%; }
-        }
-        
-        @keyframes shimmer {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-        
-        .loading-location {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 0.875rem;
-        }
-        
-        /* =====================================================
-           TRANSITION OVERLAY - Traveling Animation
-           ===================================================== */
-        #transition-overlay {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: var(--color-lava-black);
-            z-index: 15;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.5s ease-in-out;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        #transition-overlay.active {
-            opacity: 1;
-        }
-        
-        .travel-animation {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            gap: var(--space-4);
-        }
-        
-        #transition-overlay.active .travel-animation {
-            display: flex;
-        }
-        
-        .travel-car {
-            font-size: 3rem;
-            animation: drive 1s ease-in-out infinite;
-        }
-        
-        @keyframes drive {
-            0%, 100% { transform: translateX(-10px) rotate(-2deg); }
-            50% { transform: translateX(10px) rotate(2deg); }
-        }
-        
-        .travel-road {
-            display: flex;
-            gap: 8px;
-            margin-top: var(--space-2);
-        }
-        
-        .road-dash {
-            width: 20px;
-            height: 4px;
-            background: var(--color-seafoam);
-            border-radius: 2px;
-            animation: roadMove 0.5s linear infinite;
-        }
-        
-        .road-dash:nth-child(2) { animation-delay: 0.1s; }
-        .road-dash:nth-child(3) { animation-delay: 0.2s; }
-        .road-dash:nth-child(4) { animation-delay: 0.3s; }
-        .road-dash:nth-child(5) { animation-delay: 0.4s; }
-        
-        @keyframes roadMove {
-            0% { opacity: 0.3; transform: translateX(10px); }
-            50% { opacity: 1; }
-            100% { opacity: 0.3; transform: translateX(-10px); }
-        }
-        
-        .travel-info {
-            text-align: center;
-            color: var(--color-plumeria);
-        }
-        
-        .travel-from-to {
-            font-size: 0.9rem;
-            color: var(--color-seafoam);
-            margin-bottom: var(--space-2);
-        }
-        
-        .travel-distance {
-            font-size: 1.5rem;
-            font-weight: 600;
-            font-family: var(--font-display);
-        }
-        
-        .travel-time {
-            font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.6);
-            margin-top: var(--space-1);
-        }
-        
-        /* =====================================================
-           INFO PANEL - Glass Morphism with Info Card
-           ===================================================== */
-        #info {
-            position: absolute;
-            top: var(--space-5);
-            left: var(--space-5);
-            background: rgba(26, 26, 26, 0.85);
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
-            padding: var(--space-4) var(--space-5);
-            border-radius: var(--radius-lg);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            z-index: 50;
-            max-width: 340px;
-            box-shadow: 
-                0 8px 32px rgba(0, 0, 0, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.05);
-            animation: fadeUp var(--duration-slow) var(--ease-out-expo);
-            max-height: calc(100vh - 200px);
-            overflow-y: auto;
-        }
-        
-        @keyframes fadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .info-brand {
-            display: flex;
-            align-items: center;
-            gap: var(--space-2);
-            font-family: var(--font-display);
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: var(--color-seafoam);
-            margin-bottom: var(--space-3);
-            padding-bottom: var(--space-3);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        
-        #location-name {
-            font-family: var(--font-display);
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: var(--space-1);
-            line-height: 1.2;
-        }
-        
-        #location-hawaiian {
-            font-family: var(--font-accent);
-            font-style: italic;
-            font-size: 0.9rem;
-            color: var(--color-pikake);
-            margin-bottom: var(--space-2);
-        }
-        
-        #location-desc {
-            font-size: 0.875rem;
-            color: rgba(255, 255, 255, 0.6);
-            line-height: 1.4;
-            margin-bottom: var(--space-3);
-        }
-        
-        /* Location Info Card */
-        .info-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: var(--radius-md);
-            padding: var(--space-3);
-            margin-bottom: var(--space-3);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        
-        .info-card-header {
-            display: flex;
-            align-items: center;
-            gap: var(--space-2);
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--color-seafoam);
-            margin-bottom: var(--space-2);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-        
-        .info-card-content {
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.7);
-            line-height: 1.5;
-        }
-        
-        .info-card-content ul {
-            margin: 0;
-            padding-left: var(--space-4);
-        }
-        
-        .info-card-content li {
-            margin-bottom: var(--space-1);
-        }
-        
-        .info-toggle {
-            background: none;
-            border: none;
-            color: var(--color-seafoam);
-            font-size: 0.8rem;
-            cursor: pointer;
-            padding: var(--space-1) 0;
-            display: flex;
-            align-items: center;
-            gap: var(--space-1);
-            transition: color var(--duration-fast);
-        }
-        
-        .info-toggle:hover {
-            color: var(--color-plumeria);
-        }
-        
-        .info-toggle-icon {
-            transition: transform var(--duration-fast);
-        }
-        
-        .info-toggle.expanded .info-toggle-icon {
-            transform: rotate(180deg);
-        }
-        
-        .info-details {
-            display: none;
-            margin-top: var(--space-3);
-        }
-        
-        .info-details.visible {
-            display: block;
-        }
-        
-        .location-dots {
-            display: flex;
-            gap: var(--space-1);
-            margin-bottom: var(--space-2);
-            flex-wrap: wrap;
-        }
-        
-        .location-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--color-volcanic-ash);
-            cursor: pointer;
-            transition: all var(--duration-fast) var(--ease-natural);
-        }
-        
-        .location-dot:hover {
-            transform: scale(1.3);
-            background: var(--color-seafoam);
-        }
-        
-        .location-dot.active {
-            width: 10px;
-            height: 10px;
-            background: var(--color-ti-leaf);
-            box-shadow: 0 0 10px rgba(42, 157, 143, 0.5);
-        }
-        
-        .location-dot.visited {
-            background: var(--color-seafoam);
-        }
-        
-        .location-dot.in-tour {
-            background: var(--color-pikake);
-        }
-        
-        #location-counter {
-            font-size: 0.75rem;
-            color: var(--color-seafoam);
-            font-weight: 500;
-            letter-spacing: 0.02em;
-        }
-        
-        /* =====================================================
-           LOCATION SELECTOR
-           ===================================================== */
-        #location-selector {
-            position: absolute;
-            top: var(--space-5);
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 50;
-            animation: fadeUp var(--duration-slow) var(--ease-out-expo) 0.1s both;
-        }
-        
-        #location-dropdown {
-            background: rgba(26, 26, 26, 0.85);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: var(--radius-md);
-            color: var(--color-plumeria);
-            padding: var(--space-3) var(--space-5);
-            padding-right: var(--space-6);
-            font-family: var(--font-primary);
-            font-size: 0.95rem;
-            cursor: pointer;
-            min-width: 280px;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237FCDCD' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 12px center;
-            transition: all var(--duration-fast) var(--ease-natural);
-        }
-        
-        #location-dropdown:hover {
-            border-color: var(--color-seafoam);
-        }
-        
-        #location-dropdown:focus {
-            outline: 2px solid var(--color-shallow-water);
-            outline-offset: 2px;
-        }
-        
-        #location-dropdown option {
-            background: var(--color-pahoehoe);
-            color: var(--color-plumeria);
-            padding: var(--space-2);
-        }
-        
-        #location-dropdown optgroup {
-            background: var(--color-lava-black);
-            color: var(--color-seafoam);
-            font-weight: 600;
-        }
-        
-        /* =====================================================
-           TOUR PANEL
-           ===================================================== */
-        #tour-panel {
-            position: absolute;
-            top: 70px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(26, 26, 26, 0.9);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: var(--radius-lg);
-            padding: var(--space-3) var(--space-4);
-            z-index: 55;
-            display: none;
-            min-width: 320px;
-        }
-        
-        #tour-panel.visible {
-            display: block;
-            animation: fadeUp var(--duration-normal) var(--ease-out-expo);
-        }
-        
-        .tour-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: var(--space-3);
-            padding-bottom: var(--space-2);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .tour-title {
-            font-family: var(--font-display);
-            font-size: 1rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: var(--space-2);
-        }
-        
-        .tour-close {
-            background: none;
-            border: none;
-            color: var(--color-seafoam);
-            cursor: pointer;
-            font-size: 1.2rem;
-            padding: var(--space-1);
-            transition: color var(--duration-fast);
-        }
-        
-        .tour-close:hover {
-            color: var(--color-hibiscus);
-        }
-        
-        .tour-progress {
-            margin-bottom: var(--space-3);
-        }
-        
-        .tour-progress-bar {
-            height: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
-            overflow: hidden;
-            margin-bottom: var(--space-2);
-        }
-        
-        .tour-progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--color-ti-leaf), var(--color-seafoam));
-            border-radius: 3px;
-            transition: width var(--duration-normal) var(--ease-out-expo);
-        }
-        
-        .tour-progress-text {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.75rem;
-            color: rgba(255, 255, 255, 0.6);
-        }
-        
-        .tour-stops {
-            display: flex;
-            flex-wrap: wrap;
-            gap: var(--space-2);
-            margin-bottom: var(--space-3);
-        }
-        
-        .tour-stop {
-            padding: var(--space-1) var(--space-2);
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: var(--radius-sm);
-            font-size: 0.75rem;
-            color: rgba(255, 255, 255, 0.6);
-            cursor: pointer;
-            transition: all var(--duration-fast);
-            border: 1px solid transparent;
-        }
-        
-        .tour-stop:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-        
-        .tour-stop.active {
-            background: rgba(42, 157, 143, 0.3);
-            border-color: var(--color-ti-leaf);
-            color: var(--color-plumeria);
-        }
-        
-        .tour-stop.completed {
-            background: rgba(127, 205, 205, 0.2);
-            color: var(--color-seafoam);
-        }
-        
-        .tour-controls {
-            display: flex;
-            gap: var(--space-2);
-        }
-        
-        .tour-btn {
-            flex: 1;
-            padding: var(--space-2) var(--space-3);
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: var(--radius-sm);
-            color: var(--color-plumeria);
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all var(--duration-fast);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: var(--space-1);
-        }
-        
-        .tour-btn:hover {
-            background: rgba(42, 157, 143, 0.2);
-            border-color: var(--color-ti-leaf);
-        }
-        
-        .tour-btn.primary {
-            background: var(--color-ti-leaf);
-            border-color: var(--color-ti-leaf);
-        }
-        
-        .tour-btn.primary:hover {
-            background: #25897c;
-        }
-        
-        /* =====================================================
-           TOUR SELECTOR
-           ===================================================== */
-        #tour-selector {
-            position: absolute;
-            top: var(--space-5);
-            right: 230px;
-            z-index: 50;
-            animation: fadeUp var(--duration-slow) var(--ease-out-expo) 0.1s both;
-        }
-        
-        #tour-dropdown {
-            background: rgba(26, 26, 26, 0.85);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(244, 162, 97, 0.4);
-            border-radius: var(--radius-md);
-            color: var(--color-pikake);
-            padding: var(--space-2) var(--space-4);
-            padding-right: var(--space-5);
-            font-family: var(--font-primary);
-            font-size: 0.85rem;
-            cursor: pointer;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23F4A261' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 8px center;
-            transition: all var(--duration-fast) var(--ease-natural);
-        }
-        
-        #tour-dropdown:hover {
-            border-color: var(--color-pikake);
-            background-color: rgba(244, 162, 97, 0.1);
-        }
-        
-        /* =====================================================
-           MINI MAP - Enhanced
-           ===================================================== */
-        #mini-map-container {
-            position: absolute;
-            bottom: var(--space-5);
-            left: var(--space-5);
-            width: 220px;
-            height: 170px;
-            background: rgba(26, 26, 26, 0.85);
-            backdrop-filter: blur(20px);
-            border-radius: var(--radius-lg);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            overflow: hidden;
-            z-index: 50;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-            animation: fadeUp var(--duration-slow) var(--ease-out-expo) 0.2s both;
-        }
-        
-        #mini-map {
-            width: 100%;
-            height: 100%;
-        }
-        
-        .mini-map-controls {
-            position: absolute;
-            top: var(--space-2);
-            right: var(--space-2);
-            display: flex;
-            gap: var(--space-1);
-            z-index: 10;
-        }
-        
-        .map-type-btn {
-            width: 28px;
-            height: 28px;
-            background: rgba(26, 26, 26, 0.9);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: var(--radius-sm);
-            color: var(--color-plumeria);
-            cursor: pointer;
-            font-size: 0.8rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all var(--duration-fast);
-        }
-        
-        .map-type-btn:hover {
-            background: rgba(42, 157, 143, 0.3);
-            border-color: var(--color-ti-leaf);
-        }
-        
-        .map-type-btn.active {
-            background: var(--color-ti-leaf);
-            border-color: var(--color-ti-leaf);
-        }
-        
-        .mini-map-label {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: var(--space-2);
-            background: linear-gradient(transparent, rgba(0,0,0,0.8));
-            font-size: 0.7rem;
-            color: var(--color-seafoam);
-            text-align: center;
-            pointer-events: none;
-        }
-        
-        /* Pulsing current marker */
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.5); opacity: 0.5; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        
-        /* =====================================================
-           EFFECTS PANEL
-           ===================================================== */
-        #effects {
-            position: absolute;
-            top: var(--space-5);
-            right: var(--space-5);
-            background: rgba(26, 26, 26, 0.85);
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
-            padding: var(--space-4);
-            border-radius: var(--radius-lg);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            z-index: 50;
-            min-width: 200px;
-            box-shadow: 
-                0 8px 32px rgba(0, 0, 0, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.05);
-            animation: fadeUp var(--duration-slow) var(--ease-out-expo) 0.1s both;
-        }
-        
-        .effects-header {
-            display: flex;
-            align-items: center;
-            gap: var(--space-2);
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: var(--color-seafoam);
-            margin-bottom: var(--space-3);
-            padding-bottom: var(--space-3);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        
-        .effect-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: var(--space-3);
-            gap: var(--space-3);
-        }
-        
-        .effect-row:last-child {
-            margin-bottom: 0;
-        }
-        
-        .effect-label {
-            display: flex;
-            align-items: center;
-            gap: var(--space-2);
-            font-size: 0.875rem;
-            color: var(--color-plumeria);
-        }
-        
-        .effect-icon {
-            font-size: 1rem;
-        }
-        
-        /* Toggle Switch - Hawaiian style */
-        .toggle-switch {
-            width: 52px;
-            height: 28px;
-            background: linear-gradient(135deg, var(--color-pahoehoe), var(--color-volcanic-ash));
-            border-radius: 14px;
-            position: relative;
-            cursor: pointer;
-            transition: all var(--duration-fast) var(--ease-natural);
-            flex-shrink: 0;
-        }
-        
-        .toggle-switch::after {
-            content: '';
-            position: absolute;
-            width: 22px;
-            height: 22px;
-            background: linear-gradient(135deg, var(--color-plumeria), #E0E0E0);
-            border-radius: 50%;
-            top: 3px;
-            left: 3px;
-            transition: transform var(--duration-fast) var(--ease-out-expo);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-        }
-        
-        .toggle-switch.on {
-            background: linear-gradient(135deg, var(--color-pacific-teal), var(--color-ti-leaf));
-        }
-        
-        .toggle-switch.on::after {
-            transform: translateX(24px);
-        }
-        
-        /* Volume Slider */
-        .volume-section {
-            margin-top: var(--space-3);
-            padding-top: var(--space-3);
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        
-        .volume-label {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: var(--space-2);
-            font-size: 0.75rem;
-            color: rgba(255, 255, 255, 0.6);
-        }
-        
-        .volume-slider {
-            -webkit-appearance: none;
-            width: 100%;
-            height: 6px;
-            background: linear-gradient(90deg, var(--color-ti-leaf) 0%, var(--color-volcanic-ash) 100%);
-            border-radius: 3px;
-            outline: none;
-        }
-        
-        .volume-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 18px;
-            height: 18px;
-            background: linear-gradient(135deg, var(--color-plumeria), #E0E0E0);
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-            transition: transform var(--duration-fast) var(--ease-natural);
-        }
-        
-        .volume-slider::-webkit-slider-thumb:hover {
-            transform: scale(1.15);
-        }
-        
-        /* =====================================================
-           CONTROLS - Navigation
-           ===================================================== */
-        #controls {
-            position: absolute;
-            bottom: var(--space-5);
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: var(--space-3);
-            z-index: 50;
-            animation: fadeUp var(--duration-slow) var(--ease-out-expo) 0.2s both;
-        }
-        
-        .control-btn {
-            background: rgba(26, 26, 26, 0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--color-plumeria);
-            padding: var(--space-3) var(--space-5);
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            font-family: var(--font-primary);
-            font-size: 0.875rem;
-            font-weight: 500;
-            transition: all var(--duration-fast) var(--ease-natural);
-            display: flex;
-            align-items: center;
-            gap: var(--space-2);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-        }
-        
-        .control-btn:hover {
-            background: rgba(42, 157, 143, 0.2);
-            border-color: rgba(42, 157, 143, 0.4);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-        }
-        
-        .control-btn:active {
-            transform: translateY(0);
-        }
-        
-        .control-btn.active {
-            background: rgba(42, 157, 143, 0.3);
-            border-color: var(--color-ti-leaf);
-            box-shadow: 0 0 20px rgba(42, 157, 143, 0.3);
-        }
-        
-        .control-btn:focus-visible {
-            outline: 2px solid var(--color-shallow-water);
-            outline-offset: 2px;
-        }
-        
-        /* =====================================================
-           KEYBOARD HINTS
-           ===================================================== */
-        #hints {
-            position: absolute;
-            bottom: 90px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(26, 26, 26, 0.6);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            padding: var(--space-2) var(--space-4);
-            border-radius: var(--radius-xl);
-            font-size: 0.75rem;
-            color: rgba(255, 255, 255, 0.6);
-            z-index: 50;
-            white-space: nowrap;
-            animation: fadeUp var(--duration-slow) var(--ease-out-expo) 0.3s both;
-        }
-        
-        kbd {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 2px 8px;
-            border-radius: var(--radius-sm);
-            margin: 0 2px;
-            font-family: var(--font-primary);
-            font-size: 0.75rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        /* =====================================================
-           RAIN EFFECT CANVAS
-           ===================================================== */
-        #rain-canvas {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 20;
-            opacity: 0;
-            transition: opacity var(--duration-slow) var(--ease-natural);
-        }
-        
-        #rain-canvas.active {
-            opacity: 1;
-        }
-        
-        /* =====================================================
-           FULLSCREEN BUTTON
-           ===================================================== */
-        #fullscreen-btn {
-            position: absolute;
-            bottom: var(--space-5);
-            right: var(--space-5);
-            background: linear-gradient(135deg, var(--color-orchid), #7B4BC4);
-            border: none;
-            color: var(--color-plumeria);
-            padding: var(--space-3) var(--space-5);
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            font-family: var(--font-primary);
-            font-size: 0.875rem;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: var(--space-2);
-            z-index: 50;
-            box-shadow: 0 4px 20px rgba(155, 93, 229, 0.4);
-            transition: all var(--duration-fast) var(--ease-natural);
-            animation: fadeUp var(--duration-slow) var(--ease-out-expo) 0.3s both;
-        }
-        
-        #fullscreen-btn:hover {
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 6px 25px rgba(155, 93, 229, 0.5);
-        }
-        
-        /* =====================================================
-           ERROR MESSAGE
-           ===================================================== */
-        #error-message {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(230, 57, 70, 0.9);
-            color: white;
-            padding: var(--space-5);
-            border-radius: var(--radius-lg);
-            text-align: center;
-            z-index: 200;
-            display: none;
-            max-width: 400px;
-        }
-        
-        #error-message h3 {
-            margin-bottom: var(--space-2);
-        }
-        
-        #error-message.visible {
-            display: block;
-        }
-        
-        /* =====================================================
-           COVERAGE STATUS
-           ===================================================== */
-        #coverage-status {
-            position: absolute;
-            top: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(244, 162, 97, 0.9);
-            color: var(--color-lava-black);
-            padding: var(--space-2) var(--space-4);
-            border-radius: var(--radius-md);
-            font-size: 0.8rem;
-            z-index: 60;
-            display: none;
-        }
-        
-        #coverage-status.visible {
-            display: block;
-        }
-        
-        /* =====================================================
-           RESPONSIVE - TABLET
-           ===================================================== */
-        @media (max-width: 1024px) {
-            #info {
-                max-width: 280px;
-            }
-            
-            #effects {
-                min-width: 180px;
-            }
-            
-            #mini-map-container {
-                width: 180px;
-                height: 140px;
-            }
-            
-            #tour-selector {
-                right: 220px;
-            }
-        }
-        
-        /* =====================================================
-           RESPONSIVE - MOBILE
-           ===================================================== */
         @media (max-width: 768px) {
-            #info {
-                top: auto;
-                bottom: 160px;
-                left: var(--space-4);
-                right: var(--space-4);
-                max-width: none;
-                max-height: 200px;
-            }
-            
-            #location-selector {
-                top: var(--space-4);
-                width: calc(100% - 120px);
-                left: var(--space-4);
-                transform: none;
-            }
-            
-            #location-dropdown {
-                width: 100%;
-                min-width: auto;
-            }
-            
-            #tour-selector {
-                top: var(--space-4);
-                right: var(--space-4);
-                left: auto;
-            }
-            
-            #tour-panel {
-                top: 60px;
-                left: var(--space-4);
-                right: var(--space-4);
-                transform: none;
-                min-width: auto;
-            }
-            
-            #mini-map-container {
-                display: none;
-            }
-            
-            #effects {
-                position: fixed;
-                top: auto;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-                transform: translateY(100%);
-                transition: transform var(--duration-normal) var(--ease-out-expo);
-            }
-            
-            #effects.open {
-                transform: translateY(0);
-            }
-            
-            #controls {
-                bottom: var(--space-4);
-            }
-            
-            .control-btn {
-                padding: var(--space-3) var(--space-4);
-            }
-            
-            #hints {
-                bottom: 80px;
-                font-size: 0.7rem;
-            }
-            
-            #fullscreen-btn {
-                bottom: auto;
-                top: var(--space-4);
-                right: var(--space-4);
-            }
-            
-            #loading h1 {
-                font-size: 1.75rem;
-            }
-            
-            .loading-subtitle {
-                font-size: 0.95rem;
-                padding: 0 var(--space-4);
-            }
+            #info { top: auto; bottom: 160px; left: var(--space-4); right: var(--space-4); max-width: none; }
+            #location-selector { top: var(--space-4); width: calc(100% - 32px); }
+            #location-dropdown { width: 100%; min-width: auto; }
+            #mini-map-container { display: none; }
+            #effects { position: fixed; top: auto; bottom: 0; left: 0; right: 0; border-radius: var(--radius-lg) var(--radius-lg) 0 0; transform: translateY(100%); transition: transform var(--duration-normal) var(--ease-out-expo); max-height: 60vh; }
+            #effects.open { transform: translateY(0); }
+            #controls { bottom: var(--space-4); }
+            .control-btn { padding: var(--space-3) var(--space-4); }
+            #hints { bottom: 80px; font-size: 0.7rem; }
+            #fullscreen-btn { bottom: auto; top: var(--space-4); right: var(--space-4); }
+            #loading h1 { font-size: 1.75rem; }
+            .loading-subtitle { font-size: 0.95rem; padding: 0 var(--space-4); }
         }
         
-        @media (max-width: 375px) {
-            #controls {
-                gap: var(--space-2);
-            }
-            
-            .control-btn {
-                padding: var(--space-2) var(--space-3);
-                font-size: 0.8rem;
-            }
-        }
-        
-        /* =====================================================
-           REDUCED MOTION
-           ===================================================== */
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-            }
-        }
-        
-        /* =====================================================
-           FOCUS STYLES FOR ACCESSIBILITY
-           ===================================================== */
-        *:focus-visible {
-            outline: 2px solid var(--color-shallow-water);
-            outline-offset: 2px;
-        }
-        
-        /* Hide default Street View UI elements we're replacing */
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; } }
+        *:focus-visible { outline: 2px solid var(--color-shallow-water); outline-offset: 2px; }
         .gm-style-cc, .gmnoprint { display: none !important; }
     </style>
 </head>
 <body>
     <div id="viewer">
-        <!-- Loading screen -->
         <div id="loading">
             <div class="loading-logo">🌴</div>
             <h1>Big Island VR</h1>
             <p class="loading-subtitle">"E komo mai" — Welcome</p>
-            <div class="loading-progress">
-                <div class="loading-progress-bar"></div>
-            </div>
+            <div class="loading-progress"><div class="loading-progress-bar"></div></div>
             <p class="loading-location">Loading <span id="loading-location-name">Street View</span>...</p>
         </div>
         
-        <!-- Transition overlay for smooth fades with travel animation -->
-        <div id="transition-overlay">
-            <div class="travel-animation">
-                <div class="travel-car">🚗</div>
-                <div class="travel-road">
-                    <div class="road-dash"></div>
-                    <div class="road-dash"></div>
-                    <div class="road-dash"></div>
-                    <div class="road-dash"></div>
-                    <div class="road-dash"></div>
-                </div>
-                <div class="travel-info">
-                    <div class="travel-from-to">
-                        <span id="travel-from">Location A</span> → <span id="travel-to">Location B</span>
-                    </div>
-                    <div class="travel-distance" id="travel-distance">25 miles</div>
-                    <div class="travel-time" id="travel-time">~35 min drive</div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Google Street View container -->
+        <div id="transition-overlay"></div>
+        <div id="atmosphere-layer" class="time-day"></div>
+        <div id="mist-layer"></div>
         <div id="street-view-container"></div>
-        
-        <!-- Rain overlay -->
         <canvas id="rain-canvas"></canvas>
         
-        <!-- Error message -->
-        <div id="error-message">
-            <h3>📍 No Street View Here</h3>
-            <p>Trying nearby location...</p>
-        </div>
-        
-        <!-- Coverage status -->
+        <div id="error-message"><h3>📍 No Street View Here</h3><p>Trying nearby location...</p></div>
         <div id="coverage-status">⚠️ Limited coverage - showing nearest available view</div>
+        <button id="audio-unlock"><span>🔊</span><span>Click to Enable Audio</span></button>
         
-        <!-- Location selector dropdown -->
         <div id="location-selector">
             <select id="location-dropdown" aria-label="Select location">
                 <option value="" disabled>🗺️ Choose a destination...</option>
             </select>
         </div>
         
-        <!-- Tour selector -->
-        <div id="tour-selector">
-            <select id="tour-dropdown" aria-label="Select tour">
-                <option value="">🎯 Guided Tours</option>
-            </select>
-        </div>
-        
-        <!-- Tour panel -->
-        <div id="tour-panel">
-            <div class="tour-header">
-                <div class="tour-title">
-                    <span>🗺️</span>
-                    <span id="active-tour-name">Tour Name</span>
-                </div>
-                <button class="tour-close" id="tour-close" aria-label="Close tour">✕</button>
-            </div>
-            <div class="tour-progress">
-                <div class="tour-progress-bar">
-                    <div class="tour-progress-fill" id="tour-progress-fill" style="width: 0%"></div>
-                </div>
-                <div class="tour-progress-text">
-                    <span id="tour-stop-text">Stop 1 of 5</span>
-                    <span id="tour-time-remaining">~45 min remaining</span>
-                </div>
-            </div>
-            <div class="tour-stops" id="tour-stops"></div>
-            <div class="tour-controls">
-                <button class="tour-btn" id="tour-prev">⬅️ Previous</button>
-                <button class="tour-btn primary" id="tour-play">
-                    <span id="tour-play-icon">▶️</span>
-                    <span id="tour-play-text">Start</span>
-                </button>
-                <button class="tour-btn" id="tour-next">Next ➡️</button>
-            </div>
-        </div>
-        
-        <!-- Info panel -->
         <div id="info">
-            <div class="info-brand">
-                <span>🌴</span>
-                <span>Big Island VR</span>
-            </div>
+            <div class="info-brand"><span>🌴</span><span>Big Island VR</span></div>
             <h2 id="location-name">Loading...</h2>
-            <p id="location-hawaiian"></p>
             <p id="location-desc">Real 360° Street View from Hawaiʻi</p>
-            
-            <button class="info-toggle" id="info-toggle">
-                <span class="info-toggle-icon">▼</span>
-                <span>More Info</span>
-            </button>
-            
-            <div class="info-details" id="info-details">
-                <div class="info-card" id="history-card">
-                    <div class="info-card-header">
-                        <span>📜</span>
-                        <span>History & Culture</span>
-                    </div>
-                    <div class="info-card-content" id="location-history"></div>
-                </div>
-                
-                <div class="info-card" id="things-card">
-                    <div class="info-card-header">
-                        <span>👀</span>
-                        <span>Things to See</span>
-                    </div>
-                    <div class="info-card-content" id="location-things"></div>
-                </div>
-            </div>
-            
             <div class="location-dots" id="location-dots"></div>
-            <div id="location-counter">Location 1 of 32</div>
+            <div id="location-counter">Location 1 of 15</div>
         </div>
         
-        <!-- Mini map with controls -->
         <div id="mini-map-container">
-            <div class="mini-map-controls">
-                <button class="map-type-btn active" id="map-terrain" title="Terrain view">🗻</button>
-                <button class="map-type-btn" id="map-satellite" title="Satellite view">🛰️</button>
-            </div>
             <div id="mini-map"></div>
             <div class="mini-map-label">Click to teleport</div>
         </div>
         
-        <!-- Effects panel -->
         <div id="effects">
-            <div class="effects-header">
-                <span>🎛️</span>
-                <span>Ambient Effects</span>
+            <div class="effects-header"><span>🎛️</span><span>Ambient Effects</span></div>
+            
+            <div class="effects-section">
+                <div class="section-title">🔊 Ambient Sounds</div>
+                <div class="effect-row"><span class="effect-label"><span class="effect-icon">🌊</span><span>Ocean</span></span><div class="toggle-switch on" data-effect="ocean" role="switch" aria-checked="true" tabindex="0"></div></div>
+                <div class="effect-row"><span class="effect-label"><span class="effect-icon">🐦</span><span>Birds</span></span><div class="toggle-switch on" data-effect="birds" role="switch" aria-checked="true" tabindex="0"></div></div>
+                <div class="effect-row"><span class="effect-label"><span class="effect-icon">💨</span><span>Wind</span></span><div class="toggle-switch" data-effect="wind" role="switch" aria-checked="false" tabindex="0"></div></div>
+                <div class="effect-row"><span class="effect-label"><span class="effect-icon">🌋</span><span>Volcanic</span></span><div class="toggle-switch" data-effect="volcanic" role="switch" aria-checked="false" tabindex="0"></div></div>
             </div>
             
-            <div class="effect-row">
-                <span class="effect-label">
-                    <span class="effect-icon">🌧️</span>
-                    <span>Rain</span>
-                </span>
-                <div class="toggle-switch" data-effect="rain" role="switch" aria-checked="false" tabindex="0"></div>
+            <div class="effects-section">
+                <div class="section-title">🌦️ Weather</div>
+                <div class="slider-row">
+                    <div class="slider-label"><span>🌧️ Rain Intensity</span><span class="slider-value" id="rain-value">0%</span></div>
+                    <input type="range" class="effect-slider" id="rain-slider" min="0" max="100" value="0" aria-label="Rain intensity">
+                </div>
+                <div class="slider-row">
+                    <div class="slider-label"><span>💨 Wind Strength</span><span class="slider-value" id="wind-value">20%</span></div>
+                    <input type="range" class="effect-slider" id="wind-slider" min="0" max="100" value="20" aria-label="Wind strength">
+                </div>
+                <div class="effect-row"><span class="effect-label"><span class="effect-icon">🌫️</span><span>Mist/Fog</span></span><div class="toggle-switch" data-effect="mist" role="switch" aria-checked="false" tabindex="0"></div></div>
             </div>
             
-            <div class="effect-row">
-                <span class="effect-label">
-                    <span class="effect-icon">💨</span>
-                    <span>Wind</span>
-                </span>
-                <div class="toggle-switch" data-effect="wind" role="switch" aria-checked="false" tabindex="0"></div>
-            </div>
-            
-            <div class="effect-row">
-                <span class="effect-label">
-                    <span class="effect-icon">🐦</span>
-                    <span>Birds</span>
-                </span>
-                <div class="toggle-switch on" data-effect="birds" role="switch" aria-checked="true" tabindex="0"></div>
-            </div>
-            
-            <div class="effect-row">
-                <span class="effect-label">
-                    <span class="effect-icon">🌊</span>
-                    <span>Ocean</span>
-                </span>
-                <div class="toggle-switch on" data-effect="ocean" role="switch" aria-checked="true" tabindex="0"></div>
+            <div class="effects-section">
+                <div class="section-title">☀️ Time of Day</div>
+                <div class="time-selector">
+                    <button class="time-btn" data-time="dawn" aria-label="Dawn"><span class="time-btn-icon">🌅</span>Dawn</button>
+                    <button class="time-btn active" data-time="day" aria-label="Day"><span class="time-btn-icon">☀️</span>Day</button>
+                    <button class="time-btn" data-time="dusk" aria-label="Dusk"><span class="time-btn-icon">🌆</span>Dusk</button>
+                    <button class="time-btn" data-time="night" aria-label="Night"><span class="time-btn-icon">🌙</span>Night</button>
+                </div>
             </div>
             
             <div class="volume-section">
-                <div class="volume-label">
-                    <span>🔊 Master Volume</span>
-                    <span id="volume-value">80%</span>
-                </div>
+                <div class="volume-label"><span>🔊 Master Volume</span><span id="volume-value">80%</span></div>
                 <input type="range" class="volume-slider" id="volume-slider" min="0" max="100" value="80" aria-label="Master volume">
             </div>
         </div>
         
-        <!-- Controls -->
         <div id="controls">
-            <button class="control-btn" id="prev-btn" aria-label="Previous location">
-                <span>⬅️</span>
-                <span>Previous</span>
-            </button>
-            <button class="control-btn" id="play-btn" aria-label="Toggle auto-play">
-                <span id="play-icon">▶️</span>
-                <span id="play-text">Auto Tour</span>
-            </button>
-            <button class="control-btn" id="next-btn" aria-label="Next location">
-                <span>Next</span>
-                <span>➡️</span>
-            </button>
+            <button class="control-btn" id="prev-btn" aria-label="Previous location"><span>⬅️</span><span>Previous</span></button>
+            <button class="control-btn" id="play-btn" aria-label="Toggle auto-play"><span id="play-icon">▶️</span><span id="play-text">Auto Tour</span></button>
+            <button class="control-btn" id="next-btn" aria-label="Next location"><span>Next</span><span>➡️</span></button>
         </div>
         
-        <!-- Fullscreen Button -->
-        <button id="fullscreen-btn" aria-label="Toggle fullscreen">
-            <span>⛶</span>
-            <span>Fullscreen</span>
-        </button>
+        <button id="fullscreen-btn" aria-label="Toggle fullscreen"><span>⛶</span><span>Fullscreen</span></button>
         
-        <!-- Keyboard hints -->
-        <div id="hints">
-            <kbd>←</kbd> <kbd>→</kbd> Navigate &nbsp;·&nbsp; 
-            <kbd>Space</kbd> Auto-tour &nbsp;·&nbsp;
-            <kbd>T</kbd> Tours &nbsp;·&nbsp;
-            Drag to look around
-        </div>
+        <div id="hints"><kbd>←</kbd> <kbd>→</kbd> Navigate · <kbd>Space</kbd> Auto-tour · Drag to look around</div>
     </div>
     
-    <!-- Google Maps JavaScript API -->
     <script>
-        // =====================================================
-        // BIG ISLAND VR - REAL STREET VIEW PANORAMAS
-        // Enhanced with Tours, Info Cards, and Polish
-        // =====================================================
-        
         const API_KEY = 'AIzaSyBmSDHrsQunVjxhZ4UHQ0asdUY6vZVFszY';
+        const CONFIG = { transitionDuration: 800, autoPlayInterval: 12000, searchRadius: 500, audioCrossfadeDuration: 2000 };
         
-        const CONFIG = {
-            transitionDuration: 1200,
-            autoPlayInterval: 15000,
-            tourAutoPlayInterval: 12000,
-            searchRadius: 500,
-            showTravelAnimation: true
+        // CC0/Free Audio Sources from freesound.org
+        const AUDIO_URLS = {
+            ocean: 'https://cdn.freesound.org/previews/531/531015_6746984-lq.mp3',
+            birds: 'https://cdn.freesound.org/previews/352/352515_4164823-lq.mp3',
+            wind: 'https://cdn.freesound.org/previews/217/217506_2493965-lq.mp3',
+            rain: 'https://cdn.freesound.org/previews/104/104390_866265-lq.mp3',
+            waterfall: 'https://cdn.freesound.org/previews/365/365915_6142149-lq.mp3',
+            volcanic: 'https://cdn.freesound.org/previews/198/198879_1616430-lq.mp3'
         };
         
-        // =====================================================
-        // 32 REAL BIG ISLAND LOCATIONS WITH RICH INFO
-        // =====================================================
-        
         const LOCATIONS = [
-            // ===== HILO AREA (1-5) =====
-            {
-                id: 1,
-                name: "Hilo Bayfront",
-                hawaiian: "Kūkuihaele",
-                desc: "Downtown Hilo along Kamehameha Avenue with views of Hilo Bay",
-                region: "Hilo",
-                lat: 19.7297,
-                lng: -155.0900,
-                heading: 45,
-                pitch: 0,
-                audio: { ocean: 0.8, birds: 0.6 },
-                history: "Hilo is one of Hawaii's oldest towns, established in the 1820s by missionaries. The bayfront has been rebuilt twice after devastating tsunamis in 1946 and 1960.",
-                things: ["Hilo Farmers Market (Wed & Sat)", "Historic buildings from the 1900s", "Views of Mauna Kea on clear days", "Coconut Island (Mokuola) across the bay"]
-            },
-            {
-                id: 2,
-                name: "Banyan Drive",
-                hawaiian: "Ke ala niu",
-                desc: "Historic avenue lined with banyan trees planted by celebrities",
-                region: "Hilo",
-                lat: 19.7235,
-                lng: -155.0772,
-                heading: 180,
-                pitch: 0,
-                audio: { ocean: 0.5, birds: 0.8 },
-                history: "Starting in 1933, visiting dignitaries planted these banyan trees. Plaques identify trees planted by Babe Ruth, Amelia Earhart, King George V, and more.",
-                things: ["Celebrity banyan trees with plaques", "Queen Liliʻuokalani Gardens nearby", "Views of Hilo Bay", "Historic hotels"]
-            },
-            {
-                id: 3,
-                name: "Rainbow Falls",
-                hawaiian: "Waiānuenue — 'rainbow water'",
-                desc: "Iconic 80-foot waterfall in Wailuku River State Park",
-                region: "Hilo",
-                lat: 19.7189,
-                lng: -155.1065,
-                heading: 270,
-                pitch: -10,
-                audio: { birds: 0.9, wind: 0.3 },
-                history: "According to Hawaiian legend, this is the home of Hina, goddess of the moon. The cave behind the falls was said to be her dwelling place.",
-                things: ["Rainbow viewing in morning mist", "Massive banyan tree at overlook", "Short walk to Boiling Pots upstream", "Free parking and easy access"]
-            },
-            {
-                id: 4,
-                name: "Hilo Farmers Market",
-                hawaiian: "Mākeke",
-                desc: "Vibrant outdoor market in downtown Hilo with local produce",
-                region: "Hilo",
-                lat: 19.7244,
-                lng: -155.0896,
-                heading: 90,
-                pitch: 0,
-                audio: { birds: 0.4 },
-                history: "One of the best farmers markets in Hawaii, open since 1988. Features over 200 vendors on big market days.",
-                things: ["Fresh tropical fruits and flowers", "Local crafts and souvenirs", "Food vendors with plate lunches", "Best on Wednesday and Saturday"]
-            },
-            {
-                id: 5,
-                name: "Pepeʻekeo Scenic Drive",
-                hawaiian: "Old Māmalahoa Highway",
-                desc: "4-mile scenic detour through a lush tropical rainforest",
-                region: "Hilo",
-                lat: 19.8333,
-                lng: -155.1056,
-                heading: 0,
-                pitch: 0,
-                audio: { birds: 0.9, rain: 0.2 },
-                history: "This was once the main highway connecting Hilo to Hamakua. The narrow road winds past one-lane bridges and tropical vegetation.",
-                things: ["Hawaii Tropical Botanical Garden", "One-lane bridges", "Onomea Bay lookout", "Lush ferns and flowering plants"]
-            },
-            
-            // ===== HAMAKUA COAST (6-8) =====
-            {
-                id: 6,
-                name: "Akaka Falls State Park",
-                hawaiian: "ʻAkaka — 'split, crack'",
-                desc: "442-foot waterfall, one of the tallest in Hawaii",
-                region: "Hamakua",
-                lat: 19.8536,
-                lng: -155.1528,
-                heading: 180,
-                pitch: 0,
-                audio: { birds: 0.8, wind: 0.4 },
-                history: "The park was established in 1968. The name may refer to the vertical split in the cliff or to the legendary chief Akaka.",
-                things: ["442-foot main falls", "Kahūnā Falls (100 ft)", "0.4-mile loop trail", "Lush bamboo forest"]
-            },
-            {
-                id: 7,
-                name: "Waipiʻo Valley Lookout",
-                hawaiian: "Waipiʻo — 'curved water'",
-                desc: "Dramatic overlook of the Valley of the Kings",
-                region: "Hamakua",
-                lat: 20.1197,
-                lng: -155.5878,
-                heading: 270,
-                pitch: -5,
-                audio: { wind: 0.6, birds: 0.5 },
-                history: "Sacred valley that was home to Hawaiian ali'i (royalty). Kamehameha I spent his youth here. Once home to 10,000 people, now fewer than 100.",
-                things: ["1,400-foot cliff views", "Hiʻilawe Falls (1,450 ft)", "Black sand beach below", "Taro fields in the valley"]
-            },
-            {
-                id: 8,
-                name: "Honoka'a Town",
-                hawaiian: "Honoka'a — 'rolling bay'",
-                desc: "Historic sugar plantation town on the Hamakua Coast",
-                region: "Hamakua",
-                lat: 20.0789,
-                lng: -155.4669,
-                heading: 90,
-                pitch: 0,
-                audio: { birds: 0.5 },
-                history: "Founded in the 1880s as a sugar town, Honoka'a was once the third-largest city in Hawaii. The sugar industry closed in 1994.",
-                things: ["Historic 1930s theater (The People's Theatre)", "Antique shops and galleries", "Tex Drive-In malasadas", "Western Week rodeo (May)"]
-            },
-            
-            // ===== VOLCANO AREA (9-13) =====
-            {
-                id: 9,
-                name: "Volcano Village",
-                hawaiian: "Keokea",
-                desc: "Misty rainforest village at 4,000 feet near Kīlauea",
-                region: "Volcano",
-                lat: 19.4329,
-                lng: -155.2339,
-                heading: 90,
-                pitch: 0,
-                audio: { birds: 0.8, rain: 0.3, wind: 0.4 },
-                history: "This arts community developed alongside Volcano House hotel and Hawaii Volcanoes National Park. Many residents are artists drawn to the mystical atmosphere.",
-                things: ["Local art galleries", "Volcano Garden Arts", "Thai Thai Restaurant", "Cool mountain climate"]
-            },
-            {
-                id: 10,
-                name: "Kilauea Visitor Center",
-                hawaiian: "Kīlauea — 'spewing, much spreading'",
-                desc: "Gateway to Hawaiʻi Volcanoes National Park",
-                region: "Volcano",
-                lat: 19.4313,
-                lng: -155.2570,
-                heading: 180,
-                pitch: 0,
-                audio: { wind: 0.5, birds: 0.3 },
-                history: "The park was established in 1916, making it one of the oldest national parks. Kīlauea is one of the world's most active volcanoes.",
-                things: ["Park ranger programs", "Volcano House restaurant", "Museum exhibits", "Trail information"]
-            },
-            {
-                id: 11,
-                name: "Crater Rim Drive",
-                hawaiian: "Kīlauea Caldera",
-                desc: "Scenic drive around Kīlauea's summit caldera",
-                region: "Volcano",
-                lat: 19.4078,
-                lng: -155.2672,
-                heading: 45,
-                pitch: 0,
-                audio: { wind: 0.7 },
-                history: "The caldera formed over centuries of eruptions and collapses. Halemaʻumaʻu crater within is the legendary home of Pele, goddess of fire.",
-                things: ["Steam vents", "Sulfur banks (Haʻakulamanu)", "Jaggar Museum viewpoint", "Volcanic fumes (check air quality)"]
-            },
-            {
-                id: 12,
-                name: "Chain of Craters Road",
-                hawaiian: "Ke ala pele",
-                desc: "19-mile drive through lava fields to the coast",
-                region: "Volcano",
-                lat: 19.3053,
-                lng: -155.1014,
-                heading: 180,
-                pitch: 0,
-                audio: { wind: 0.7, ocean: 0.4 },
-                history: "This road descends 3,700 feet through multiple lava flows. The coastal section was buried by lava in the 1970s-90s.",
-                things: ["Puʻu Loa petroglyphs", "Hōlei Sea Arch", "Active lava viewing (when flowing)", "Stark volcanic landscapes"]
-            },
-            {
-                id: 13,
-                name: "Thurston Lava Tube",
-                hawaiian: "Nāhuku — 'protuberances'",
-                desc: "500-year-old lava tube through ohia forest",
-                region: "Volcano",
-                lat: 19.4142,
-                lng: -155.2391,
-                heading: 0,
-                pitch: 0,
-                audio: { birds: 0.9 },
-                history: "Discovered in 1913 by Lorrin Thurston, this tube formed when the outer surface of a lava flow cooled while molten rock continued flowing inside.",
-                things: ["Lit 600-foot tube walk", "Native ohia and fern forest", "Extended unlit tube section", "Native bird sounds"]
-            },
-            
-            // ===== KAʻŪ DISTRICT (14-16) =====
-            {
-                id: 14,
-                name: "Punaluʻu Black Sand Beach",
-                hawaiian: "Punaluʻu — 'coral diving'",
-                desc: "Iconic black sand beach famous for green sea turtles",
-                region: "Ka'ū",
-                lat: 19.1361,
-                lng: -155.5042,
-                heading: 180,
-                pitch: 0,
-                audio: { ocean: 0.9, birds: 0.3 },
-                history: "The black sand is created by volcanic basalt fragmented by ocean waves. Hawaiian green sea turtles (honu) bask on the beach daily.",
-                things: ["Endangered green sea turtles", "Black sand (don't take it!)", "Coconut palm grove", "Swimming (strong currents)"]
-            },
-            {
-                id: 15,
-                name: "South Point (Ka Lae)",
-                hawaiian: "Ka Lae — 'the point'",
-                desc: "Southernmost point in the United States",
-                region: "Ka'ū",
-                lat: 18.9108,
-                lng: -155.6822,
-                heading: 180,
-                pitch: 0,
-                audio: { wind: 1.0, ocean: 0.8 },
-                history: "First Polynesian landing site in Hawaii around 400 AD. Ancient fishing canoe mooring holes still visible in the rocks.",
-                things: ["Southernmost point in USA", "Cliff jumping spot", "Green Sand Beach nearby (2.5 mi hike)", "Constant trade winds"]
-            },
-            {
-                id: 16,
-                name: "Nāʻālehu Town",
-                hawaiian: "Nāʻālehu — 'the volcanic ashes'",
-                desc: "Southernmost town in the United States",
-                region: "Ka'ū",
-                lat: 19.0642,
-                lng: -155.5822,
-                heading: 90,
-                pitch: 0,
-                audio: { birds: 0.5 },
-                history: "Historic sugar town that's reinventing itself. Home to the famous Punalu'u Bake Shop known for its Hawaiian sweetbread.",
-                things: ["Punalu'u Bake Shop", "Mark Twain's monkeypod tree", "Southernmost bakery in USA", "Gateway to South Point"]
-            },
-            
-            // ===== KONA COAST (17-22) =====
-            {
-                id: 17,
-                name: "Aliʻi Drive, Kailua-Kona",
-                hawaiian: "Ke alanui o nā aliʻi — 'road of the chiefs'",
-                desc: "Historic oceanfront street in downtown Kona",
-                region: "Kona",
-                lat: 19.6400,
-                lng: -155.9969,
-                heading: 270,
-                pitch: 0,
-                audio: { ocean: 0.9, birds: 0.4 },
-                history: "Named for the Hawaiian royalty who lived here. King Kamehameha I spent his final years nearby at Kamakahonu.",
-                things: ["Huliheʻe Palace", "Mokuaikaua Church (Hawaii's oldest)", "Sea wall at sunset", "Shops and restaurants"]
-            },
-            {
-                id: 18,
-                name: "Kailua Pier",
-                hawaiian: "Kailua — 'two seas'",
-                desc: "Heart of Kona — finish line of IRONMAN World Championship",
-                region: "Kona",
-                lat: 19.6392,
-                lng: -155.9987,
-                heading: 270,
-                pitch: 0,
-                audio: { ocean: 1.0 },
-                history: "The pier has been central to Kona since ancient times. Today it's famous as the start/finish of the IRONMAN World Championship held every October.",
-                things: ["IRONMAN finish line", "Sport fishing charters", "Sunset cruises", "Snorkeling at King Kam beach"]
-            },
-            {
-                id: 19,
-                name: "Keauhou Bay",
-                hawaiian: "Keauhou — 'new era'",
-                desc: "Birthplace of Kamehameha III and great snorkeling spot",
-                region: "Kona",
-                lat: 19.5611,
-                lng: -155.9647,
-                heading: 270,
-                pitch: 0,
-                audio: { ocean: 0.8, birds: 0.3 },
-                history: "Kamehameha III was born here in 1813 and revived from apparent death by a kahuna (priest), thus the name 'new era.' Heiau ruins dot the shoreline.",
-                things: ["Manta ray night snorkeling", "Kayak and SUP rentals", "Heʻeia and Kapuanoni Heiau", "Fair Wind cruises to Kealakekua"]
-            },
-            {
-                id: 20,
-                name: "Kealakekua Bay",
-                hawaiian: "Kealakekua — 'pathway of the god'",
-                desc: "Marine sanctuary where Captain Cook was killed",
-                region: "Kona",
-                lat: 19.4778,
-                lng: -155.9333,
-                heading: 270,
-                pitch: 0,
-                audio: { ocean: 0.7, birds: 0.5 },
-                history: "Captain James Cook was killed here on February 14, 1779, in a confrontation with Hawaiians. A white monument marks the spot.",
-                things: ["Captain Cook Monument", "Best snorkeling on Big Island", "Spinner dolphins", "Kayak access only (no road)"]
-            },
-            {
-                id: 21,
-                name: "Puʻuhonua o Hōnaunau",
-                hawaiian: "Place of Refuge — 'puʻuhonua'",
-                desc: "Ancient Hawaiian sanctuary and sacred site",
-                region: "Kona",
-                lat: 19.4225,
-                lng: -155.9108,
-                heading: 180,
-                pitch: 0,
-                audio: { ocean: 0.6, birds: 0.4 },
-                history: "Defeated warriors, kapu breakers, and non-combatants could find sanctuary here. After performing rituals, they could return home safely.",
-                things: ["Restored temple (heiau)", "Royal fishponds", "Carved kiʻi (god images)", "Hale o Keawe mausoleum"]
-            },
-            {
-                id: 22,
-                name: "Hapuna Beach",
-                hawaiian: "Hapuna — 'spring of life'",
-                desc: "Rated best beach in the US multiple times",
-                region: "Kona",
-                lat: 19.9925,
-                lng: -155.8275,
-                heading: 270,
-                pitch: 0,
-                audio: { ocean: 1.0 },
-                history: "This white sand beach is one of the largest on the Big Island. The sand comes from parrotfish that eat coral and excrete sand.",
-                things: ["Half-mile white sand beach", "Excellent swimming and bodyboarding", "Full facilities and parking ($10)", "Westin Hapuna Beach Resort"]
-            },
-            
-            // ===== KOHALA COAST (23-26) =====
-            {
-                id: 23,
-                name: "Mauna Lani Resort",
-                hawaiian: "Mauna Lani — 'mountain reaching heaven'",
-                desc: "Luxury resort area with ancient fishponds and petroglyphs",
-                region: "Kohala",
-                lat: 19.9283,
-                lng: -155.8711,
-                heading: 0,
-                pitch: 0,
-                audio: { ocean: 0.5, birds: 0.4 },
-                history: "The Kalāhuipuaʻa fishponds here are over 800 years old. Ancient Hawaiians stocked them with fish for the aliʻi.",
-                things: ["Ancient fishponds still in use", "Puakō Petroglyph Archaeological Preserve", "Two championship golf courses", "Luxury Auberge resort"]
-            },
-            {
-                id: 24,
-                name: "Waikoloa Village",
-                hawaiian: "Waikoloa — 'water of ducks'",
-                desc: "Master-planned resort community on the lava fields",
-                region: "Kohala",
-                lat: 19.9142,
-                lng: -155.7906,
-                heading: 90,
-                pitch: 0,
-                audio: { birds: 0.4 },
-                history: "Built starting in the 1970s on what was barren lava. The King's Trail (Ala Mauka-Makai) petroglyphs are preserved nearby.",
-                things: ["Kings' Shops and Queens' Marketplace", "Petroglyph trail at Kings' Shops", "Dolphin Quest at Hilton", "Anaehoomalu Bay (A-Bay)"]
-            },
-            {
-                id: 25,
-                name: "Hāwī Town",
-                hawaiian: "Hāwī — 'bend, curve'",
-                desc: "Charming art galleries and shops in North Kohala",
-                region: "Kohala",
-                lat: 20.2411,
-                lng: -155.8339,
-                heading: 180,
-                pitch: 0,
-                audio: { birds: 0.5, wind: 0.4 },
-                history: "Once a thriving sugar town, Hawi reinvented itself as an arts community after the plantation closed in 1975. Original wooden buildings remain.",
-                things: ["Bamboo Restaurant (famous for local cuisine)", "Art galleries and boutiques", "Gateway to Pololu Valley", "Original King Kamehameha statue"]
-            },
-            {
-                id: 26,
-                name: "Pololu Valley Lookout",
-                hawaiian: "Pololu — 'long spear'",
-                desc: "Dramatic viewpoint of remote windward valley",
-                region: "Kohala",
-                lat: 20.2058,
-                lng: -155.7361,
-                heading: 0,
-                pitch: -5,
-                audio: { wind: 0.8, ocean: 0.4 },
-                history: "The end of the road in North Kohala. Like Waipiʻo, this was once a thriving taro-growing valley. A steep trail leads to the black sand beach.",
-                things: ["Dramatic cliff viewpoint", "Steep trail to beach (0.5 mi)", "Black sand beach", "Wild and rugged scenery"]
-            },
-            
-            // ===== WAIMEA & SADDLE (27-29) =====
-            {
-                id: 27,
-                name: "Waimea Town Center",
-                hawaiian: "Waimea/Kamuela — 'reddish water'",
-                desc: "Paniolo (Hawaiian cowboy) country at 2,700 feet",
-                region: "Waimea",
-                lat: 20.0234,
-                lng: -155.6659,
-                heading: 0,
-                pitch: 0,
-                audio: { wind: 0.5, birds: 0.6 },
-                history: "Home to Parker Ranch, one of the largest cattle ranches in the US (130,000 acres). John Parker started it in 1847. The cowboy tradition continues today.",
-                things: ["Parker Ranch Store & Museum", "Merriman's Restaurant (farm-to-table pioneer)", "Waimea Cherry Blossom Festival (Feb)", "Cool upcountry climate"]
-            },
-            {
-                id: 28,
-                name: "Mauna Kea Access Road",
-                hawaiian: "Mauna a Wākea — 'mountain of Wākea'",
-                desc: "Road to the summit observatories at 13,796 feet",
-                region: "Saddle",
-                lat: 19.7588,
-                lng: -155.4569,
-                heading: 0,
-                pitch: 10,
-                audio: { wind: 0.9 },
-                history: "Mauna Kea is sacred to Hawaiians — the realm of the snow goddess Poliʻahu. World-class astronomical observatories operate at the summit.",
-                things: ["Onizuka Visitor Center (9,200 ft)", "Summit observatories (4WD required)", "Stargazing programs", "Snow in winter!"]
-            },
-            {
-                id: 29,
-                name: "Saddle Road Viewpoint",
-                hawaiian: "Māmalahoa Highway",
-                desc: "Between Mauna Kea and Mauna Loa at 6,500 feet",
-                region: "Saddle",
-                lat: 19.6833,
-                lng: -155.4667,
-                heading: 270,
-                pitch: 0,
-                audio: { wind: 0.8 },
-                history: "Saddle Road connects Hilo to Kona between Hawaii's two massive volcanoes. Once notorious, it was completely rebuilt and improved in 2013.",
-                things: ["Views of both mountains", "Kipuka (forest island) access", "Hunting area (wild pigs, game birds)", "Military base (Pohakuloa)"]
-            },
-            
-            // ===== PUNA DISTRICT (30-32) =====
-            {
-                id: 30,
-                name: "Pāhoa Village",
-                hawaiian: "Pāhoa — 'dagger'",
-                desc: "Funky town with historic wooden boardwalk",
-                region: "Puna",
-                lat: 19.4959,
-                lng: -154.9437,
-                heading: 180,
-                pitch: 0,
-                audio: { birds: 0.6 },
-                history: "Old plantation town with wooden storefronts from the 1900s. Known for its alternative, artistic community. Barely spared by 2018 lava flows.",
-                things: ["Historic wooden boardwalk", "Kalapana Cultural Center", "Gateway to Puna coast", "Alternative shops and cafes"]
-            },
-            {
-                id: 31,
-                name: "Kapoho Tide Pools",
-                hawaiian: "Wai'ōpae — 'shrimp water'",
-                desc: "Volcanic tide pools formed by 2018 lava (now covered)",
-                region: "Puna",
-                lat: 19.4969,
-                lng: -154.8172,
-                heading: 90,
-                pitch: 0,
-                audio: { ocean: 0.7 },
-                history: "The famous tide pools were tragically buried by lava in May 2018. New land formed where homes and natural pools once existed.",
-                things: ["New lava land from 2018", "Changed coastline", "Isaac Hale Beach Park nearby", "Pohoiki boat ramp"]
-            },
-            {
-                id: 32,
-                name: "Keaʻau Town",
-                hawaiian: "Keaʻau — 'the current'",
-                desc: "Gateway town to the Puna district",
-                region: "Puna",
-                lat: 19.6222,
-                lng: -155.0386,
-                heading: 0,
-                pitch: 0,
-                audio: { birds: 0.7 },
-                history: "Small town at the junction of Highway 11 and the Keaʻau-Pāhoa Road. Main shopping area for Puna residents.",
-                things: ["Keaʻau Shopping Center", "Gateway to lower Puna", "Local plate lunch shops", "Affordable housing area"]
-            }
+            { id: 1, name: "Hilo Bayfront", desc: "Downtown Hilo along Kamehameha Avenue with views of Hilo Bay", region: "Hilo", lat: 19.7297, lng: -155.0900, heading: 45, pitch: 0, audio: { ocean: 0.7, birds: 0.5, wind: 0.2 }, atmosphere: { mist: false, volcanic: false } },
+            { id: 2, name: "Banyan Drive", desc: "Historic avenue lined with banyan trees planted by celebrities", region: "Hilo", lat: 19.7235, lng: -155.0772, heading: 180, pitch: 0, audio: { ocean: 0.4, birds: 0.8, wind: 0.1 }, atmosphere: { mist: false, volcanic: false } },
+            { id: 3, name: "Rainbow Falls Viewpoint", desc: "Waiānuenue — iconic 80-foot waterfall just outside Hilo", region: "Hilo", lat: 19.7189, lng: -155.1065, heading: 270, pitch: -10, audio: { waterfall: 0.8, birds: 0.6, wind: 0.2 }, atmosphere: { mist: true, volcanic: false } },
+            { id: 4, name: "Hilo Farmers Market", desc: "Vibrant outdoor market in downtown Hilo", region: "Hilo", lat: 19.7244, lng: -155.0896, heading: 90, pitch: 0, audio: { birds: 0.3, wind: 0.1 }, atmosphere: { mist: false, volcanic: false } },
+            { id: 5, name: "Keaʻau Town Center", desc: "Small town gateway to the Puna district", region: "Puna", lat: 19.6222, lng: -155.0386, heading: 0, pitch: 0, audio: { birds: 0.6, wind: 0.2 }, atmosphere: { mist: false, volcanic: false } },
+            { id: 6, name: "Pāhoa Village", desc: "Funky town with historic wooden boardwalk", region: "Puna", lat: 19.4959, lng: -154.9437, heading: 180, pitch: 0, audio: { birds: 0.5, wind: 0.2 }, atmosphere: { mist: false, volcanic: false } },
+            { id: 7, name: "Volcano Village", desc: "Misty rainforest village near Kīlauea", region: "Volcano", lat: 19.4329, lng: -155.2339, heading: 90, pitch: 0, audio: { birds: 0.7, wind: 0.4, rain: 0.3 }, atmosphere: { mist: true, volcanic: false }, defaultRain: 20 },
+            { id: 8, name: "Hawaiʻi Volcanoes National Park", desc: "Crater Rim Drive with views of Kīlauea Caldera", region: "Volcano", lat: 19.4313, lng: -155.2570, heading: 180, pitch: 0, audio: { wind: 0.6, volcanic: 0.5 }, atmosphere: { mist: true, volcanic: true } },
+            { id: 9, name: "Chain of Craters Road", desc: "Scenic drive through lava fields to the coast", region: "Volcano", lat: 19.3053, lng: -155.1014, heading: 180, pitch: 0, audio: { wind: 0.7, ocean: 0.3, volcanic: 0.2 }, atmosphere: { mist: false, volcanic: true } },
+            { id: 10, name: "Aliʻi Drive, Kailua-Kona", desc: "Historic oceanfront street in downtown Kona", region: "Kona", lat: 19.6400, lng: -155.9969, heading: 270, pitch: 0, audio: { ocean: 0.9, birds: 0.3, wind: 0.2 }, atmosphere: { mist: false, volcanic: false } },
+            { id: 11, name: "Kailua Pier", desc: "Heart of Kona — departure point for ocean adventures", region: "Kona", lat: 19.6392, lng: -155.9987, heading: 270, pitch: 0, audio: { ocean: 1.0, wind: 0.3 }, atmosphere: { mist: false, volcanic: false } },
+            { id: 12, name: "Keauhou Bay", desc: "Beautiful bay south of Kona, great for snorkeling", region: "Kona", lat: 19.5611, lng: -155.9647, heading: 270, pitch: 0, audio: { ocean: 0.8, birds: 0.2, wind: 0.2 }, atmosphere: { mist: false, volcanic: false } },
+            { id: 13, name: "Waimea Town Center", desc: "Paniolo (Hawaiian cowboy) country in the highlands", region: "Waimea", lat: 20.0234, lng: -155.6659, heading: 0, pitch: 0, audio: { wind: 0.5, birds: 0.5 }, atmosphere: { mist: false, volcanic: false } },
+            { id: 14, name: "Hāwī Town", desc: "Charming art galleries in North Kohala", region: "Kohala", lat: 20.2411, lng: -155.8339, heading: 180, pitch: 0, audio: { birds: 0.4, wind: 0.5 }, atmosphere: { mist: false, volcanic: false } },
+            { id: 15, name: "Saddle Road Viewpoint", desc: "Between Mauna Kea and Mauna Loa at 6,500 feet", region: "Saddle", lat: 19.6833, lng: -155.4667, heading: 270, pitch: 0, audio: { wind: 0.9 }, atmosphere: { mist: false, volcanic: false } }
         ];
         
         // =====================================================
-        // GUIDED TOURS
+        // AUDIO MANAGER - Web Audio API
         // =====================================================
-        
-        const TOURS = [
-            {
-                id: 'volcano-day',
-                name: 'Volcano Day Trip',
-                emoji: '🌋',
-                description: 'Explore Hawaiʻi Volcanoes National Park',
-                stops: [3, 9, 10, 11, 12, 13], // Rainbow Falls, Volcano Village, HVNP, Crater Rim, Chain of Craters, Thurston
-                duration: '4-5 hours',
-                difficulty: 'Easy'
-            },
-            {
-                id: 'kona-coast',
-                name: 'Kona Coast Explorer',
-                emoji: '🏖️',
-                description: 'Historic Kona and beautiful beaches',
-                stops: [17, 18, 19, 20, 21, 22], // Ali'i Drive through Hapuna
-                duration: '5-6 hours',
-                difficulty: 'Easy'
-            },
-            {
-                id: 'hamakua-heritage',
-                name: 'Hamakua Heritage',
-                emoji: '🌿',
-                description: 'Waterfalls and valleys of the Hamakua Coast',
-                stops: [5, 6, 8, 7], // Pepe'ekeo, Akaka Falls, Honoka'a, Waipi'o
-                duration: '4 hours',
-                difficulty: 'Moderate'
-            },
-            {
-                id: 'kohala-north',
-                name: 'North Kohala Adventure',
-                emoji: '🤠',
-                description: 'Cowboy country and hidden valleys',
-                stops: [27, 25, 26], // Waimea, Hawi, Pololu
-                duration: '3-4 hours',
-                difficulty: 'Moderate'
-            },
-            {
-                id: 'southern-route',
-                name: 'Southern Route',
-                emoji: '🐢',
-                description: 'Ka'ū beaches and the southernmost point',
-                stops: [14, 16, 15], // Punalu'u, Nā'ālehu, South Point
-                duration: '4-5 hours',
-                difficulty: 'Moderate'
-            },
-            {
-                id: 'full-island',
-                name: 'Full Island Circle',
-                emoji: '🗺️',
-                description: 'Complete Big Island experience',
-                stops: [1, 3, 6, 7, 27, 25, 22, 17, 21, 14, 15, 10, 12],
-                duration: '10-12 hours',
-                difficulty: 'Full Day'
+        class AudioManager {
+            constructor() {
+                this.context = null;
+                this.masterGain = null;
+                this.tracks = {};
+                this.buffers = {};
+                this.initialized = false;
+                this.masterVolume = 0.8;
+                this.currentMix = {};
+                this.targetMix = {};
+                this.crossfadeInterval = null;
+                this.windStrength = 0.2;
+                this.rainIntensity = 0;
             }
-        ];
+            
+            async init() {
+                if (this.initialized) return;
+                try {
+                    this.context = new (window.AudioContext || window.webkitAudioContext)();
+                    this.masterGain = this.context.createGain();
+                    this.masterGain.connect(this.context.destination);
+                    this.masterGain.gain.value = this.masterVolume;
+                    await this.loadAllAudio();
+                    this.createTracks();
+                    this.initialized = true;
+                    console.log('🎵 AudioManager initialized');
+                    document.getElementById('audio-unlock').classList.remove('visible');
+                    return true;
+                } catch (error) {
+                    console.error('Failed to initialize audio:', error);
+                    return false;
+                }
+            }
+            
+            async loadAllAudio() {
+                const loadPromises = Object.entries(AUDIO_URLS).map(async ([name, url]) => {
+                    try {
+                        const response = await fetch(url);
+                        const arrayBuffer = await response.arrayBuffer();
+                        this.buffers[name] = await this.context.decodeAudioData(arrayBuffer);
+                        console.log(`✓ Loaded: ${name}`);
+                    } catch (error) {
+                        console.warn(`Failed to load ${name}:`, error);
+                    }
+                });
+                await Promise.all(loadPromises);
+            }
+            
+            createTracks() {
+                for (const name of Object.keys(AUDIO_URLS)) {
+                    if (!this.buffers[name]) continue;
+                    const gainNode = this.context.createGain();
+                    gainNode.connect(this.masterGain);
+                    gainNode.gain.value = 0;
+                    const source = this.context.createBufferSource();
+                    source.buffer = this.buffers[name];
+                    source.loop = true;
+                    source.connect(gainNode);
+                    source.start(0);
+                    this.tracks[name] = { source, gain: gainNode, volume: 0 };
+                    this.currentMix[name] = 0;
+                }
+            }
+            
+            crossfadeTo(targetMix, duration = CONFIG.audioCrossfadeDuration) {
+                if (!this.initialized) return;
+                if (this.crossfadeInterval) clearInterval(this.crossfadeInterval);
+                this.targetMix = { ...targetMix };
+                for (const name of Object.keys(this.tracks)) {
+                    if (this.targetMix[name] === undefined) this.targetMix[name] = 0;
+                }
+                const steps = 30;
+                const stepDuration = duration / steps;
+                let currentStep = 0;
+                this.crossfadeInterval = setInterval(() => {
+                    currentStep++;
+                    const progress = currentStep / steps;
+                    const eased = progress < 0.5 ? 2 * progress * progress : -1 + (4 - 2 * progress) * progress;
+                    for (const [name, track] of Object.entries(this.tracks)) {
+                        const start = this.currentMix[name] || 0;
+                        const end = this.targetMix[name] || 0;
+                        const newVolume = start + (end - start) * eased;
+                        track.gain.gain.setValueAtTime(newVolume * this.masterVolume, this.context.currentTime);
+                        track.volume = newVolume;
+                    }
+                    if (currentStep >= steps) {
+                        clearInterval(this.crossfadeInterval);
+                        this.crossfadeInterval = null;
+                        this.currentMix = { ...this.targetMix };
+                    }
+                }, stepDuration);
+            }
+            
+            setMasterVolume(volume) {
+                this.masterVolume = volume;
+                if (this.masterGain) this.masterGain.gain.setValueAtTime(volume, this.context.currentTime);
+            }
+            
+            setTrackVolume(name, volume) {
+                if (!this.tracks[name]) return;
+                this.tracks[name].gain.gain.setValueAtTime(volume * this.masterVolume, this.context.currentTime);
+                this.tracks[name].volume = volume;
+                this.currentMix[name] = volume;
+            }
+            
+            toggleTrack(name, enabled) {
+                if (!this.initialized) return;
+                const volume = enabled ? (this.targetMix[name] || 0.5) : 0;
+                this.setTrackVolume(name, volume);
+            }
+            
+            updateWeatherAudio() {
+                if (!this.initialized) return;
+                // Rain audio scales with intensity
+                if (this.rainIntensity > 0) {
+                    const rainVol = this.rainIntensity / 100 * 0.8;
+                    this.setTrackVolume('rain', rainVol);
+                    // Birds quiet down in rain
+                    if (this.tracks.birds) {
+                        const birdVol = this.currentMix.birds || 0.5;
+                        const reducedBirds = birdVol * (1 - this.rainIntensity / 150);
+                        this.tracks.birds.gain.gain.setValueAtTime(Math.max(0.1, reducedBirds) * this.masterVolume, this.context.currentTime);
+                    }
+                } else {
+                    this.setTrackVolume('rain', 0);
+                }
+                // Wind audio scales with strength
+                if (this.tracks.wind) {
+                    const windVol = (this.currentMix.wind || 0) * (this.windStrength * 2);
+                    this.tracks.wind.gain.gain.setValueAtTime(Math.min(1, windVol) * this.masterVolume, this.context.currentTime);
+                }
+            }
+            
+            setWindStrength(strength) { this.windStrength = strength / 100; this.updateWeatherAudio(); }
+            setRainIntensity(intensity) { this.rainIntensity = intensity; this.updateWeatherAudio(); }
+            resume() { if (this.context && this.context.state === 'suspended') this.context.resume(); }
+        }
+        
+        // =====================================================
+        // ATMOSPHERE MANAGER
+        // =====================================================
+        class AtmosphereManager {
+            constructor() {
+                this.currentTime = 'day';
+                this.mistEnabled = false;
+                this.volcanicMist = false;
+                this.atmosphereLayer = document.getElementById('atmosphere-layer');
+                this.mistLayer = document.getElementById('mist-layer');
+            }
+            
+            setTimeOfDay(time) {
+                this.currentTime = time;
+                this.atmosphereLayer.className = `time-${time}`;
+                // Adjust birds based on time
+                if (audioManager.initialized && audioManager.tracks.birds) {
+                    let birdMod = 1;
+                    switch(time) {
+                        case 'dawn': birdMod = 1.2; break;
+                        case 'day': birdMod = 1; break;
+                        case 'dusk': birdMod = 0.6; break;
+                        case 'night': birdMod = 0.1; break;
+                    }
+                    const baseBird = audioManager.currentMix.birds || 0.5;
+                    audioManager.tracks.birds.gain.gain.setValueAtTime(baseBird * birdMod * audioManager.masterVolume, audioManager.context.currentTime);
+                }
+            }
+            
+            setMist(enabled, volcanic = false) {
+                this.mistEnabled = enabled;
+                this.volcanicMist = volcanic;
+                if (enabled) {
+                    this.mistLayer.classList.add('active');
+                    volcanic ? this.mistLayer.classList.add('volcanic') : this.mistLayer.classList.remove('volcanic');
+                } else {
+                    this.mistLayer.classList.remove('active');
+                }
+            }
+            
+            applyLocationAtmosphere(location) {
+                if (location.atmosphere) {
+                    this.setMist(location.atmosphere.mist || false, location.atmosphere.volcanic || false);
+                } else {
+                    this.setMist(false);
+                }
+            }
+        }
         
         // =====================================================
         // STATE
         // =====================================================
-        
-        let streetViewPanorama = null;
-        let streetViewService = null;
-        let miniMap = null;
-        let currentMarker = null;
-        let allMarkers = [];
-        let tourPolyline = null;
-        let currentIndex = 0;
-        let previousIndex = 0;
-        let isTransitioning = false;
-        let isAutoPlaying = false;
-        let autoPlayTimer = null;
-        let mapsLoaded = false;
-        let mapType = 'terrain';
-        
-        // Tour state
-        let activeTour = null;
-        let tourStopIndex = 0;
-        let isTourPlaying = false;
-        let tourTimer = null;
+        let streetViewPanorama = null, streetViewService = null, miniMap = null, currentMarker = null, allMarkers = [];
+        let currentIndex = 0, isTransitioning = false, isAutoPlaying = false, autoPlayTimer = null, mapsLoaded = false;
+        const audioManager = new AudioManager();
+        const atmosphereManager = new AtmosphereManager();
+        let effectStates = { ocean: true, birds: true, wind: false, volcanic: false, mist: false };
         
         // =====================================================
-        // INITIALIZE GOOGLE MAPS
+        // GOOGLE MAPS INIT
         // =====================================================
-        
         function initMap() {
             mapsLoaded = true;
-            
-            // Initialize Street View service
             streetViewService = new google.maps.StreetViewService();
-            
-            // Create Street View panorama
             const streetViewContainer = document.getElementById('street-view-container');
             streetViewPanorama = new google.maps.StreetViewPanorama(streetViewContainer, {
-                pov: { heading: 0, pitch: 0 },
-                zoom: 1,
-                addressControl: false,
-                showRoadLabels: false,
-                linksControl: true,
-                panControl: false,
-                enableCloseButton: false,
-                fullscreenControl: false,
-                motionTracking: false,
-                motionTrackingControl: false,
-                zoomControl: false
+                pov: { heading: 0, pitch: 0 }, zoom: 1, addressControl: false, showRoadLabels: false,
+                linksControl: true, panControl: false, enableCloseButton: false, fullscreenControl: false,
+                motionTracking: false, motionTrackingControl: false, zoomControl: false
             });
-            
-            // Initialize mini map
             initMiniMap();
-            
-            // Create UI elements
             createLocationDots();
             populateDropdown();
-            populateTourDropdown();
-            
-            // Load first location
             goToLocation(0);
-            
-            // Set up event listeners
             setupEventListeners();
-            
-            // Listen for panorama changes
-            streetViewPanorama.addListener('pano_changed', () => {
-                document.getElementById('loading').classList.add('hidden');
-            });
+            streetViewPanorama.addListener('pano_changed', () => document.getElementById('loading').classList.add('hidden'));
+            document.getElementById('audio-unlock').classList.add('visible');
         }
         
         function initMiniMap() {
             const mapContainer = document.getElementById('mini-map');
-            
             miniMap = new google.maps.Map(mapContainer, {
-                center: { lat: 19.6, lng: -155.5 },
-                zoom: 8,
-                mapTypeId: 'terrain',
-                disableDefaultUI: true,
-                gestureHandling: 'cooperative',
-                styles: getMapStyles()
+                center: { lat: 19.6, lng: -155.5 }, zoom: 8, mapTypeId: 'terrain', disableDefaultUI: true, gestureHandling: 'cooperative',
+                styles: [
+                    { elementType: 'geometry', stylers: [{ color: '#1a1a1a' }] },
+                    { elementType: 'labels.text.fill', stylers: [{ color: '#7FCDCD' }] },
+                    { elementType: 'labels.text.stroke', stylers: [{ color: '#1a1a1a' }] },
+                    { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#0D3B66' }] },
+                    { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#2D2D2D' }] },
+                    { featureType: 'poi', stylers: [{ visibility: 'off' }] }
+                ]
             });
-            
-            // Add markers for all locations
             LOCATIONS.forEach((loc, index) => {
                 const marker = new google.maps.Marker({
-                    position: { lat: loc.lat, lng: loc.lng },
-                    map: miniMap,
-                    title: loc.name,
-                    icon: createMarkerIcon(index, false)
+                    position: { lat: loc.lat, lng: loc.lng }, map: miniMap, title: loc.name,
+                    icon: { path: google.maps.SymbolPath.CIRCLE, scale: 6, fillColor: index === 0 ? '#2A9D8F' : '#7FCDCD', fillOpacity: 0.9, strokeColor: '#FAF8F5', strokeWeight: 2 }
                 });
-                
-                marker.addListener('click', () => {
-                    goToLocation(index);
-                });
-                
+                marker.addListener('click', () => goToLocation(index));
                 allMarkers.push(marker);
             });
-            
             currentMarker = allMarkers[0];
-            
-            // Map type toggle buttons
-            document.getElementById('map-terrain').addEventListener('click', () => setMapType('terrain'));
-            document.getElementById('map-satellite').addEventListener('click', () => setMapType('satellite'));
-        }
-        
-        function getMapStyles() {
-            return [
-                { elementType: 'geometry', stylers: [{ color: '#1a1a1a' }] },
-                { elementType: 'labels.text.fill', stylers: [{ color: '#7FCDCD' }] },
-                { elementType: 'labels.text.stroke', stylers: [{ color: '#1a1a1a' }] },
-                { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#0D3B66' }] },
-                { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#2D2D2D' }] },
-                { featureType: 'poi', stylers: [{ visibility: 'off' }] }
-            ];
-        }
-        
-        function createMarkerIcon(index, isActive, isInTour = false) {
-            let color = '#7FCDCD';
-            let scale = 6;
-            let strokeWeight = 2;
-            
-            if (isActive) {
-                color = '#2A9D8F';
-                scale = 10;
-                strokeWeight = 3;
-            } else if (isInTour) {
-                color = '#F4A261';
-            }
-            
-            return {
-                path: google.maps.SymbolPath.CIRCLE,
-                scale: scale,
-                fillColor: color,
-                fillOpacity: 0.9,
-                strokeColor: '#FAF8F5',
-                strokeWeight: strokeWeight
-            };
-        }
-        
-        function setMapType(type) {
-            mapType = type;
-            
-            document.getElementById('map-terrain').classList.toggle('active', type === 'terrain');
-            document.getElementById('map-satellite').classList.toggle('active', type === 'satellite');
-            
-            if (type === 'satellite') {
-                miniMap.setMapTypeId('hybrid');
-                miniMap.setOptions({ styles: [] });
-            } else {
-                miniMap.setMapTypeId('terrain');
-                miniMap.setOptions({ styles: getMapStyles() });
-            }
         }
         
         function createLocationDots() {
             const container = document.getElementById('location-dots');
             container.innerHTML = '';
-            
             LOCATIONS.forEach((loc, index) => {
                 const dot = document.createElement('div');
                 dot.className = 'location-dot' + (index === 0 ? ' active' : '');
@@ -2157,720 +545,276 @@
                 dot.setAttribute('aria-label', `Go to ${loc.name}`);
                 dot.setAttribute('tabindex', '0');
                 dot.addEventListener('click', () => goToLocation(index));
-                dot.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        goToLocation(index);
-                    }
-                });
+                dot.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); goToLocation(index); } });
                 container.appendChild(dot);
             });
         }
         
         function populateDropdown() {
             const dropdown = document.getElementById('location-dropdown');
-            
             const regions = {};
-            LOCATIONS.forEach((loc, index) => {
-                if (!regions[loc.region]) regions[loc.region] = [];
-                regions[loc.region].push({ ...loc, index });
-            });
-            
+            LOCATIONS.forEach((loc, index) => { if (!regions[loc.region]) regions[loc.region] = []; regions[loc.region].push({ ...loc, index }); });
             Object.keys(regions).forEach(region => {
                 const optgroup = document.createElement('optgroup');
                 optgroup.label = `📍 ${region}`;
-                
-                regions[region].forEach(loc => {
-                    const option = document.createElement('option');
-                    option.value = loc.index;
-                    option.textContent = loc.name;
-                    optgroup.appendChild(option);
-                });
-                
+                regions[region].forEach(loc => { const option = document.createElement('option'); option.value = loc.index; option.textContent = loc.name; optgroup.appendChild(option); });
                 dropdown.appendChild(optgroup);
             });
-            
             dropdown.value = '0';
-            
-            dropdown.addEventListener('change', (e) => {
-                goToLocation(parseInt(e.target.value));
-            });
-        }
-        
-        function populateTourDropdown() {
-            const dropdown = document.getElementById('tour-dropdown');
-            
-            TOURS.forEach(tour => {
-                const option = document.createElement('option');
-                option.value = tour.id;
-                option.textContent = `${tour.emoji} ${tour.name}`;
-                dropdown.appendChild(option);
-            });
-            
-            dropdown.addEventListener('change', (e) => {
-                if (e.target.value) {
-                    startTour(e.target.value);
-                }
-            });
+            dropdown.addEventListener('change', (e) => goToLocation(parseInt(e.target.value)));
         }
         
         function updateLocationDots() {
-            const dots = document.querySelectorAll('.location-dot');
-            dots.forEach((dot, index) => {
-                dot.classList.remove('active', 'in-tour');
-                if (index === currentIndex) {
-                    dot.classList.add('active');
-                } else if (index < currentIndex) {
-                    dot.classList.add('visited');
-                }
-                
-                // Highlight tour stops
-                if (activeTour) {
-                    const locId = LOCATIONS[index].id;
-                    if (activeTour.stops.includes(locId)) {
-                        dot.classList.add('in-tour');
-                    }
-                }
+            document.querySelectorAll('.location-dot').forEach((dot, index) => {
+                dot.classList.remove('active');
+                if (index === currentIndex) dot.classList.add('active');
+                else if (index < currentIndex) dot.classList.add('visited');
             });
         }
         
         function updateMiniMapMarkers() {
-            const tourStopIds = activeTour ? activeTour.stops : [];
-            
             allMarkers.forEach((marker, index) => {
-                const locId = LOCATIONS[index].id;
-                const isInTour = tourStopIds.includes(locId);
-                marker.setIcon(createMarkerIcon(index, index === currentIndex, isInTour));
+                marker.setIcon({ path: google.maps.SymbolPath.CIRCLE, scale: index === currentIndex ? 8 : 6, fillColor: index === currentIndex ? '#2A9D8F' : '#7FCDCD', fillOpacity: 0.9, strokeColor: '#FAF8F5', strokeWeight: index === currentIndex ? 3 : 2 });
             });
-            
-            // Animate current marker
-            if (allMarkers[currentIndex]) {
-                animateMarker(allMarkers[currentIndex]);
-            }
-            
-            // Draw tour route line
-            if (activeTour && !tourPolyline) {
-                drawTourRoute();
-            }
-            
-            // Pan to current location
             const loc = LOCATIONS[currentIndex];
             miniMap.panTo({ lat: loc.lat, lng: loc.lng });
-        }
-        
-        function animateMarker(marker) {
-            // Pulse animation using icon scale
-            let scale = 10;
-            let growing = false;
-            
-            const animate = () => {
-                if (growing) {
-                    scale += 0.5;
-                    if (scale >= 12) growing = false;
-                } else {
-                    scale -= 0.5;
-                    if (scale <= 8) growing = true;
-                }
-                
-                marker.setIcon({
-                    path: google.maps.SymbolPath.CIRCLE,
-                    scale: scale,
-                    fillColor: '#2A9D8F',
-                    fillOpacity: 0.9,
-                    strokeColor: '#FAF8F5',
-                    strokeWeight: 3
-                });
-            };
-            
-            // Run a few times
-            let count = 0;
-            const interval = setInterval(() => {
-                animate();
-                count++;
-                if (count > 12) {
-                    clearInterval(interval);
-                    marker.setIcon(createMarkerIcon(currentIndex, true));
-                }
-            }, 100);
-        }
-        
-        function drawTourRoute() {
-            if (tourPolyline) {
-                tourPolyline.setMap(null);
-            }
-            
-            if (!activeTour) return;
-            
-            const path = activeTour.stops.map(id => {
-                const loc = LOCATIONS.find(l => l.id === id);
-                return { lat: loc.lat, lng: loc.lng };
-            });
-            
-            tourPolyline = new google.maps.Polyline({
-                path: path,
-                geodesic: true,
-                strokeColor: '#F4A261',
-                strokeOpacity: 0.8,
-                strokeWeight: 3
-            });
-            
-            tourPolyline.setMap(miniMap);
-        }
-        
-        function clearTourRoute() {
-            if (tourPolyline) {
-                tourPolyline.setMap(null);
-                tourPolyline = null;
-            }
         }
         
         // =====================================================
         // LOCATION NAVIGATION
         // =====================================================
-        
         function goToLocation(index) {
             if (index < 0 || index >= LOCATIONS.length || isTransitioning) return;
             if (index === currentIndex && streetViewPanorama.getPano()) return;
-            
             isTransitioning = true;
-            previousIndex = currentIndex;
             const location = LOCATIONS[index];
-            const previousLocation = LOCATIONS[previousIndex];
-            
             document.getElementById('loading-location-name').textContent = location.name;
-            
             const overlay = document.getElementById('transition-overlay');
-            
-            // Show travel info for distant locations
-            if (CONFIG.showTravelAnimation && previousIndex !== index) {
-                const distance = getDistanceFromLatLng(
-                    previousLocation.lat, previousLocation.lng,
-                    location.lat, location.lng
-                );
-                
-                if (distance > 5000) { // More than 5km
-                    showTravelAnimation(previousLocation, location, distance);
-                }
-            }
-            
             overlay.classList.add('active');
             
             setTimeout(() => {
                 const searchLocation = new google.maps.LatLng(location.lat, location.lng);
-                
-                streetViewService.getPanorama(
-                    {
-                        location: searchLocation,
-                        radius: CONFIG.searchRadius,
-                        preference: google.maps.StreetViewPreference.NEAREST,
-                        source: google.maps.StreetViewSource.OUTDOOR
-                    },
-                    (data, status) => {
-                        if (status === google.maps.StreetViewStatus.OK) {
-                            // Smooth heading transition
-                            smoothPanoramaTransition(data, location);
-                            
-                            currentIndex = index;
-                            updateUI(location);
-                            updateLocationDots();
-                            updateMiniMapMarkers();
-                            
-                            document.getElementById('location-dropdown').value = index;
-                            
-                            const foundLat = data.location.latLng.lat();
-                            const foundLng = data.location.latLng.lng();
-                            const dist = getDistanceFromLatLng(location.lat, location.lng, foundLat, foundLng);
-                            
-                            if (dist > 100) {
+                streetViewService.getPanorama({ location: searchLocation, radius: CONFIG.searchRadius, preference: google.maps.StreetViewPreference.NEAREST, source: google.maps.StreetViewSource.OUTDOOR }, (data, status) => {
+                    if (status === google.maps.StreetViewStatus.OK) {
+                        streetViewPanorama.setPano(data.location.pano);
+                        streetViewPanorama.setPov({ heading: location.heading || 0, pitch: location.pitch || 0 });
+                        currentIndex = index;
+                        updateUI(location);
+                        updateLocationDots();
+                        updateMiniMapMarkers();
+                        document.getElementById('location-dropdown').value = index;
+                        updateAudioForLocation(location);
+                        atmosphereManager.applyLocationAtmosphere(location);
+                        if (location.defaultRain !== undefined) {
+                            const rainSlider = document.getElementById('rain-slider');
+                            rainSlider.value = location.defaultRain;
+                            document.getElementById('rain-value').textContent = `${location.defaultRain}%`;
+                            updateRainIntensity(location.defaultRain);
+                        }
+                        const foundLat = data.location.latLng.lat(), foundLng = data.location.latLng.lng();
+                        const distance = getDistanceFromLatLng(location.lat, location.lng, foundLat, foundLng);
+                        distance > 100 ? showCoverageStatus() : hideCoverageStatus();
+                        setTimeout(() => { overlay.classList.remove('active'); isTransitioning = false; }, 300);
+                    } else {
+                        streetViewService.getPanorama({ location: searchLocation, radius: 1000, preference: google.maps.StreetViewPreference.NEAREST }, (data2, status2) => {
+                            if (status2 === google.maps.StreetViewStatus.OK) {
+                                streetViewPanorama.setPano(data2.location.pano);
+                                streetViewPanorama.setPov({ heading: location.heading || 0, pitch: location.pitch || 0 });
+                                currentIndex = index;
+                                updateUI(location);
+                                updateLocationDots();
+                                updateMiniMapMarkers();
+                                document.getElementById('location-dropdown').value = index;
+                                updateAudioForLocation(location);
+                                atmosphereManager.applyLocationAtmosphere(location);
                                 showCoverageStatus();
+                                setTimeout(() => { overlay.classList.remove('active'); isTransitioning = false; }, 300);
                             } else {
-                                hideCoverageStatus();
-                            }
-                            
-                            setTimeout(() => {
+                                showError(`No Street View coverage near ${location.name}`);
                                 overlay.classList.remove('active');
                                 isTransitioning = false;
-                            }, 400);
-                            
-                        } else {
-                            // Wider search fallback
-                            streetViewService.getPanorama(
-                                {
-                                    location: searchLocation,
-                                    radius: 1000,
-                                    preference: google.maps.StreetViewPreference.NEAREST
-                                },
-                                (data2, status2) => {
-                                    if (status2 === google.maps.StreetViewStatus.OK) {
-                                        smoothPanoramaTransition(data2, location);
-                                        
-                                        currentIndex = index;
-                                        updateUI(location);
-                                        updateLocationDots();
-                                        updateMiniMapMarkers();
-                                        document.getElementById('location-dropdown').value = index;
-                                        
-                                        showCoverageStatus();
-                                        
-                                        setTimeout(() => {
-                                            overlay.classList.remove('active');
-                                            isTransitioning = false;
-                                        }, 400);
-                                    } else {
-                                        showError(`No Street View coverage near ${location.name}`);
-                                        overlay.classList.remove('active');
-                                        isTransitioning = false;
-                                        
-                                        setTimeout(() => {
-                                            hideError();
-                                            nextLocation();
-                                        }, 2000);
-                                    }
-                                }
-                            );
-                        }
+                                setTimeout(() => { hideError(); nextLocation(); }, 2000);
+                            }
+                        });
                     }
-                );
+                });
             }, CONFIG.transitionDuration / 2);
         }
         
-        function smoothPanoramaTransition(data, location) {
-            streetViewPanorama.setPano(data.location.pano);
-            
-            // Animate heading rotation
-            const currentPov = streetViewPanorama.getPov();
-            const targetHeading = location.heading || 0;
-            const targetPitch = location.pitch || 0;
-            
-            // Direct set for now (can add easing later)
-            streetViewPanorama.setPov({
-                heading: targetHeading,
-                pitch: targetPitch
-            });
-        }
-        
-        function showTravelAnimation(from, to, distanceMeters) {
-            const miles = (distanceMeters / 1609.34).toFixed(1);
-            const driveMinutes = Math.round(distanceMeters / 1000 * 2); // ~30 mph average
-            
-            document.getElementById('travel-from').textContent = from.name;
-            document.getElementById('travel-to').textContent = to.name;
-            document.getElementById('travel-distance').textContent = `${miles} miles`;
-            document.getElementById('travel-time').textContent = `~${driveMinutes} min drive`;
-        }
-        
-        function nextLocation() {
-            if (activeTour) {
-                tourNext();
-            } else {
-                const next = (currentIndex + 1) % LOCATIONS.length;
-                goToLocation(next);
+        function updateAudioForLocation(location) {
+            if (!audioManager.initialized) return;
+            const targetMix = {};
+            if (location.audio) {
+                for (const [track, volume] of Object.entries(location.audio)) {
+                    if (effectStates[track] !== false) targetMix[track] = volume;
+                }
             }
-        }
-        
-        function prevLocation() {
-            if (activeTour) {
-                tourPrev();
-            } else {
-                const prev = (currentIndex - 1 + LOCATIONS.length) % LOCATIONS.length;
-                goToLocation(prev);
+            for (const [effect, enabled] of Object.entries(effectStates)) {
+                if (!enabled) targetMix[effect] = 0;
             }
+            audioManager.crossfadeTo(targetMix);
         }
         
+        function nextLocation() { goToLocation((currentIndex + 1) % LOCATIONS.length); }
+        function prevLocation() { goToLocation((currentIndex - 1 + LOCATIONS.length) % LOCATIONS.length); }
         function updateUI(location) {
             document.getElementById('location-name').textContent = location.name;
-            document.getElementById('location-hawaiian').textContent = location.hawaiian || '';
             document.getElementById('location-desc').textContent = location.desc;
-            document.getElementById('location-counter').textContent = 
-                `Location ${currentIndex + 1} of ${LOCATIONS.length}`;
-            
-            // Update info cards
-            document.getElementById('location-history').textContent = location.history || 'Historical information coming soon.';
-            
-            const thingsEl = document.getElementById('location-things');
-            if (location.things && location.things.length > 0) {
-                thingsEl.innerHTML = '<ul>' + location.things.map(t => `<li>${t}</li>`).join('') + '</ul>';
-            } else {
-                thingsEl.textContent = 'Explore and discover!';
-            }
-            
-            // Update tour panel if active
-            if (activeTour) {
-                updateTourProgress();
-            }
-        }
-        
-        // =====================================================
-        // TOUR SYSTEM
-        // =====================================================
-        
-        function startTour(tourId) {
-            const tour = TOURS.find(t => t.id === tourId);
-            if (!tour) return;
-            
-            activeTour = tour;
-            tourStopIndex = 0;
-            isTourPlaying = false;
-            
-            // Show tour panel
-            document.getElementById('tour-panel').classList.add('visible');
-            document.getElementById('active-tour-name').textContent = `${tour.emoji} ${tour.name}`;
-            
-            // Create tour stop buttons
-            const stopsContainer = document.getElementById('tour-stops');
-            stopsContainer.innerHTML = '';
-            
-            tour.stops.forEach((locId, idx) => {
-                const loc = LOCATIONS.find(l => l.id === locId);
-                const stop = document.createElement('div');
-                stop.className = 'tour-stop' + (idx === 0 ? ' active' : '');
-                stop.textContent = `${idx + 1}. ${loc.name.split(' ')[0]}`;
-                stop.addEventListener('click', () => {
-                    tourStopIndex = idx;
-                    const locIndex = LOCATIONS.findIndex(l => l.id === locId);
-                    goToLocation(locIndex);
-                    updateTourProgress();
-                });
-                stopsContainer.appendChild(stop);
-            });
-            
-            // Update markers and route
-            updateMiniMapMarkers();
-            drawTourRoute();
-            updateLocationDots();
-            
-            // Go to first stop
-            const firstLocIndex = LOCATIONS.findIndex(l => l.id === tour.stops[0]);
-            goToLocation(firstLocIndex);
-            
-            updateTourProgress();
-        }
-        
-        function updateTourProgress() {
-            if (!activeTour) return;
-            
-            const progress = ((tourStopIndex + 1) / activeTour.stops.length) * 100;
-            document.getElementById('tour-progress-fill').style.width = `${progress}%`;
-            document.getElementById('tour-stop-text').textContent = 
-                `Stop ${tourStopIndex + 1} of ${activeTour.stops.length}`;
-            
-            const stopsRemaining = activeTour.stops.length - tourStopIndex - 1;
-            const minRemaining = stopsRemaining * 8; // ~8 min per stop
-            document.getElementById('tour-time-remaining').textContent = 
-                stopsRemaining > 0 ? `~${minRemaining} min remaining` : 'Tour complete! 🎉';
-            
-            // Update stop buttons
-            const stops = document.querySelectorAll('.tour-stop');
-            stops.forEach((stop, idx) => {
-                stop.classList.remove('active', 'completed');
-                if (idx === tourStopIndex) {
-                    stop.classList.add('active');
-                } else if (idx < tourStopIndex) {
-                    stop.classList.add('completed');
-                }
-            });
-            
-            // Update play button
-            const playIcon = document.getElementById('tour-play-icon');
-            const playText = document.getElementById('tour-play-text');
-            playIcon.textContent = isTourPlaying ? '⏸️' : '▶️';
-            playText.textContent = isTourPlaying ? 'Pause' : 'Play';
-        }
-        
-        function tourNext() {
-            if (!activeTour) return;
-            
-            if (tourStopIndex < activeTour.stops.length - 1) {
-                tourStopIndex++;
-                const locIndex = LOCATIONS.findIndex(l => l.id === activeTour.stops[tourStopIndex]);
-                goToLocation(locIndex);
-                updateTourProgress();
-            } else {
-                // Tour complete
-                if (isTourPlaying) {
-                    toggleTourPlay();
-                }
-            }
-        }
-        
-        function tourPrev() {
-            if (!activeTour) return;
-            
-            if (tourStopIndex > 0) {
-                tourStopIndex--;
-                const locIndex = LOCATIONS.findIndex(l => l.id === activeTour.stops[tourStopIndex]);
-                goToLocation(locIndex);
-                updateTourProgress();
-            }
-        }
-        
-        function toggleTourPlay() {
-            isTourPlaying = !isTourPlaying;
-            
-            if (isTourPlaying) {
-                tourTimer = setInterval(() => {
-                    if (tourStopIndex < activeTour.stops.length - 1) {
-                        tourNext();
-                    } else {
-                        toggleTourPlay();
-                    }
-                }, CONFIG.tourAutoPlayInterval);
-            } else {
-                clearInterval(tourTimer);
-            }
-            
-            updateTourProgress();
-        }
-        
-        function closeTour() {
-            activeTour = null;
-            tourStopIndex = 0;
-            isTourPlaying = false;
-            clearInterval(tourTimer);
-            
-            document.getElementById('tour-panel').classList.remove('visible');
-            document.getElementById('tour-dropdown').value = '';
-            
-            clearTourRoute();
-            updateMiniMapMarkers();
-            updateLocationDots();
+            document.getElementById('location-counter').textContent = `Location ${currentIndex + 1} of ${LOCATIONS.length}`;
         }
         
         // =====================================================
         // HELPERS
         // =====================================================
-        
         function getDistanceFromLatLng(lat1, lng1, lat2, lng2) {
-            const R = 6371000;
-            const dLat = (lat2 - lat1) * Math.PI / 180;
-            const dLng = (lng2 - lng1) * Math.PI / 180;
-            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                      Math.sin(dLng/2) * Math.sin(dLng/2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-            return R * c;
+            const R = 6371000, dLat = (lat2 - lat1) * Math.PI / 180, dLng = (lng2 - lng1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng/2) * Math.sin(dLng/2);
+            return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
         }
-        
-        function showError(message) {
-            const el = document.getElementById('error-message');
-            el.querySelector('p').textContent = message;
-            el.classList.add('visible');
-        }
-        
-        function hideError() {
-            document.getElementById('error-message').classList.remove('visible');
-        }
-        
-        function showCoverageStatus() {
-            document.getElementById('coverage-status').classList.add('visible');
-            setTimeout(hideCoverageStatus, 3000);
-        }
-        
-        function hideCoverageStatus() {
-            document.getElementById('coverage-status').classList.remove('visible');
-        }
+        function showError(message) { const el = document.getElementById('error-message'); el.querySelector('p').textContent = message; el.classList.add('visible'); }
+        function hideError() { document.getElementById('error-message').classList.remove('visible'); }
+        function showCoverageStatus() { document.getElementById('coverage-status').classList.add('visible'); setTimeout(hideCoverageStatus, 3000); }
+        function hideCoverageStatus() { document.getElementById('coverage-status').classList.remove('visible'); }
         
         // =====================================================
         // EVENT LISTENERS
         // =====================================================
-        
         function setupEventListeners() {
-            // Navigation buttons
             document.getElementById('prev-btn').addEventListener('click', prevLocation);
             document.getElementById('next-btn').addEventListener('click', nextLocation);
             document.getElementById('play-btn').addEventListener('click', toggleAutoPlay);
-            
-            // Tour controls
-            document.getElementById('tour-prev').addEventListener('click', tourPrev);
-            document.getElementById('tour-next').addEventListener('click', tourNext);
-            document.getElementById('tour-play').addEventListener('click', toggleTourPlay);
-            document.getElementById('tour-close').addEventListener('click', closeTour);
-            
-            // Info panel toggle
-            document.getElementById('info-toggle').addEventListener('click', () => {
-                const toggle = document.getElementById('info-toggle');
-                const details = document.getElementById('info-details');
-                toggle.classList.toggle('expanded');
-                details.classList.toggle('visible');
-            });
-            
-            // Keyboard navigation
             document.addEventListener('keydown', onKeyDown);
-            
-            // Fullscreen
             document.getElementById('fullscreen-btn').addEventListener('click', toggleFullscreen);
+            document.getElementById('audio-unlock').addEventListener('click', async () => { await audioManager.init(); updateAudioForLocation(LOCATIONS[currentIndex]); });
             
-            // Effect toggles
             document.querySelectorAll('.toggle-switch').forEach(toggle => {
                 const handleToggle = () => {
                     toggle.classList.toggle('on');
                     const effect = toggle.dataset.effect;
                     const isOn = toggle.classList.contains('on');
                     toggle.setAttribute('aria-checked', isOn);
-                    
-                    if (effect === 'rain') {
-                        toggleRain(isOn);
-                    }
+                    effectStates[effect] = isOn;
+                    if (effect === 'mist') atmosphereManager.setMist(isOn, LOCATIONS[currentIndex]?.atmosphere?.volcanic);
+                    else audioManager.toggleTrack(effect, isOn);
                 };
-                
                 toggle.addEventListener('click', handleToggle);
-                toggle.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        handleToggle();
-                    }
+                toggle.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleToggle(); } });
+            });
+            
+            document.getElementById('rain-slider').addEventListener('input', (e) => {
+                const value = parseInt(e.target.value);
+                document.getElementById('rain-value').textContent = `${value}%`;
+                updateRainIntensity(value);
+            });
+            
+            document.getElementById('wind-slider').addEventListener('input', (e) => {
+                const value = parseInt(e.target.value);
+                document.getElementById('wind-value').textContent = `${value}%`;
+                updateWindStrength(value);
+            });
+            
+            document.querySelectorAll('.time-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    atmosphereManager.setTimeOfDay(btn.dataset.time);
                 });
             });
             
-            // Volume slider
             const volumeSlider = document.getElementById('volume-slider');
-            const volumeValue = document.getElementById('volume-value');
-            
             volumeSlider.addEventListener('input', (e) => {
-                volumeValue.textContent = `${e.target.value}%`;
+                const value = parseInt(e.target.value);
+                document.getElementById('volume-value').textContent = `${value}%`;
+                audioManager.setMasterVolume(value / 100);
             });
             
-            // Visibility change
             document.addEventListener('visibilitychange', () => {
-                if (document.hidden) {
-                    if (isAutoPlaying) clearInterval(autoPlayTimer);
-                    if (isTourPlaying) clearInterval(tourTimer);
-                } else {
-                    if (isAutoPlaying) autoPlayTimer = setInterval(nextLocation, CONFIG.autoPlayInterval);
-                    if (isTourPlaying) tourTimer = setInterval(tourNext, CONFIG.tourAutoPlayInterval);
-                }
+                if (document.hidden && isAutoPlaying) clearInterval(autoPlayTimer);
+                else if (!document.hidden && isAutoPlaying) autoPlayTimer = setInterval(nextLocation, CONFIG.autoPlayInterval);
             });
+            document.addEventListener('click', () => audioManager.resume(), { once: true });
         }
         
         function onKeyDown(e) {
             switch(e.key) {
-                case 'ArrowRight':
-                    nextLocation();
-                    break;
-                case 'ArrowLeft':
-                    prevLocation();
-                    break;
-                case ' ':
-                    e.preventDefault();
-                    if (activeTour) {
-                        toggleTourPlay();
-                    } else {
-                        toggleAutoPlay();
-                    }
-                    break;
-                case 'f':
-                case 'F':
-                    toggleFullscreen();
-                    break;
-                case 't':
-                case 'T':
-                    // Focus tour dropdown
-                    document.getElementById('tour-dropdown').focus();
-                    break;
-                case 'Escape':
-                    if (activeTour) closeTour();
+                case 'ArrowRight': nextLocation(); break;
+                case 'ArrowLeft': prevLocation(); break;
+                case ' ': e.preventDefault(); toggleAutoPlay(); break;
+                case 'f': case 'F': toggleFullscreen(); break;
+                case 'm': case 'M':
+                    const volumeSlider = document.getElementById('volume-slider');
+                    if (audioManager.masterVolume > 0) { audioManager.setMasterVolume(0); volumeSlider.value = 0; document.getElementById('volume-value').textContent = '0%'; }
+                    else { audioManager.setMasterVolume(0.8); volumeSlider.value = 80; document.getElementById('volume-value').textContent = '80%'; }
                     break;
             }
         }
         
         function toggleAutoPlay() {
             isAutoPlaying = !isAutoPlaying;
-            const btn = document.getElementById('play-btn');
-            const icon = document.getElementById('play-icon');
-            const text = document.getElementById('play-text');
-            
-            if (isAutoPlaying) {
-                icon.textContent = '⏸️';
-                text.textContent = 'Pause';
-                btn.classList.add('active');
-                autoPlayTimer = setInterval(nextLocation, CONFIG.autoPlayInterval);
-            } else {
-                icon.textContent = '▶️';
-                text.textContent = 'Auto Tour';
-                btn.classList.remove('active');
-                clearInterval(autoPlayTimer);
-            }
+            const btn = document.getElementById('play-btn'), icon = document.getElementById('play-icon'), text = document.getElementById('play-text');
+            if (isAutoPlaying) { icon.textContent = '⏸️'; text.textContent = 'Pause'; btn.classList.add('active'); autoPlayTimer = setInterval(nextLocation, CONFIG.autoPlayInterval); }
+            else { icon.textContent = '▶️'; text.textContent = 'Auto Tour'; btn.classList.remove('active'); clearInterval(autoPlayTimer); }
         }
         
         function toggleFullscreen() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => {
-                    console.log('Fullscreen error:', err);
-                });
-            } else {
-                document.exitFullscreen();
-            }
+            if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(err => console.log('Fullscreen error:', err));
+            else document.exitFullscreen();
         }
         
         // =====================================================
         // RAIN EFFECT
         // =====================================================
-        
         const rainCanvas = document.getElementById('rain-canvas');
         const rainCtx = rainCanvas.getContext('2d');
-        let raindrops = [];
-        let rainActive = false;
-        let rainAnimationFrame = null;
+        let raindrops = [], rainActive = false, rainAnimationFrame = null, currentWindStrength = 0.2;
         
-        function initRain() {
-            rainCanvas.width = window.innerWidth;
-            rainCanvas.height = window.innerHeight;
-            
+        function initRain() { rainCanvas.width = window.innerWidth; rainCanvas.height = window.innerHeight; raindrops = []; }
+        
+        function createRaindrops(intensity) {
+            const count = Math.floor(intensity * 3);
             raindrops = [];
-            for (let i = 0; i < 200; i++) {
-                raindrops.push({
-                    x: Math.random() * rainCanvas.width,
-                    y: Math.random() * rainCanvas.height,
-                    length: Math.random() * 20 + 10,
-                    speed: Math.random() * 10 + 15,
-                    opacity: Math.random() * 0.3 + 0.1
-                });
+            for (let i = 0; i < count; i++) {
+                raindrops.push({ x: Math.random() * rainCanvas.width, y: Math.random() * rainCanvas.height, length: Math.random() * 15 + 10, speed: Math.random() * 10 + 15, opacity: Math.random() * 0.3 + 0.1 });
             }
         }
         
         function updateRain() {
             if (!rainActive) return;
-            
             rainCtx.clearRect(0, 0, rainCanvas.width, rainCanvas.height);
-            
+            const windAngle = currentWindStrength * 0.5;
             raindrops.forEach(drop => {
                 rainCtx.beginPath();
                 rainCtx.moveTo(drop.x, drop.y);
-                rainCtx.lineTo(drop.x + 1, drop.y + drop.length);
+                rainCtx.lineTo(drop.x + Math.sin(windAngle) * drop.length, drop.y + Math.cos(windAngle) * drop.length);
                 rainCtx.strokeStyle = `rgba(174, 194, 224, ${drop.opacity})`;
                 rainCtx.lineWidth = 1;
                 rainCtx.stroke();
-                
                 drop.y += drop.speed;
-                
-                if (drop.y > rainCanvas.height) {
-                    drop.y = -drop.length;
-                    drop.x = Math.random() * rainCanvas.width;
-                }
+                drop.x += currentWindStrength * 2;
+                if (drop.y > rainCanvas.height || drop.x > rainCanvas.width) { drop.y = -drop.length; drop.x = Math.random() * rainCanvas.width; }
             });
-            
             rainAnimationFrame = requestAnimationFrame(updateRain);
         }
         
-        function toggleRain(on) {
-            rainActive = on;
-            rainCanvas.classList.toggle('active', on);
-            if (on) {
-                updateRain();
-            } else if (rainAnimationFrame) {
-                cancelAnimationFrame(rainAnimationFrame);
+        function updateRainIntensity(intensity) {
+            audioManager.setRainIntensity(intensity);
+            if (intensity > 0) {
+                if (!rainActive) { rainActive = true; rainCanvas.classList.add('active'); updateRain(); }
+                createRaindrops(intensity);
+            } else {
+                rainActive = false;
+                rainCanvas.classList.remove('active');
+                if (rainAnimationFrame) cancelAnimationFrame(rainAnimationFrame);
             }
         }
         
-        window.addEventListener('resize', () => {
-            rainCanvas.width = window.innerWidth;
-            rainCanvas.height = window.innerHeight;
-        });
+        function updateWindStrength(strength) { currentWindStrength = strength / 100; audioManager.setWindStrength(strength); }
+        
+        window.addEventListener('resize', () => { rainCanvas.width = window.innerWidth; rainCanvas.height = window.innerHeight; });
         
         // =====================================================
         // INITIALIZE
         // =====================================================
-        
         initRain();
         
         function loadGoogleMapsAPI() {
@@ -2878,14 +822,11 @@
             script.src = `https://maps.googleapis.com/maps/api/js?key=${API_KEY}&callback=initMap`;
             script.async = true;
             script.defer = true;
-            script.onerror = () => {
-                showError('Failed to load Google Maps. Please check your internet connection.');
-            };
+            script.onerror = () => showError('Failed to load Google Maps. Please check your internet connection.');
             document.head.appendChild(script);
         }
         
         window.initMap = initMap;
-        
         loadGoogleMapsAPI();
     </script>
 </body>

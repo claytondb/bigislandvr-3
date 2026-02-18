@@ -1,7 +1,61 @@
 {
-  "version": "1.0",
+  "version": "2.0",
   "last_updated": "2026-02-17",
-  "description": "Big Island VR location database - panoramas, depth maps, and audio settings",
+  "description": "Big Island VR location database - panoramas, depth maps, audio settings, and atmosphere",
+  "audio_system": {
+    "description": "Web Audio API-based ambient sound system with location-specific mixes",
+    "tracks": {
+      "ocean": {
+        "description": "Ocean waves and surf",
+        "source": "freesound.org/531015",
+        "license": "CC0",
+        "use_cases": ["coastal", "beach", "pier", "bay"]
+      },
+      "birds": {
+        "description": "Tropical birds and forest ambience",
+        "source": "freesound.org/352515",
+        "license": "CC BY 4.0",
+        "use_cases": ["forest", "garden", "town", "general"]
+      },
+      "wind": {
+        "description": "Wind from gentle breeze to strong gusts",
+        "source": "freesound.org/217506",
+        "license": "CC0",
+        "use_cases": ["summit", "highland", "exposed", "volcano"]
+      },
+      "rain": {
+        "description": "Rain from light drizzle to heavy tropical rain",
+        "source": "freesound.org/104390",
+        "license": "CC0",
+        "use_cases": ["hilo", "volcano", "rainforest"]
+      },
+      "waterfall": {
+        "description": "Waterfall and rushing water",
+        "source": "freesound.org/365915",
+        "license": "CC BY 4.0",
+        "use_cases": ["rainbow_falls", "akaka_falls", "streams"]
+      },
+      "volcanic": {
+        "description": "Deep volcanic rumble and geothermal sounds",
+        "source": "freesound.org/198879",
+        "license": "CC0",
+        "use_cases": ["kilauea", "volcano_area", "lava_fields"]
+      }
+    }
+  },
+  "atmosphere_system": {
+    "description": "Visual atmosphere overlays for immersion",
+    "effects": {
+      "mist": {
+        "description": "Fog/mist overlay for humid or volcanic areas",
+        "variants": ["normal", "volcanic"]
+      },
+      "time_of_day": {
+        "description": "Time-based lighting overlay",
+        "options": ["dawn", "day", "dusk", "night"]
+      }
+    }
+  },
   "routes": {
     "hilo_bayfront": [
       "Banyan Drive Start",
@@ -54,16 +108,17 @@
       "lng": -155.082,
       "region": "Hilo",
       "route": "hilo_bayfront",
-      "audio_mix": {
+      "audio": {
         "ocean": 0.3,
-        "birds": 0.5,
-        "wind": 0.2,
-        "ambient": "rainforest_light"
+        "birds": 0.6,
+        "wind": 0.2
       },
-      "nearby": [
-        "Liliuokalani Gardens",
-        "Hilo Bay Pier"
-      ]
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false,
+        "defaultTime": "day"
+      },
+      "nearby": ["Liliuokalani Gardens", "Hilo Bay Pier"]
     },
     {
       "name": "Liliuokalani Gardens",
@@ -72,16 +127,16 @@
       "lng": -155.0792,
       "region": "Hilo",
       "route": "hilo_bayfront",
-      "audio_mix": {
-        "water": 0.4,
-        "birds": 0.4,
-        "wind": 0.2,
-        "ambient": "garden_peaceful"
+      "audio": {
+        "ocean": 0.2,
+        "birds": 0.5,
+        "wind": 0.2
       },
-      "nearby": [
-        "Banyan Drive Start",
-        "Coconut Island Viewpoint"
-      ]
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "nearby": ["Banyan Drive Start", "Coconut Island Viewpoint"]
     },
     {
       "name": "Coconut Island Viewpoint",
@@ -90,18 +145,18 @@
       "lng": -155.078,
       "region": "Hilo",
       "route": "hilo_bayfront",
-      "audio_mix": {
+      "audio": {
         "ocean": 0.5,
-        "birds": 0.3,
+        "birds": 0.4,
         "wind": 0.2
       },
-      "nearby": [
-        "Liliuokalani Gardens",
-        "Hilo Bay Pier"
-      ],
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "nearby": ["Liliuokalani Gardens", "Hilo Bay Pier"],
       "pano_id": "mbqeC_kUxjsPZxcLlbqOFg",
       "panorama_path": "/mnt/c/Users/clayt/OneDrive/Documents/dc-bigislandvr-3/panoramas/processed/6b1b1ac8e1b5_panorama.jpg",
-      "depth_path": null,
       "processed": true
     },
     {
@@ -111,18 +166,18 @@
       "lng": -155.087,
       "region": "Hilo",
       "route": "hilo_bayfront",
-      "audio_mix": {
-        "ocean": 0.6,
-        "harbor": 0.2,
-        "birds": 0.2
+      "audio": {
+        "ocean": 0.7,
+        "birds": 0.2,
+        "wind": 0.3
       },
-      "nearby": [
-        "Downtown Hilo",
-        "Banyan Drive Start"
-      ],
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "nearby": ["Downtown Hilo", "Banyan Drive Start"],
       "pano_id": "tdkSC9MEMErekDComm0iCg",
       "panorama_path": "/mnt/c/Users/clayt/OneDrive/Documents/dc-bigislandvr-3/panoramas/processed/037713065259_panorama.jpg",
-      "depth_path": null,
       "processed": true
     },
     {
@@ -132,19 +187,36 @@
       "lng": -155.0868,
       "region": "Hilo",
       "route": "hilo_bayfront",
-      "audio_mix": {
-        "town": 0.4,
+      "audio": {
         "birds": 0.3,
-        "ambient": "small_town"
+        "wind": 0.1
       },
-      "nearby": [
-        "Hilo Bay Pier",
-        "Banyan Drive Start"
-      ],
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "nearby": ["Hilo Bay Pier", "Banyan Drive Start"],
       "pano_id": "-Xv9-rbq2rw4KSyZoNCyag",
       "panorama_path": "/mnt/c/Users/clayt/OneDrive/Documents/dc-bigislandvr-3/panoramas/processed/14db86d34551_panorama.jpg",
-      "depth_path": null,
       "processed": true
+    },
+    {
+      "name": "Rainbow Falls",
+      "description": "Waiānuenue - iconic 80-foot waterfall just outside Hilo",
+      "lat": 19.7189,
+      "lng": -155.1065,
+      "region": "Hilo",
+      "route": "hilo_bayfront",
+      "audio": {
+        "waterfall": 0.8,
+        "birds": 0.5,
+        "wind": 0.2
+      },
+      "atmosphere": {
+        "mist": true,
+        "volcanic": false
+      },
+      "nearby": ["Downtown Hilo"]
     },
     {
       "name": "Park Entrance",
@@ -153,14 +225,15 @@
       "lng": -155.25,
       "region": "Volcano",
       "route": "hawaii_volcanoes",
-      "audio_mix": {
-        "forest": 0.5,
-        "birds": 0.4,
-        "wind": 0.1
+      "audio": {
+        "birds": 0.5,
+        "wind": 0.3
       },
-      "nearby": [
-        "Kilauea Visitor Center"
-      ]
+      "atmosphere": {
+        "mist": true,
+        "volcanic": false
+      },
+      "nearby": ["Kilauea Visitor Center"]
     },
     {
       "name": "Kilauea Visitor Center",
@@ -169,15 +242,15 @@
       "lng": -155.2579,
       "region": "Volcano",
       "route": "hawaii_volcanoes",
-      "audio_mix": {
-        "forest": 0.4,
+      "audio": {
         "birds": 0.4,
-        "ambient": "visitor_center"
+        "wind": 0.3
       },
-      "nearby": [
-        "Park Entrance",
-        "Steam Vents"
-      ]
+      "atmosphere": {
+        "mist": true,
+        "volcanic": false
+      },
+      "nearby": ["Park Entrance", "Steam Vents"]
     },
     {
       "name": "Steam Vents",
@@ -186,18 +259,17 @@
       "lng": -155.261,
       "region": "Volcano",
       "route": "hawaii_volcanoes",
-      "audio_mix": {
-        "steam": 0.5,
-        "wind": 0.3,
-        "volcanic": 0.2
+      "audio": {
+        "volcanic": 0.6,
+        "wind": 0.5
       },
-      "nearby": [
-        "Kilauea Visitor Center",
-        "Jaggar Museum Overlook"
-      ],
+      "atmosphere": {
+        "mist": true,
+        "volcanic": true
+      },
+      "nearby": ["Kilauea Visitor Center", "Jaggar Museum Overlook"],
       "pano_id": "LwhblGlGuH7iVJp7uD7qwg",
       "panorama_path": "/mnt/c/Users/clayt/OneDrive/Documents/dc-bigislandvr-3/panoramas/processed/895966e45fd7_panorama.jpg",
-      "depth_path": null,
       "processed": true
     },
     {
@@ -207,18 +279,17 @@
       "lng": -155.2879,
       "region": "Volcano",
       "route": "hawaii_volcanoes",
-      "audio_mix": {
-        "wind": 0.5,
-        "volcanic": 0.3,
-        "ambient": "crater_overlook"
+      "audio": {
+        "wind": 0.6,
+        "volcanic": 0.5
       },
-      "nearby": [
-        "Steam Vents",
-        "Halema'uma'u Crater"
-      ],
+      "atmosphere": {
+        "mist": true,
+        "volcanic": true
+      },
+      "nearby": ["Steam Vents", "Halema'uma'u Crater"],
       "pano_id": "t3o3vDEgI14Jqq16F0n0wg",
       "panorama_path": "/mnt/c/Users/clayt/OneDrive/Documents/dc-bigislandvr-3/panoramas/processed/3993a37ba38e_panorama.jpg",
-      "depth_path": null,
       "processed": true
     },
     {
@@ -228,15 +299,15 @@
       "lng": -155.281,
       "region": "Volcano",
       "route": "hawaii_volcanoes",
-      "audio_mix": {
-        "volcanic": 0.5,
-        "wind": 0.4,
-        "rumble": 0.1
+      "audio": {
+        "volcanic": 0.8,
+        "wind": 0.6
       },
-      "nearby": [
-        "Jaggar Museum Overlook",
-        "Chain of Craters Road"
-      ]
+      "atmosphere": {
+        "mist": true,
+        "volcanic": true
+      },
+      "nearby": ["Jaggar Museum Overlook", "Chain of Craters Road"]
     },
     {
       "name": "Chain of Craters Road",
@@ -245,15 +316,16 @@
       "lng": -155.145,
       "region": "Volcano",
       "route": "hawaii_volcanoes",
-      "audio_mix": {
-        "wind": 0.5,
-        "volcanic_desert": 0.3,
+      "audio": {
+        "wind": 0.6,
+        "volcanic": 0.3,
         "birds": 0.2
       },
-      "nearby": [
-        "Halema'uma'u Crater",
-        "Holei Sea Arch"
-      ]
+      "atmosphere": {
+        "mist": false,
+        "volcanic": true
+      },
+      "nearby": ["Halema'uma'u Crater", "Holei Sea Arch"]
     },
     {
       "name": "Holei Sea Arch",
@@ -262,14 +334,15 @@
       "lng": -155.097,
       "region": "Volcano",
       "route": "hawaii_volcanoes",
-      "audio_mix": {
-        "ocean": 0.6,
-        "wind": 0.3,
-        "waves_crash": 0.1
+      "audio": {
+        "ocean": 0.7,
+        "wind": 0.5
       },
-      "nearby": [
-        "Chain of Craters Road"
-      ]
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "nearby": ["Chain of Craters Road"]
     },
     {
       "name": "Saddle Road Start (Hilo Side)",
@@ -278,14 +351,15 @@
       "lng": -155.14,
       "region": "Saddle",
       "route": "saddle_road",
-      "audio_mix": {
-        "forest": 0.4,
-        "birds": 0.4,
-        "wind": 0.2
+      "audio": {
+        "birds": 0.5,
+        "wind": 0.3
       },
-      "nearby": [
-        "Mauna Kea Access Road"
-      ]
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "nearby": ["Mauna Kea Access Road"]
     },
     {
       "name": "Mauna Kea Access Road",
@@ -294,15 +368,15 @@
       "lng": -155.456,
       "region": "Saddle",
       "route": "saddle_road",
-      "audio_mix": {
-        "highland": 0.4,
-        "wind": 0.5,
-        "birds": 0.1
+      "audio": {
+        "wind": 0.7,
+        "birds": 0.2
       },
-      "nearby": [
-        "Saddle Road Start (Hilo Side)",
-        "Pu'u Huluhulu"
-      ]
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "nearby": ["Saddle Road Start (Hilo Side)", "Pu'u Huluhulu"]
     },
     {
       "name": "Pu'u Huluhulu",
@@ -311,15 +385,15 @@
       "lng": -155.432,
       "region": "Saddle",
       "route": "saddle_road",
-      "audio_mix": {
-        "forest": 0.5,
-        "birds": 0.3,
-        "wind": 0.2
+      "audio": {
+        "birds": 0.5,
+        "wind": 0.4
       },
-      "nearby": [
-        "Mauna Kea Access Road",
-        "Kipuka Ki"
-      ]
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "nearby": ["Mauna Kea Access Road", "Kipuka Ki"]
     },
     {
       "name": "Kipuka Ki",
@@ -328,15 +402,15 @@
       "lng": -155.41,
       "region": "Saddle",
       "route": "saddle_road",
-      "audio_mix": {
-        "forest": 0.6,
-        "birds": 0.3,
-        "wind": 0.1
+      "audio": {
+        "birds": 0.6,
+        "wind": 0.3
       },
-      "nearby": [
-        "Pu'u Huluhulu",
-        "Saddle Summit"
-      ]
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "nearby": ["Pu'u Huluhulu", "Saddle Summit"]
     },
     {
       "name": "Saddle Summit",
@@ -345,14 +419,14 @@
       "lng": -155.52,
       "region": "Saddle",
       "route": "saddle_road",
-      "audio_mix": {
-        "wind": 0.6,
-        "highland": 0.3,
-        "silence": 0.1
+      "audio": {
+        "wind": 0.9
       },
-      "nearby": [
-        "Kipuka Ki"
-      ]
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "nearby": ["Kipuka Ki"]
     },
     {
       "name": "Kailua-Kona Pier",
@@ -361,14 +435,16 @@
       "lng": -155.996,
       "region": "Kona",
       "route": "kona_coast",
-      "audio_mix": {
-        "ocean": 0.4,
-        "harbor": 0.3,
-        "town": 0.3
+      "audio": {
+        "ocean": 0.8,
+        "birds": 0.2,
+        "wind": 0.2
       },
-      "nearby": [
-        "Ali'i Drive"
-      ]
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "nearby": ["Ali'i Drive"]
     },
     {
       "name": "Ali'i Drive",
@@ -377,15 +453,16 @@
       "lng": -155.99,
       "region": "Kona",
       "route": "kona_coast",
-      "audio_mix": {
-        "ocean": 0.5,
-        "traffic_light": 0.2,
-        "birds": 0.3
+      "audio": {
+        "ocean": 0.6,
+        "birds": 0.3,
+        "wind": 0.2
       },
-      "nearby": [
-        "Kailua-Kona Pier",
-        "Magic Sands Beach"
-      ]
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "nearby": ["Kailua-Kona Pier", "Magic Sands Beach"]
     },
     {
       "name": "Magic Sands Beach",
@@ -394,15 +471,15 @@
       "lng": -155.969,
       "region": "Kona",
       "route": "kona_coast",
-      "audio_mix": {
-        "ocean": 0.6,
-        "waves_crash": 0.3,
-        "birds": 0.1
+      "audio": {
+        "ocean": 0.9,
+        "wind": 0.3
       },
-      "nearby": [
-        "Ali'i Drive",
-        "Keauhou Bay"
-      ]
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "nearby": ["Ali'i Drive", "Keauhou Bay"]
     },
     {
       "name": "Keauhou Bay",
@@ -411,15 +488,16 @@
       "lng": -155.964,
       "region": "Kona",
       "route": "kona_coast",
-      "audio_mix": {
-        "ocean": 0.5,
-        "harbor": 0.2,
-        "birds": 0.3
+      "audio": {
+        "ocean": 0.6,
+        "birds": 0.3,
+        "wind": 0.2
       },
-      "nearby": [
-        "Magic Sands Beach",
-        "Kealakekua Bay"
-      ]
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "nearby": ["Magic Sands Beach", "Kealakekua Bay"]
     },
     {
       "name": "Kealakekua Bay",
@@ -428,14 +506,15 @@
       "lng": -155.931,
       "region": "Kona",
       "route": "kona_coast",
-      "audio_mix": {
-        "ocean": 0.6,
-        "dolphins": 0.2,
-        "birds": 0.2
+      "audio": {
+        "ocean": 0.7,
+        "birds": 0.3
       },
-      "nearby": [
-        "Keauhou Bay"
-      ]
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "nearby": ["Keauhou Bay"]
     },
     {
       "name": "Akaka Falls",
@@ -444,14 +523,16 @@
       "lng": -155.152,
       "region": "Hamakua",
       "route": "hamakua_coast",
-      "audio_mix": {
-        "waterfall": 0.6,
-        "forest": 0.3,
-        "birds": 0.1
+      "audio": {
+        "waterfall": 0.9,
+        "birds": 0.4,
+        "wind": 0.2
       },
-      "nearby": [
-        "Honoka'a Town"
-      ]
+      "atmosphere": {
+        "mist": true,
+        "volcanic": false
+      },
+      "nearby": ["Honoka'a Town"]
     },
     {
       "name": "Waipio Valley Lookout",
@@ -460,14 +541,16 @@
       "lng": -155.587,
       "region": "Hamakua",
       "route": "hamakua_coast",
-      "audio_mix": {
-        "wind": 0.4,
-        "ocean_distant": 0.3,
-        "forest": 0.3
+      "audio": {
+        "wind": 0.5,
+        "ocean": 0.3,
+        "birds": 0.4
       },
-      "nearby": [
-        "Honoka'a Town"
-      ]
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "nearby": ["Honoka'a Town"]
     },
     {
       "name": "Honoka'a Town",
@@ -476,15 +559,15 @@
       "lng": -155.468,
       "region": "Hamakua",
       "route": "hamakua_coast",
-      "audio_mix": {
-        "town": 0.4,
-        "wind": 0.3,
-        "birds": 0.3
+      "audio": {
+        "birds": 0.4,
+        "wind": 0.3
       },
-      "nearby": [
-        "Akaka Falls",
-        "Waipio Valley Lookout"
-      ]
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "nearby": ["Akaka Falls", "Waipio Valley Lookout"]
     },
     {
       "name": "Laupahoehoe Point",
@@ -493,15 +576,15 @@
       "lng": -155.237,
       "region": "Hamakua",
       "route": "hamakua_coast",
-      "audio_mix": {
-        "ocean": 0.6,
-        "waves_crash": 0.3,
-        "wind": 0.1
+      "audio": {
+        "ocean": 0.8,
+        "wind": 0.4
       },
-      "nearby": [
-        "Akaka Falls",
-        "Honoka'a Town"
-      ]
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "nearby": ["Akaka Falls", "Honoka'a Town"]
     },
     {
       "name": "South Point Road",
@@ -510,14 +593,15 @@
       "lng": -155.67,
       "region": "Ka'u",
       "route": "south_point",
-      "audio_mix": {
-        "wind": 0.6,
-        "grassland": 0.3,
-        "birds": 0.1
+      "audio": {
+        "wind": 0.7,
+        "birds": 0.2
       },
-      "nearby": [
-        "Ka Lae (South Point)"
-      ]
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "nearby": ["Ka Lae (South Point)"]
     },
     {
       "name": "Ka Lae (South Point)",
@@ -526,15 +610,15 @@
       "lng": -155.682,
       "region": "Ka'u",
       "route": "south_point",
-      "audio_mix": {
-        "wind": 0.5,
-        "ocean": 0.4,
-        "cliffs": 0.1
+      "audio": {
+        "wind": 0.8,
+        "ocean": 0.5
       },
-      "nearby": [
-        "South Point Road",
-        "Green Sand Beach Trailhead"
-      ]
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "nearby": ["South Point Road", "Green Sand Beach Trailhead"]
     },
     {
       "name": "Green Sand Beach Trailhead",
@@ -543,15 +627,15 @@
       "lng": -155.652,
       "region": "Ka'u",
       "route": "south_point",
-      "audio_mix": {
-        "wind": 0.5,
-        "ocean_distant": 0.3,
-        "desert": 0.2
+      "audio": {
+        "wind": 0.7,
+        "ocean": 0.3
       },
-      "nearby": [
-        "Ka Lae (South Point)",
-        "Punalu'u Black Sand Beach"
-      ]
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "nearby": ["Ka Lae (South Point)", "Punalu'u Black Sand Beach"]
     },
     {
       "name": "Punalu'u Black Sand Beach",
@@ -560,68 +644,23 @@
       "lng": -155.505,
       "region": "Ka'u",
       "route": "south_point",
-      "audio_mix": {
-        "ocean": 0.5,
-        "waves_gentle": 0.3,
-        "palms": 0.2
+      "audio": {
+        "ocean": 0.7,
+        "birds": 0.3,
+        "wind": 0.2
       },
-      "nearby": [
-        "Green Sand Beach Trailhead"
-      ]
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "nearby": ["Green Sand Beach Trailhead"]
     }
   ],
-  "audio_presets": {
-    "rainforest_light": {
-      "description": "Light rainfall, tropical birds, gentle rustling",
-      "layers": [
-        "rain_light",
-        "birds_tropical",
-        "leaves_rustle"
-      ]
-    },
-    "garden_peaceful": {
-      "description": "Koi pond, gentle breeze, songbirds",
-      "layers": [
-        "water_pond",
-        "wind_gentle",
-        "birds_song"
-      ]
-    },
-    "crater_overlook": {
-      "description": "Wind, volcanic ambiance, distant rumble",
-      "layers": [
-        "wind_strong",
-        "volcanic_hum",
-        "silence"
-      ]
-    },
-    "small_town": {
-      "description": "Light activity, birds, occasional car",
-      "layers": [
-        "ambient_town",
-        "birds_general",
-        "traffic_distant"
-      ]
-    },
-    "visitor_center": {
-      "description": "Indoor/outdoor transition, people, exhibits",
-      "layers": [
-        "people_murmur",
-        "birds_outside",
-        "indoor_ambient"
-      ]
-    }
-  },
   "metadata": {
-    "total_locations": 28,
-    "regions": [
-      "Hilo",
-      "Volcano",
-      "Saddle",
-      "Kona",
-      "Hamakua",
-      "Ka'u"
-    ],
+    "total_locations": 32,
+    "regions": ["Hilo", "Volcano", "Saddle", "Kona", "Hamakua", "Ka'u"],
+    "audio_tracks": 6,
+    "atmosphere_effects": 3,
     "api_key": "AIzaSyBmSDHrsQunVjxhZ4UHQ0asdUY6vZVFszY",
     "coordinate_system": "WGS84",
     "projection": "equirectangular"
