@@ -1,51 +1,91 @@
 # 🌴 Big Island VR - Explore Hawaiʻi
 
-An immersive 360° virtual reality experience of the Big Island of Hawaii using real Google Street View panoramas.
+> **E komo mai** — Welcome to an immersive 360° virtual reality experience of the Big Island of Hawaii!
 
-**E komo mai** — Welcome!
+[![Version](https://img.shields.io/badge/version-3.0.0-blue.svg)](https://github.com/claytondb/dc-bigislandvr-3)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Made with Aloha](https://img.shields.io/badge/Made%20with-Aloha%20🌺-ff69b4.svg)](#)
+
+Experience the Big Island through authentic Google Street View panoramas with immersive ambient audio, dynamic weather effects, and beautiful time-of-day atmospherics.
+
+---
 
 ## ✨ Features
 
-### 🗺️ Real Locations
-Explore the Big Island through authentic Street View panoramas:
+### 🗺️ 32 Authentic Locations
 
-- **Hilo Area** - Bayfront, Banyan Drive, Coconut Island, Downtown
-- **Volcano** - Steam Vents, Jaggar Museum Overlook, Kilauea Caldera
-- **Kona Coast** - Coming soon
-- **Hamakua Coast** - Coming soon
+Explore the entire Big Island through real Street View panoramas:
 
-### 🥽 WebXR VR Mode
-- **"Enter VR" button** - Works on Meta Quest browser
-- **VR controller support** - Point and trigger to teleport
-- **Gaze-based selection** - Fallback for Cardboard-style viewers
-- **VR-optimized UI panels** - Floating, readable at distance
-- **Clean exit** - Look down to find exit button
+| Region | Locations |
+|--------|-----------|
+| **Hilo** | Bayfront, Banyan Drive, Rainbow Falls, Farmers Market, Pepeʻekeo Scenic Drive |
+| **Hamakua Coast** | Akaka Falls, Waipiʻo Valley Lookout, Honokaʻa Town, Laupāhoehoe Point |
+| **Volcano** | Village, National Park Entrance, Kīlauea Crater Rim, Chain of Craters, Thurston Lava Tube |
+| **Kaʻū District** | Punalu'u Black Sand Beach, South Point (Ka Lae), Nāʻālehu Town |
+| **Kona Coast** | Aliʻi Drive, Kailua Pier, Keauhou Bay, Kealakekua Bay, Place of Refuge, Hapuna Beach |
+| **Kohala** | Mauna Lani Resort, Waikoloa Village, Hāwī Town, Pololū Valley, Kapaʻau Town |
+| **Waimea & Saddle** | Waimea Town, Mauna Kea Access Road, Saddle Road Viewpoint |
+| **Puna** | Pāhoa Village |
 
-### 📱 Mobile Touch Optimization
-- **Pinch to zoom** - Adjust field of view with two fingers
-- **Swipe gestures** - Swipe left/right to change locations
-- **Bottom sheet** - Touch-friendly location selector
-- **Large touch targets** - Minimum 44px buttons
-- **Keyboard hints hidden** - Clean mobile interface
+### 🎯 Guided Tours
 
-### ⚡ Performance Optimization
-- **Lazy loading** - Street View loads only when needed
-- **Memory management** - Efficient transitions between locations
-- **Optimized particles** - Reduced effects on mobile
-- **Performance mode toggle** - Disable effects for best performance
+Six curated tour routes with auto-play:
 
-### 📲 PWA (Progressive Web App)
-- **Installable** - Add to Home Screen on mobile/desktop
-- **Offline shell** - Basic app shell cached via Service Worker
-- **App manifest** - Big Island branding and icons
-- **Splash screen** - Beautiful loading experience
+- 🌋 **Volcano Day Trip** — Explore Hawaiʻi Volcanoes National Park (6 stops)
+- 🏖️ **Kona Coast Explorer** — Historic Kona and beautiful beaches (6 stops)
+- 🌿 **Hamakua Heritage** — Waterfalls and valleys (4 stops)
+- 🤠 **North Kohala Adventure** — Cowboy country and hidden valleys (3 stops)
+- 🐢 **Southern Route** — Kaʻū beaches and South Point (3 stops)
+- ❤️ **My Favorites** — Your personally saved locations
 
-### ♿ Accessibility
-- **Screen reader support** - ARIA live regions announce location changes
-- **High contrast mode** - Toggle for better visibility
-- **Reduced motion** - Respects prefers-reduced-motion
-- **Keyboard navigation** - Full keyboard control throughout
-- **Skip links** - Skip to main content
+### 🎧 Immersive Audio
+
+Location-aware ambient soundscapes that crossfade smoothly:
+- 🌊 Ocean waves (louder at beaches)
+- 🐦 Tropical birds (quieter in rain)
+- 💨 Wind (stronger at high elevation)
+- 🌧️ Rain (adjustable intensity)
+- 🌋 Volcanic ambience (at Kīlauea)
+- 💧 Waterfall sounds (at Rainbow Falls & Akaka Falls)
+
+### 🌦️ Dynamic Weather & Atmosphere
+
+- **Rain Effect** — Canvas-rendered raindrops with wind influence
+- **Mist/Fog** — Animated atmospheric overlay for misty locations
+- **Time of Day** — Dawn, Day, Dusk, and Night filters
+- **Volcanic Haze** — Special atmosphere for volcano areas
+
+### ❤️ Favorites System
+
+- Click the heart icon to save favorite locations
+- Favorites appear in the dropdown menu
+- "My Favorites" tour option
+- Persisted to localStorage
+
+### 📷 Photo Mode
+
+- Hide all UI for clean screenshots
+- One-click screenshot download
+- Share button copies direct link to location
+- Press `P` to toggle
+
+### ⚙️ Settings Panel
+
+- **Quality Presets** — Low, Medium, High, Ultra
+- **Audio Controls** — Master volume, auto-play toggle
+- **Visual Effects** — Weather, atmosphere, transitions
+- **Tour Duration** — Adjustable auto-play interval
+- **Favorites Management** — View and remove favorites
+- **Data Management** — Clear all saved preferences
+
+### 🎉 Welcome Experience
+
+- First-time visitor welcome modal
+- Feature highlights
+- Quick-start options (Explore or Take Tour)
+- "Don't show again" option
+
+---
 
 ## ⌨️ Keyboard Shortcuts
 
@@ -53,104 +93,159 @@ Explore the Big Island through authentic Street View panoramas:
 |-----|--------|
 | `←` `→` | Previous / Next location |
 | `Space` | Toggle auto-play |
+| `P` | Toggle photo mode |
 | `F` | Toggle fullscreen |
-| `L` | Open location list |
-| `V` | Enter VR mode |
-| `A` | Open accessibility options |
-| `Esc` | Exit VR / Close panels |
+| `M` | Mute / Unmute audio |
+| `Esc` | Exit photo mode / Close panels |
 
-## 🎛️ Ambient Effects
+---
 
-Each location has unique ambient audio and visual effects:
+## 🚀 Getting Started
 
-- 🌧️ Rain overlay
-- 💨 Wind sounds
-- 🐦 Bird sounds  
-- 🌊 Ocean waves
-- 🌋 Volcanic atmosphere
-- 🌫️ Mist particles
+### Option 1: Direct Use
+Simply open `index.html` in a modern browser. No build step required!
 
-## 🖥️ Usage
-
-### Quick Start
+### Option 2: Local Server
+For the best experience (especially for audio):
 ```bash
-# Serve the public folder
-cd public
+# Python 3
 python -m http.server 8000
-# or
-npx serve
+
+# Node.js
+npx serve .
 ```
+Then open `http://localhost:8000`
 
-Then open http://localhost:8000 in your browser.
+### Option 3: Deploy
+Upload `index.html` to any static hosting:
+- GitHub Pages
+- Netlify
+- Vercel
+- Cloudflare Pages
+- Any web server
 
-### VR Mode Requirements
-- **Quest Browser**: Built-in WebXR support
-- **Chrome on Android**: With WebXR enabled
-- **Mobile Cardboard**: Fallback gaze-based controls
+---
 
-## 📁 Project Structure
+## 📱 Browser Support
 
-```
-dc-bigislandvr-3/
-├── public/
-│   ├── index.html        # Main application (single file)
-│   ├── manifest.json     # PWA manifest
-│   ├── sw.js            # Service worker
-│   ├── icons/           # PWA icons
-│   └── generate-icons.html # Icon generator tool
-├── panoramas/
-│   ├── locations.json   # Location database
-│   ├── processed/       # Full panorama images
-│   ├── tiles/          # Tiled panoramas for LOD
-│   └── stitched/       # Raw stitched images
-├── audio/
-│   └── SOURCES.md      # Audio attribution
-├── scripts/            # Processing scripts
-└── docs/              # Design documentation
-```
+| Browser | Support |
+|---------|---------|
+| Chrome | ✅ Recommended |
+| Firefox | ✅ Full support |
+| Safari | ✅ Full support |
+| Edge | ✅ Full support |
+| Mobile browsers | ✅ Responsive design |
 
-## 🔧 Technical Details
-
-- **Single-file architecture** - Everything in one HTML file
-- **Google Street View API** - Real panorama imagery
-- **WebXR API** - Native VR headset support
-- **Web Audio API** - Ambient sound system
-- **Service Worker** - Offline caching
-- **CSS Variables** - Hawaiian-themed design tokens
+---
 
 ## 🎨 Design System
 
 Hawaiian-inspired color palette:
 
-| Token | Color | Use |
-|-------|-------|-----|
-| Kona Blue | `#0D3B66` | Deep ocean |
+| Token | Hex | Usage |
+|-------|-----|-------|
+| Kona Blue | `#0D3B66` | Deep backgrounds |
 | Pacific Teal | `#1A6B7C` | Ocean tones |
-| Seafoam | `#7FCDCD` | Accents |
+| Shallow Water | `#3DA5D9` | Focus states |
+| Seafoam | `#7FCDCD` | Accents, labels |
 | Ti Leaf | `#2A9D8F` | Primary actions |
-| Pikake | `#F4A261` | Highlights |
-| Hibiscus | `#E63946` | Alerts |
+| Pikake | `#F4A261` | Tours, highlights |
+| Hibiscus | `#E63946` | Alerts, favorites |
+| Orchid | `#9B5DE5` | Special buttons |
 | Lava Black | `#1A1A1A` | Backgrounds |
 | Plumeria | `#FAF8F5` | Text |
 
-## 📱 Browser Support
+Typography:
+- **Display**: DM Sans
+- **Primary**: Inter
+- **Accent**: Lora (italic)
 
-| Browser | Desktop | Mobile | VR |
-|---------|---------|--------|-----|
-| Chrome | ✅ | ✅ | ✅ |
-| Firefox | ✅ | ✅ | ⚠️ |
-| Safari | ✅ | ✅ | ❌ |
-| Edge | ✅ | ✅ | ✅ |
-| Quest Browser | - | - | ✅ |
+---
+
+## 📸 Screenshots
+
+*Coming soon! Take your own with Photo Mode (P key)*
+
+---
+
+## 🔧 Technical Details
+
+- **Single-file architecture** — Everything in one HTML file (~100KB)
+- **Zero dependencies** — Just Google Maps/Street View APIs
+- **Web Audio API** — Spatial audio mixing and crossfades
+- **Canvas API** — Efficient rain animation
+- **CSS Custom Properties** — Themeable design tokens
+- **localStorage** — Persistent preferences and favorites
+- **URL sharing** — `?loc=ID` parameter for direct location links
+
+### API Usage
+This project uses the Google Maps JavaScript API and Street View API. The included API key is for demo purposes.
+
+---
+
+## 🔒 Privacy
+
+- No tracking or analytics
+- All preferences stored locally in your browser
+- No data sent to external servers (except Google Maps API)
+
+---
+
+## 📝 Changelog
+
+### Version 3.0.0 (Current)
+- ✨ Expanded to 32 locations across all regions
+- 🎯 6 guided tour routes
+- ❤️ Favorites system with localStorage persistence
+- 📷 Photo mode with screenshot & share
+- ⚙️ Comprehensive settings panel
+- 🎉 Welcome/onboarding modal
+- 🎨 Quality presets (Low/Medium/High/Ultra)
+- 🔊 Improved audio with crossfading
+- 🌦️ Dynamic weather effects
+- ☀️ Time of day atmospherics
+- 🗺️ Interactive mini-map
+- 📱 Improved mobile responsiveness
+
+---
 
 ## 📄 License
 
-MIT License - Feel free to use and modify!
+MIT License — Feel free to use, modify, and share!
+
+---
+
+## 🎵 Audio Credits
+
+All ambient sounds are CC0/Public Domain from [Freesound.org](https://freesound.org):
+- Ocean waves
+- Tropical birds
+- Wind ambience
+- Rain sounds
+- Waterfall
+- Volcanic rumble
+
+---
+
+## 🤝 Contributing
+
+Contributions welcome! Ideas for improvement:
+- Additional locations
+- New tour routes
+- Accessibility improvements
+- Performance optimizations
+- Localization
+
+---
 
 ## 🌺 Mahalo!
 
 Made with aloha for Hawaii lovers everywhere.
 
+*"The Big Island is not just a destination—it's a state of mind."*
+
 ---
 
-*"The Big Island is not just a destination—it's a state of mind."*
+<p align="center">
+  <img src="https://img.shields.io/badge/Built%20with-🌴%20Aloha-success" alt="Built with Aloha">
+</p>

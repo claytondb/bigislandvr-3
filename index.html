@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="description" content="Explore the Big Island of Hawaii through immersive 360° Street View panoramas with ambient audio">
     <meta name="theme-color" content="#0D3B66">
+    <meta property="og:title" content="Big Island VR - Explore Hawaiʻi">
+    <meta property="og:description" content="Immersive 360° virtual tour of Hawaii's Big Island with ambient sounds">
+    <meta property="og:type" content="website">
     <title>Big Island VR - Explore Hawaiʻi</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -40,6 +43,7 @@
         #viewer { width: 100vw; height: 100vh; position: relative; }
         #street-view-container { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
         
+        /* Loading Screen */
         #loading { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, var(--color-kona-blue) 0%, var(--color-pacific-teal) 50%, var(--color-lava-black) 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; transition: opacity var(--duration-slow) var(--ease-out-expo); }
         #loading.hidden { opacity: 0; pointer-events: none; }
         .loading-logo { font-size: 4rem; margin-bottom: var(--space-4); animation: float 3s ease-in-out infinite; }
@@ -52,9 +56,11 @@
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
         .loading-location { color: rgba(255, 255, 255, 0.6); font-size: 0.875rem; }
         
+        /* Transition Overlay */
         #transition-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: var(--color-lava-black); z-index: 15; opacity: 0; pointer-events: none; transition: opacity 0.5s ease-in-out; }
         #transition-overlay.active { opacity: 1; }
         
+        /* Atmosphere Layers */
         #atmosphere-layer { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 18; transition: all 0.8s ease; }
         .time-dawn { background: linear-gradient(180deg, rgba(255, 180, 120, 0.15) 0%, rgba(255, 100, 50, 0.1) 30%, transparent 60%); }
         .time-day { background: transparent; }
@@ -66,9 +72,15 @@
         @keyframes mistDrift { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-20px) scale(1.05); } }
         #mist-layer.volcanic { background: radial-gradient(ellipse at 50% 100%, rgba(150, 140, 130, 0.5) 0%, rgba(120, 115, 110, 0.3) 50%, transparent 80%); }
         
+        /* Info Panel */
         #info { position: absolute; top: var(--space-5); left: var(--space-5); background: rgba(26, 26, 26, 0.85); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); padding: var(--space-4) var(--space-5); border-radius: var(--radius-lg); border: 1px solid rgba(255, 255, 255, 0.08); z-index: 50; max-width: 320px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05); animation: fadeUp var(--duration-slow) var(--ease-out-expo); }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .info-brand { display: flex; align-items: center; gap: var(--space-2); font-family: var(--font-display); font-size: 0.875rem; font-weight: 500; color: var(--color-seafoam); margin-bottom: var(--space-3); padding-bottom: var(--space-3); border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+        .info-header { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); margin-bottom: var(--space-3); padding-bottom: var(--space-3); border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+        .info-brand { display: flex; align-items: center; gap: var(--space-2); font-family: var(--font-display); font-size: 0.875rem; font-weight: 500; color: var(--color-seafoam); }
+        .favorite-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; transition: transform var(--duration-fast) var(--ease-natural); padding: var(--space-1); }
+        .favorite-btn:hover { transform: scale(1.2); }
+        .favorite-btn.active { animation: heartPop 0.3s ease; }
+        @keyframes heartPop { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.3); } }
         #location-name { font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; margin-bottom: var(--space-1); line-height: 1.2; }
         #location-desc { font-size: 0.875rem; color: rgba(255, 255, 255, 0.6); line-height: 1.4; margin-bottom: var(--space-3); }
         .location-dots { display: flex; gap: var(--space-1); margin-bottom: var(--space-2); flex-wrap: wrap; }
@@ -76,8 +88,10 @@
         .location-dot:hover { transform: scale(1.3); background: var(--color-seafoam); }
         .location-dot.active { width: 10px; height: 10px; background: var(--color-ti-leaf); box-shadow: 0 0 10px rgba(42, 157, 143, 0.5); }
         .location-dot.visited { background: var(--color-seafoam); }
+        .location-dot.favorite { background: var(--color-hibiscus); }
         #location-counter { font-size: 0.75rem; color: var(--color-seafoam); font-weight: 500; letter-spacing: 0.02em; }
         
+        /* Location Selector */
         #location-selector { position: absolute; top: var(--space-5); left: 50%; transform: translateX(-50%); z-index: 50; animation: fadeUp var(--duration-slow) var(--ease-out-expo) 0.1s both; }
         #location-dropdown { background: rgba(26, 26, 26, 0.85); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: var(--radius-md); color: var(--color-plumeria); padding: var(--space-3) var(--space-5); padding-right: var(--space-6); font-family: var(--font-primary); font-size: 0.95rem; cursor: pointer; min-width: 280px; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237FCDCD' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; transition: all var(--duration-fast) var(--ease-natural); }
         #location-dropdown:hover { border-color: var(--color-seafoam); }
@@ -85,11 +99,14 @@
         #location-dropdown option { background: var(--color-pahoehoe); color: var(--color-plumeria); padding: var(--space-2); }
         #location-dropdown optgroup { background: var(--color-lava-black); color: var(--color-seafoam); font-weight: 600; }
         
+        /* Mini Map */
         #mini-map-container { position: absolute; bottom: var(--space-5); left: var(--space-5); width: 200px; height: 150px; background: rgba(26, 26, 26, 0.85); backdrop-filter: blur(20px); border-radius: var(--radius-lg); border: 1px solid rgba(255, 255, 255, 0.08); overflow: hidden; z-index: 50; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4); animation: fadeUp var(--duration-slow) var(--ease-out-expo) 0.2s both; }
         #mini-map { width: 100%; height: 100%; }
         .mini-map-label { position: absolute; bottom: 0; left: 0; right: 0; padding: var(--space-2); background: linear-gradient(transparent, rgba(0,0,0,0.7)); font-size: 0.7rem; color: var(--color-seafoam); text-align: center; pointer-events: none; }
         
-        #effects { position: absolute; top: var(--space-5); right: var(--space-5); background: rgba(26, 26, 26, 0.85); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); padding: var(--space-4); border-radius: var(--radius-lg); border: 1px solid rgba(255, 255, 255, 0.08); z-index: 50; min-width: 240px; max-height: 80vh; overflow-y: auto; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05); animation: fadeUp var(--duration-slow) var(--ease-out-expo) 0.1s both; }
+        /* Effects Panel */
+        #effects { position: absolute; top: var(--space-5); right: var(--space-5); background: rgba(26, 26, 26, 0.85); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); padding: var(--space-4); border-radius: var(--radius-lg); border: 1px solid rgba(255, 255, 255, 0.08); z-index: 50; min-width: 240px; max-height: 80vh; overflow-y: auto; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05); animation: fadeUp var(--duration-slow) var(--ease-out-expo) 0.1s both; transition: transform var(--duration-normal) var(--ease-out-expo), opacity var(--duration-normal) var(--ease-out-expo); }
+        #effects.collapsed { transform: translateX(calc(100% + var(--space-5))); opacity: 0; pointer-events: none; }
         .effects-header { display: flex; align-items: center; gap: var(--space-2); font-size: 0.875rem; font-weight: 500; color: var(--color-seafoam); margin-bottom: var(--space-3); padding-bottom: var(--space-3); border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
         .effects-section { margin-bottom: var(--space-4); padding-bottom: var(--space-3); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
         .effects-section:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
@@ -122,25 +139,41 @@
         .volume-slider { -webkit-appearance: none; width: 100%; height: 6px; background: linear-gradient(90deg, var(--color-ti-leaf) 0%, var(--color-volcanic-ash) 100%); border-radius: 3px; outline: none; }
         .volume-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: linear-gradient(135deg, var(--color-plumeria), #E0E0E0); border-radius: 50%; cursor: pointer; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); }
         
+        /* Quality Presets */
+        .quality-presets { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+        .quality-btn { flex: 1; min-width: 50px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: var(--radius-sm); padding: var(--space-2); cursor: pointer; font-size: 0.7rem; color: var(--color-plumeria); transition: all var(--duration-fast) var(--ease-natural); text-align: center; }
+        .quality-btn:hover { background: rgba(255, 255, 255, 0.1); border-color: var(--color-seafoam); }
+        .quality-btn.active { background: rgba(155, 93, 229, 0.3); border-color: var(--color-orchid); }
+        
+        /* Audio Unlock Button */
         #audio-unlock { display: none; position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, var(--color-ti-leaf), var(--color-pacific-teal)); border: none; padding: var(--space-3) var(--space-5); border-radius: var(--radius-xl); color: white; font-family: var(--font-primary); font-size: 0.9rem; font-weight: 500; cursor: pointer; z-index: 200; box-shadow: 0 4px 20px rgba(42, 157, 143, 0.4); animation: pulse 2s ease-in-out infinite; }
         #audio-unlock.visible { display: flex; align-items: center; gap: var(--space-2); }
         @keyframes pulse { 0%, 100% { transform: translateX(-50%) scale(1); } 50% { transform: translateX(-50%) scale(1.05); } }
         
+        /* Controls */
         #controls { position: absolute; bottom: var(--space-5); left: 50%; transform: translateX(-50%); display: flex; gap: var(--space-3); z-index: 50; animation: fadeUp var(--duration-slow) var(--ease-out-expo) 0.2s both; }
         .control-btn { background: rgba(26, 26, 26, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--color-plumeria); padding: var(--space-3) var(--space-5); border-radius: var(--radius-md); cursor: pointer; font-family: var(--font-primary); font-size: 0.875rem; font-weight: 500; transition: all var(--duration-fast) var(--ease-natural); display: flex; align-items: center; gap: var(--space-2); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3); }
         .control-btn:hover { background: rgba(42, 157, 143, 0.2); border-color: rgba(42, 157, 143, 0.4); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4); }
         .control-btn:active { transform: translateY(0); }
         .control-btn.active { background: rgba(42, 157, 143, 0.3); border-color: var(--color-ti-leaf); box-shadow: 0 0 20px rgba(42, 157, 143, 0.3); }
         
+        /* Right Bottom Controls */
+        #right-controls { position: absolute; bottom: var(--space-5); right: var(--space-5); display: flex; flex-direction: column; gap: var(--space-2); z-index: 50; animation: fadeUp var(--duration-slow) var(--ease-out-expo) 0.3s both; }
+        .icon-btn { background: rgba(26, 26, 26, 0.85); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--color-plumeria); width: 48px; height: 48px; border-radius: var(--radius-md); cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; transition: all var(--duration-fast) var(--ease-natural); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3); }
+        .icon-btn:hover { background: rgba(42, 157, 143, 0.2); border-color: var(--color-seafoam); transform: translateY(-2px); }
+        .icon-btn.active { background: rgba(42, 157, 143, 0.3); border-color: var(--color-ti-leaf); }
+        .icon-btn.purple { background: linear-gradient(135deg, var(--color-orchid), #7B4BC4); border: none; }
+        .icon-btn.purple:hover { transform: translateY(-2px) scale(1.05); }
+        
+        /* Hints */
         #hints { position: absolute; bottom: 90px; left: 50%; transform: translateX(-50%); background: rgba(26, 26, 26, 0.6); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: var(--space-2) var(--space-4); border-radius: var(--radius-xl); font-size: 0.75rem; color: rgba(255, 255, 255, 0.6); z-index: 50; white-space: nowrap; animation: fadeUp var(--duration-slow) var(--ease-out-expo) 0.3s both; }
         kbd { background: rgba(255, 255, 255, 0.1); padding: 2px 8px; border-radius: var(--radius-sm); margin: 0 2px; font-family: var(--font-primary); font-size: 0.75rem; border: 1px solid rgba(255, 255, 255, 0.1); }
         
+        /* Rain Canvas */
         #rain-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 20; opacity: 0; transition: opacity var(--duration-slow) var(--ease-natural); }
         #rain-canvas.active { opacity: 1; }
         
-        #fullscreen-btn { position: absolute; bottom: var(--space-5); right: var(--space-5); background: linear-gradient(135deg, var(--color-orchid), #7B4BC4); border: none; color: var(--color-plumeria); padding: var(--space-3) var(--space-5); border-radius: var(--radius-md); cursor: pointer; font-family: var(--font-primary); font-size: 0.875rem; font-weight: 500; display: flex; align-items: center; gap: var(--space-2); z-index: 50; box-shadow: 0 4px 20px rgba(155, 93, 229, 0.4); transition: all var(--duration-fast) var(--ease-natural); animation: fadeUp var(--duration-slow) var(--ease-out-expo) 0.3s both; }
-        #fullscreen-btn:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 6px 25px rgba(155, 93, 229, 0.5); }
-        
+        /* Error/Status Messages */
         #error-message { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(230, 57, 70, 0.9); color: white; padding: var(--space-5); border-radius: var(--radius-lg); text-align: center; z-index: 200; display: none; max-width: 400px; }
         #error-message h3 { margin-bottom: var(--space-2); }
         #error-message.visible { display: block; }
@@ -148,19 +181,72 @@
         #coverage-status { position: absolute; top: 80px; left: 50%; transform: translateX(-50%); background: rgba(244, 162, 97, 0.9); color: var(--color-lava-black); padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); font-size: 0.8rem; z-index: 60; display: none; }
         #coverage-status.visible { display: block; }
         
+        /* Welcome Modal */
+        #welcome-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px); z-index: 300; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity var(--duration-normal) var(--ease-natural); }
+        #welcome-modal.visible { opacity: 1; pointer-events: auto; }
+        .welcome-content { background: linear-gradient(135deg, var(--color-pahoehoe), var(--color-lava-black)); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: var(--radius-xl); padding: var(--space-6); max-width: 500px; text-align: center; transform: scale(0.9); transition: transform var(--duration-normal) var(--ease-out-expo); }
+        #welcome-modal.visible .welcome-content { transform: scale(1); }
+        .welcome-logo { font-size: 4rem; margin-bottom: var(--space-4); }
+        .welcome-title { font-family: var(--font-display); font-size: 2rem; font-weight: 600; margin-bottom: var(--space-2); background: linear-gradient(135deg, var(--color-plumeria), var(--color-seafoam)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .welcome-subtitle { font-family: var(--font-accent); font-style: italic; color: var(--color-seafoam); margin-bottom: var(--space-5); }
+        .welcome-features { text-align: left; margin-bottom: var(--space-5); }
+        .welcome-feature { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-2) 0; color: rgba(255, 255, 255, 0.8); font-size: 0.9rem; }
+        .welcome-feature-icon { font-size: 1.2rem; width: 30px; text-align: center; }
+        .welcome-actions { display: flex; flex-direction: column; gap: var(--space-3); }
+        .welcome-btn { background: linear-gradient(135deg, var(--color-ti-leaf), var(--color-pacific-teal)); border: none; color: white; padding: var(--space-4) var(--space-5); border-radius: var(--radius-md); font-family: var(--font-primary); font-size: 1rem; font-weight: 500; cursor: pointer; transition: all var(--duration-fast) var(--ease-natural); }
+        .welcome-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(42, 157, 143, 0.4); }
+        .welcome-btn.secondary { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); }
+        .welcome-btn.secondary:hover { background: rgba(255, 255, 255, 0.15); box-shadow: none; }
+        .welcome-checkbox { display: flex; align-items: center; justify-content: center; gap: var(--space-2); margin-top: var(--space-4); font-size: 0.8rem; color: rgba(255, 255, 255, 0.5); }
+        .welcome-checkbox input { width: 16px; height: 16px; cursor: pointer; }
+        
+        /* Settings Panel */
+        #settings-panel { position: fixed; top: 0; right: 0; bottom: 0; width: 320px; background: rgba(26, 26, 26, 0.95); backdrop-filter: blur(20px); border-left: 1px solid rgba(255, 255, 255, 0.1); z-index: 250; transform: translateX(100%); transition: transform var(--duration-normal) var(--ease-out-expo); overflow-y: auto; }
+        #settings-panel.open { transform: translateX(0); }
+        .settings-header { display: flex; align-items: center; justify-content: space-between; padding: var(--space-5); border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        .settings-title { font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; display: flex; align-items: center; gap: var(--space-2); }
+        .settings-close { background: none; border: none; color: var(--color-plumeria); font-size: 1.5rem; cursor: pointer; padding: var(--space-2); transition: transform var(--duration-fast); }
+        .settings-close:hover { transform: rotate(90deg); }
+        .settings-body { padding: var(--space-4); }
+        .settings-section { margin-bottom: var(--space-5); }
+        .settings-section-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-seafoam); margin-bottom: var(--space-3); font-weight: 500; }
+        
+        /* Photo Mode */
+        body.photo-mode #info,
+        body.photo-mode #effects,
+        body.photo-mode #controls,
+        body.photo-mode #hints,
+        body.photo-mode #location-selector,
+        body.photo-mode #mini-map-container,
+        body.photo-mode #right-controls,
+        body.photo-mode #coverage-status { opacity: 0; pointer-events: none; transition: opacity var(--duration-fast); }
+        body.photo-mode #photo-mode-controls { opacity: 1; pointer-events: auto; }
+        
+        #photo-mode-controls { position: fixed; bottom: var(--space-5); left: 50%; transform: translateX(-50%); display: flex; gap: var(--space-3); z-index: 60; opacity: 0; pointer-events: none; transition: opacity var(--duration-fast); }
+        .photo-btn { background: rgba(26, 26, 26, 0.9); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.2); color: var(--color-plumeria); padding: var(--space-3) var(--space-5); border-radius: var(--radius-md); cursor: pointer; font-family: var(--font-primary); font-size: 0.875rem; font-weight: 500; display: flex; align-items: center; gap: var(--space-2); transition: all var(--duration-fast); }
+        .photo-btn:hover { background: rgba(42, 157, 143, 0.3); transform: translateY(-2px); }
+        
+        /* Share Toast */
+        #share-toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--color-ti-leaf); color: white; padding: var(--space-3) var(--space-5); border-radius: var(--radius-md); font-size: 0.875rem; font-weight: 500; opacity: 0; transition: all var(--duration-fast); z-index: 400; pointer-events: none; }
+        #share-toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+        
+        /* Responsive */
         @media (max-width: 768px) {
             #info { top: auto; bottom: 160px; left: var(--space-4); right: var(--space-4); max-width: none; }
             #location-selector { top: var(--space-4); width: calc(100% - 32px); }
             #location-dropdown { width: 100%; min-width: auto; }
             #mini-map-container { display: none; }
-            #effects { position: fixed; top: auto; bottom: 0; left: 0; right: 0; border-radius: var(--radius-lg) var(--radius-lg) 0 0; transform: translateY(100%); transition: transform var(--duration-normal) var(--ease-out-expo); max-height: 60vh; }
+            #effects { position: fixed; top: auto; bottom: 0; left: 0; right: 0; border-radius: var(--radius-lg) var(--radius-lg) 0 0; transform: translateY(100%); max-height: 60vh; }
             #effects.open { transform: translateY(0); }
+            #effects.collapsed { transform: translateY(100%); }
             #controls { bottom: var(--space-4); }
             .control-btn { padding: var(--space-3) var(--space-4); }
             #hints { bottom: 80px; font-size: 0.7rem; }
-            #fullscreen-btn { bottom: auto; top: var(--space-4); right: var(--space-4); }
+            #right-controls { flex-direction: row; bottom: auto; top: var(--space-4); right: var(--space-4); }
             #loading h1 { font-size: 1.75rem; }
             .loading-subtitle { font-size: 0.95rem; padding: 0 var(--space-4); }
+            .welcome-content { margin: var(--space-4); padding: var(--space-5); }
+            #settings-panel { width: 100%; }
         }
         
         @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; } }
@@ -195,11 +281,14 @@
         </div>
         
         <div id="info">
-            <div class="info-brand"><span>🌴</span><span>Big Island VR</span></div>
+            <div class="info-header">
+                <div class="info-brand"><span>🌴</span><span>Big Island VR</span></div>
+                <button class="favorite-btn" id="favorite-btn" aria-label="Add to favorites">🤍</button>
+            </div>
             <h2 id="location-name">Loading...</h2>
             <p id="location-desc">Real 360° Street View from Hawaiʻi</p>
             <div class="location-dots" id="location-dots"></div>
-            <div id="location-counter">Location 1 of 15</div>
+            <div id="location-counter">Location 1 of 32</div>
         </div>
         
         <div id="mini-map-container">
@@ -253,14 +342,126 @@
             <button class="control-btn" id="next-btn" aria-label="Next location"><span>Next</span><span>➡️</span></button>
         </div>
         
-        <button id="fullscreen-btn" aria-label="Toggle fullscreen"><span>⛶</span><span>Fullscreen</span></button>
+        <div id="right-controls">
+            <button class="icon-btn" id="photo-mode-btn" aria-label="Photo mode" title="Photo Mode">📷</button>
+            <button class="icon-btn" id="settings-btn" aria-label="Settings" title="Settings">⚙️</button>
+            <button class="icon-btn purple" id="fullscreen-btn" aria-label="Toggle fullscreen" title="Fullscreen">⛶</button>
+        </div>
         
-        <div id="hints"><kbd>←</kbd> <kbd>→</kbd> Navigate · <kbd>Space</kbd> Auto-tour · Drag to look around</div>
+        <div id="photo-mode-controls">
+            <button class="photo-btn" id="screenshot-btn"><span>📸</span><span>Screenshot</span></button>
+            <button class="photo-btn" id="share-btn"><span>🔗</span><span>Share Link</span></button>
+            <button class="photo-btn" id="exit-photo-btn"><span>✕</span><span>Exit Photo Mode</span></button>
+        </div>
+        
+        <div id="hints"><kbd>←</kbd> <kbd>→</kbd> Navigate · <kbd>Space</kbd> Auto-tour · <kbd>P</kbd> Photo mode · Drag to look around</div>
     </div>
+    
+    <!-- Welcome Modal -->
+    <div id="welcome-modal">
+        <div class="welcome-content">
+            <div class="welcome-logo">🌴</div>
+            <h1 class="welcome-title">Aloha!</h1>
+            <p class="welcome-subtitle">Welcome to Big Island VR</p>
+            <div class="welcome-features">
+                <div class="welcome-feature"><span class="welcome-feature-icon">🗺️</span><span>Explore 32 real locations across Hawaiʻi</span></div>
+                <div class="welcome-feature"><span class="welcome-feature-icon">🎧</span><span>Immersive ambient sounds - ocean, birds, rain</span></div>
+                <div class="welcome-feature"><span class="welcome-feature-icon">🌦️</span><span>Dynamic weather and time of day effects</span></div>
+                <div class="welcome-feature"><span class="welcome-feature-icon">❤️</span><span>Save your favorite spots</span></div>
+                <div class="welcome-feature"><span class="welcome-feature-icon">📷</span><span>Photo mode for beautiful screenshots</span></div>
+            </div>
+            <div class="welcome-actions">
+                <button class="welcome-btn" id="start-exploring-btn">🚀 Start Exploring</button>
+                <button class="welcome-btn secondary" id="take-tour-btn">🎯 Take a Guided Tour</button>
+            </div>
+            <label class="welcome-checkbox">
+                <input type="checkbox" id="dont-show-again">
+                <span>Don't show this again</span>
+            </label>
+        </div>
+    </div>
+    
+    <!-- Settings Panel -->
+    <div id="settings-panel">
+        <div class="settings-header">
+            <span class="settings-title"><span>⚙️</span><span>Settings</span></span>
+            <button class="settings-close" id="settings-close">×</button>
+        </div>
+        <div class="settings-body">
+            <div class="settings-section">
+                <div class="settings-section-title">🎨 Quality Preset</div>
+                <div class="quality-presets">
+                    <button class="quality-btn" data-quality="low">Low</button>
+                    <button class="quality-btn" data-quality="medium">Medium</button>
+                    <button class="quality-btn active" data-quality="high">High</button>
+                    <button class="quality-btn" data-quality="ultra">Ultra</button>
+                </div>
+            </div>
+            
+            <div class="settings-section">
+                <div class="settings-section-title">🔊 Audio</div>
+                <div class="slider-row">
+                    <div class="slider-label"><span>Master Volume</span><span class="slider-value" id="settings-volume-value">80%</span></div>
+                    <input type="range" class="effect-slider" id="settings-volume-slider" min="0" max="100" value="80">
+                </div>
+                <div class="effect-row">
+                    <span class="effect-label"><span>Auto-play audio</span></span>
+                    <div class="toggle-switch on" id="auto-audio-toggle" role="switch" aria-checked="true" tabindex="0"></div>
+                </div>
+            </div>
+            
+            <div class="settings-section">
+                <div class="settings-section-title">🎬 Visuals</div>
+                <div class="effect-row">
+                    <span class="effect-label"><span>Weather effects</span></span>
+                    <div class="toggle-switch on" id="weather-effects-toggle" role="switch" aria-checked="true" tabindex="0"></div>
+                </div>
+                <div class="effect-row">
+                    <span class="effect-label"><span>Atmosphere overlays</span></span>
+                    <div class="toggle-switch on" id="atmosphere-toggle" role="switch" aria-checked="true" tabindex="0"></div>
+                </div>
+                <div class="effect-row">
+                    <span class="effect-label"><span>Smooth transitions</span></span>
+                    <div class="toggle-switch on" id="transitions-toggle" role="switch" aria-checked="true" tabindex="0"></div>
+                </div>
+            </div>
+            
+            <div class="settings-section">
+                <div class="settings-section-title">⏱️ Auto Tour</div>
+                <div class="slider-row">
+                    <div class="slider-label"><span>Location duration</span><span class="slider-value" id="tour-duration-value">12s</span></div>
+                    <input type="range" class="effect-slider" id="tour-duration-slider" min="5" max="30" value="12">
+                </div>
+            </div>
+            
+            <div class="settings-section">
+                <div class="settings-section-title">❤️ My Favorites</div>
+                <div id="favorites-list" style="color: rgba(255,255,255,0.6); font-size: 0.875rem;">
+                    No favorites yet. Click the heart on any location to save it!
+                </div>
+            </div>
+            
+            <div class="settings-section">
+                <div class="settings-section-title">🔄 Data</div>
+                <button class="control-btn" id="clear-data-btn" style="width: 100%; justify-content: center;">
+                    <span>🗑️</span><span>Clear All Saved Data</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Share Toast -->
+    <div id="share-toast">✓ Link copied to clipboard!</div>
     
     <script>
         const API_KEY = 'AIzaSyBmSDHrsQunVjxhZ4UHQ0asdUY6vZVFszY';
-        const CONFIG = { transitionDuration: 800, autoPlayInterval: 12000, searchRadius: 500, audioCrossfadeDuration: 2000 };
+        const CONFIG = { 
+            transitionDuration: 800, 
+            autoPlayInterval: 12000, 
+            searchRadius: 500, 
+            audioCrossfadeDuration: 2000,
+            version: '3.0.0'
+        };
         
         // CC0/Free Audio Sources from freesound.org
         const AUDIO_URLS = {
@@ -272,23 +473,255 @@
             volcanic: 'https://cdn.freesound.org/previews/198/198879_1616430-lq.mp3'
         };
         
+        // All 32 Big Island Locations
         const LOCATIONS = [
+            // Hilo Area (5)
             { id: 1, name: "Hilo Bayfront", desc: "Downtown Hilo along Kamehameha Avenue with views of Hilo Bay", region: "Hilo", lat: 19.7297, lng: -155.0900, heading: 45, pitch: 0, audio: { ocean: 0.7, birds: 0.5, wind: 0.2 }, atmosphere: { mist: false, volcanic: false } },
             { id: 2, name: "Banyan Drive", desc: "Historic avenue lined with banyan trees planted by celebrities", region: "Hilo", lat: 19.7235, lng: -155.0772, heading: 180, pitch: 0, audio: { ocean: 0.4, birds: 0.8, wind: 0.1 }, atmosphere: { mist: false, volcanic: false } },
-            { id: 3, name: "Rainbow Falls Viewpoint", desc: "Waiānuenue — iconic 80-foot waterfall just outside Hilo", region: "Hilo", lat: 19.7189, lng: -155.1065, heading: 270, pitch: -10, audio: { waterfall: 0.8, birds: 0.6, wind: 0.2 }, atmosphere: { mist: true, volcanic: false } },
+            { id: 3, name: "Rainbow Falls", desc: "Waiānuenue — iconic 80-foot waterfall just outside Hilo", region: "Hilo", lat: 19.7189, lng: -155.1065, heading: 270, pitch: -10, audio: { waterfall: 0.8, birds: 0.6, wind: 0.2 }, atmosphere: { mist: true, volcanic: false } },
             { id: 4, name: "Hilo Farmers Market", desc: "Vibrant outdoor market in downtown Hilo", region: "Hilo", lat: 19.7244, lng: -155.0896, heading: 90, pitch: 0, audio: { birds: 0.3, wind: 0.1 }, atmosphere: { mist: false, volcanic: false } },
-            { id: 5, name: "Keaʻau Town Center", desc: "Small town gateway to the Puna district", region: "Puna", lat: 19.6222, lng: -155.0386, heading: 0, pitch: 0, audio: { birds: 0.6, wind: 0.2 }, atmosphere: { mist: false, volcanic: false } },
-            { id: 6, name: "Pāhoa Village", desc: "Funky town with historic wooden boardwalk", region: "Puna", lat: 19.4959, lng: -154.9437, heading: 180, pitch: 0, audio: { birds: 0.5, wind: 0.2 }, atmosphere: { mist: false, volcanic: false } },
-            { id: 7, name: "Volcano Village", desc: "Misty rainforest village near Kīlauea", region: "Volcano", lat: 19.4329, lng: -155.2339, heading: 90, pitch: 0, audio: { birds: 0.7, wind: 0.4, rain: 0.3 }, atmosphere: { mist: true, volcanic: false }, defaultRain: 20 },
-            { id: 8, name: "Hawaiʻi Volcanoes National Park", desc: "Crater Rim Drive with views of Kīlauea Caldera", region: "Volcano", lat: 19.4313, lng: -155.2570, heading: 180, pitch: 0, audio: { wind: 0.6, volcanic: 0.5 }, atmosphere: { mist: true, volcanic: true } },
-            { id: 9, name: "Chain of Craters Road", desc: "Scenic drive through lava fields to the coast", region: "Volcano", lat: 19.3053, lng: -155.1014, heading: 180, pitch: 0, audio: { wind: 0.7, ocean: 0.3, volcanic: 0.2 }, atmosphere: { mist: false, volcanic: true } },
-            { id: 10, name: "Aliʻi Drive, Kailua-Kona", desc: "Historic oceanfront street in downtown Kona", region: "Kona", lat: 19.6400, lng: -155.9969, heading: 270, pitch: 0, audio: { ocean: 0.9, birds: 0.3, wind: 0.2 }, atmosphere: { mist: false, volcanic: false } },
-            { id: 11, name: "Kailua Pier", desc: "Heart of Kona — departure point for ocean adventures", region: "Kona", lat: 19.6392, lng: -155.9987, heading: 270, pitch: 0, audio: { ocean: 1.0, wind: 0.3 }, atmosphere: { mist: false, volcanic: false } },
-            { id: 12, name: "Keauhou Bay", desc: "Beautiful bay south of Kona, great for snorkeling", region: "Kona", lat: 19.5611, lng: -155.9647, heading: 270, pitch: 0, audio: { ocean: 0.8, birds: 0.2, wind: 0.2 }, atmosphere: { mist: false, volcanic: false } },
-            { id: 13, name: "Waimea Town Center", desc: "Paniolo (Hawaiian cowboy) country in the highlands", region: "Waimea", lat: 20.0234, lng: -155.6659, heading: 0, pitch: 0, audio: { wind: 0.5, birds: 0.5 }, atmosphere: { mist: false, volcanic: false } },
-            { id: 14, name: "Hāwī Town", desc: "Charming art galleries in North Kohala", region: "Kohala", lat: 20.2411, lng: -155.8339, heading: 180, pitch: 0, audio: { birds: 0.4, wind: 0.5 }, atmosphere: { mist: false, volcanic: false } },
-            { id: 15, name: "Saddle Road Viewpoint", desc: "Between Mauna Kea and Mauna Loa at 6,500 feet", region: "Saddle", lat: 19.6833, lng: -155.4667, heading: 270, pitch: 0, audio: { wind: 0.9 }, atmosphere: { mist: false, volcanic: false } }
+            { id: 5, name: "Pepeʻekeo Scenic Drive", desc: "Lush coastal road north of Hilo with tropical gardens", region: "Hilo", lat: 19.8367, lng: -155.1067, heading: 0, pitch: 0, audio: { ocean: 0.5, birds: 0.7, wind: 0.3 }, atmosphere: { mist: false, volcanic: false } },
+            
+            // Hamakua Coast (4)
+            { id: 6, name: "Akaka Falls State Park", desc: "Stunning 442-foot waterfall surrounded by lush rainforest", region: "Hamakua", lat: 19.8536, lng: -155.1522, heading: 180, pitch: 0, audio: { waterfall: 0.9, birds: 0.7, wind: 0.2 }, atmosphere: { mist: true, volcanic: false } },
+            { id: 7, name: "Waipiʻo Valley Lookout", desc: "Breathtaking view of the Valley of the Kings", region: "Hamakua", lat: 20.1167, lng: -155.5856, heading: 270, pitch: -5, audio: { wind: 0.6, birds: 0.5, ocean: 0.3 }, atmosphere: { mist: true, volcanic: false } },
+            { id: 8, name: "Honokaʻa Town", desc: "Historic plantation town on the Hamakua Coast", region: "Hamakua", lat: 20.0789, lng: -155.4664, heading: 90, pitch: 0, audio: { birds: 0.4, wind: 0.3 }, atmosphere: { mist: false, volcanic: false } },
+            { id: 9, name: "Laupāhoehoe Point", desc: "Dramatic lava peninsula with crashing waves", region: "Hamakua", lat: 19.9878, lng: -155.2361, heading: 45, pitch: 0, audio: { ocean: 0.9, wind: 0.5 }, atmosphere: { mist: false, volcanic: false } },
+            
+            // Volcano Area (5)
+            { id: 10, name: "Volcano Village", desc: "Misty rainforest village near Kīlauea", region: "Volcano", lat: 19.4329, lng: -155.2339, heading: 90, pitch: 0, audio: { birds: 0.7, wind: 0.4, rain: 0.3 }, atmosphere: { mist: true, volcanic: false }, defaultRain: 20 },
+            { id: 11, name: "Hawaiʻi Volcanoes NP Entrance", desc: "Gateway to one of the world's most active volcanoes", region: "Volcano", lat: 19.4313, lng: -155.2570, heading: 180, pitch: 0, audio: { wind: 0.6, volcanic: 0.5 }, atmosphere: { mist: true, volcanic: true } },
+            { id: 12, name: "Kīlauea Crater Rim", desc: "Dramatic views of the Kīlauea Caldera", region: "Volcano", lat: 19.4119, lng: -155.2628, heading: 200, pitch: 0, audio: { wind: 0.7, volcanic: 0.8 }, atmosphere: { mist: false, volcanic: true } },
+            { id: 13, name: "Chain of Craters Road", desc: "Scenic drive through lava fields to the coast", region: "Volcano", lat: 19.3053, lng: -155.1014, heading: 180, pitch: 0, audio: { wind: 0.7, ocean: 0.3, volcanic: 0.2 }, atmosphere: { mist: false, volcanic: true } },
+            { id: 14, name: "Thurston Lava Tube", desc: "Walk through an ancient lava tube in the rainforest", region: "Volcano", lat: 19.4142, lng: -155.2394, heading: 0, pitch: 0, audio: { birds: 0.6, wind: 0.2 }, atmosphere: { mist: true, volcanic: false } },
+            
+            // Kaʻū District (3)
+            { id: 15, name: "Punalu'u Black Sand Beach", desc: "Famous black sand beach where sea turtles rest", region: "Ka'ū", lat: 19.1361, lng: -155.5042, heading: 180, pitch: 0, audio: { ocean: 0.9, birds: 0.4, wind: 0.3 }, atmosphere: { mist: false, volcanic: false } },
+            { id: 16, name: "South Point (Ka Lae)", desc: "Southernmost point in the United States", region: "Ka'ū", lat: 18.9117, lng: -155.6819, heading: 180, pitch: 0, audio: { wind: 0.9, ocean: 0.7 }, atmosphere: { mist: false, volcanic: false } },
+            { id: 17, name: "Nāʻālehu Town", desc: "Southernmost town in the USA", region: "Ka'ū", lat: 19.0628, lng: -155.5819, heading: 0, pitch: 0, audio: { birds: 0.4, wind: 0.3 }, atmosphere: { mist: false, volcanic: false } },
+            
+            // Kona Coast (6)
+            { id: 18, name: "Aliʻi Drive, Kailua-Kona", desc: "Historic oceanfront street in downtown Kona", region: "Kona", lat: 19.6400, lng: -155.9969, heading: 270, pitch: 0, audio: { ocean: 0.9, birds: 0.3, wind: 0.2 }, atmosphere: { mist: false, volcanic: false } },
+            { id: 19, name: "Kailua Pier", desc: "Heart of Kona — departure point for ocean adventures", region: "Kona", lat: 19.6392, lng: -155.9987, heading: 270, pitch: 0, audio: { ocean: 1.0, wind: 0.3 }, atmosphere: { mist: false, volcanic: false } },
+            { id: 20, name: "Keauhou Bay", desc: "Beautiful bay south of Kona, great for snorkeling", region: "Kona", lat: 19.5611, lng: -155.9647, heading: 270, pitch: 0, audio: { ocean: 0.8, birds: 0.2, wind: 0.2 }, atmosphere: { mist: false, volcanic: false } },
+            { id: 21, name: "Kealakekua Bay", desc: "Marine sanctuary and Captain Cook monument", region: "Kona", lat: 19.4767, lng: -155.9317, heading: 270, pitch: 0, audio: { ocean: 0.8, birds: 0.5, wind: 0.2 }, atmosphere: { mist: false, volcanic: false } },
+            { id: 22, name: "Puʻuhonua o Hōnaunau", desc: "Place of Refuge — ancient Hawaiian sanctuary", region: "Kona", lat: 19.4225, lng: -155.9108, heading: 270, pitch: 0, audio: { ocean: 0.7, birds: 0.4, wind: 0.2 }, atmosphere: { mist: false, volcanic: false } },
+            { id: 23, name: "Hapuna Beach", desc: "One of Hawaii's best white sand beaches", region: "Kona", lat: 19.9875, lng: -155.8261, heading: 270, pitch: 0, audio: { ocean: 0.9, wind: 0.4 }, atmosphere: { mist: false, volcanic: false } },
+            
+            // Kohala (5)
+            { id: 24, name: "Mauna Lani Resort", desc: "Luxury resort area with ancient fishponds", region: "Kohala", lat: 19.9283, lng: -155.8633, heading: 180, pitch: 0, audio: { ocean: 0.6, birds: 0.4, wind: 0.3 }, atmosphere: { mist: false, volcanic: false } },
+            { id: 25, name: "Waikoloa Village", desc: "Resort community on the Kohala Coast", region: "Kohala", lat: 19.9128, lng: -155.7858, heading: 90, pitch: 0, audio: { wind: 0.4, birds: 0.3 }, atmosphere: { mist: false, volcanic: false } },
+            { id: 26, name: "Hāwī Town", desc: "Charming art galleries in North Kohala", region: "Kohala", lat: 20.2411, lng: -155.8339, heading: 180, pitch: 0, audio: { birds: 0.4, wind: 0.5 }, atmosphere: { mist: false, volcanic: false } },
+            { id: 27, name: "Pololū Valley Lookout", desc: "Spectacular view of remote valley and black sand beach", region: "Kohala", lat: 20.2089, lng: -155.7322, heading: 0, pitch: -5, audio: { wind: 0.7, ocean: 0.4, birds: 0.4 }, atmosphere: { mist: true, volcanic: false } },
+            { id: 28, name: "Kapaʻau Town", desc: "Home of the original King Kamehameha statue", region: "Kohala", lat: 20.2328, lng: -155.7992, heading: 90, pitch: 0, audio: { birds: 0.4, wind: 0.3 }, atmosphere: { mist: false, volcanic: false } },
+            
+            // Waimea & Saddle (4)
+            { id: 29, name: "Waimea Town Center", desc: "Paniolo (Hawaiian cowboy) country in the highlands", region: "Waimea", lat: 20.0234, lng: -155.6659, heading: 0, pitch: 0, audio: { wind: 0.5, birds: 0.5 }, atmosphere: { mist: false, volcanic: false } },
+            { id: 30, name: "Mauna Kea Access Road", desc: "Gateway to the tallest mountain in Hawaii", region: "Saddle", lat: 19.7608, lng: -155.4567, heading: 0, pitch: 5, audio: { wind: 0.8 }, atmosphere: { mist: false, volcanic: false } },
+            { id: 31, name: "Saddle Road Viewpoint", desc: "Between Mauna Kea and Mauna Loa at 6,500 feet", region: "Saddle", lat: 19.6833, lng: -155.4667, heading: 270, pitch: 0, audio: { wind: 0.9 }, atmosphere: { mist: false, volcanic: false } },
+            
+            // Puna (1)
+            { id: 32, name: "Pāhoa Village", desc: "Funky town with historic wooden boardwalk", region: "Puna", lat: 19.4959, lng: -154.9437, heading: 180, pitch: 0, audio: { birds: 0.5, wind: 0.2 }, atmosphere: { mist: false, volcanic: false } }
         ];
+        
+        // Guided Tours
+        const TOURS = [
+            { id: 'volcano', name: '🌋 Volcano Day Trip', stops: [10, 11, 12, 13, 14, 15], duration: '4-5 hours' },
+            { id: 'kona', name: '🏖️ Kona Coast Explorer', stops: [18, 19, 20, 21, 22, 23], duration: '5-6 hours' },
+            { id: 'hamakua', name: '🌿 Hamakua Heritage', stops: [5, 6, 7, 8], duration: '4 hours' },
+            { id: 'kohala', name: '🤠 North Kohala Adventure', stops: [26, 27, 28], duration: '3-4 hours' },
+            { id: 'south', name: '🐢 Southern Route', stops: [15, 16, 17], duration: '4-5 hours' },
+            { id: 'favorites', name: '❤️ My Favorites', stops: [], duration: 'Varies' }
+        ];
+        
+        // =====================================================
+        // STORAGE MANAGER
+        // =====================================================
+        class StorageManager {
+            constructor() {
+                this.prefix = 'bivr_';
+            }
+            
+            get(key, defaultValue = null) {
+                try {
+                    const item = localStorage.getItem(this.prefix + key);
+                    return item ? JSON.parse(item) : defaultValue;
+                } catch { return defaultValue; }
+            }
+            
+            set(key, value) {
+                try {
+                    localStorage.setItem(this.prefix + key, JSON.stringify(value));
+                } catch (e) { console.warn('Storage error:', e); }
+            }
+            
+            remove(key) {
+                localStorage.removeItem(this.prefix + key);
+            }
+            
+            clear() {
+                Object.keys(localStorage)
+                    .filter(k => k.startsWith(this.prefix))
+                    .forEach(k => localStorage.removeItem(k));
+            }
+        }
+        
+        const storage = new StorageManager();
+        
+        // =====================================================
+        // FAVORITES MANAGER
+        // =====================================================
+        class FavoritesManager {
+            constructor() {
+                this.favorites = storage.get('favorites', []);
+            }
+            
+            toggle(locationId) {
+                const idx = this.favorites.indexOf(locationId);
+                if (idx === -1) {
+                    this.favorites.push(locationId);
+                } else {
+                    this.favorites.splice(idx, 1);
+                }
+                storage.set('favorites', this.favorites);
+                this.updateUI();
+                return this.isFavorite(locationId);
+            }
+            
+            isFavorite(locationId) {
+                return this.favorites.includes(locationId);
+            }
+            
+            getAll() {
+                return this.favorites;
+            }
+            
+            updateUI() {
+                // Update favorite button
+                const btn = document.getElementById('favorite-btn');
+                const currentLoc = LOCATIONS[currentIndex];
+                if (currentLoc && this.isFavorite(currentLoc.id)) {
+                    btn.textContent = '❤️';
+                    btn.classList.add('active');
+                } else {
+                    btn.textContent = '🤍';
+                    btn.classList.remove('active');
+                }
+                
+                // Update location dots
+                document.querySelectorAll('.location-dot').forEach((dot, idx) => {
+                    if (this.isFavorite(LOCATIONS[idx].id)) {
+                        dot.classList.add('favorite');
+                    } else {
+                        dot.classList.remove('favorite');
+                    }
+                });
+                
+                // Update favorites list in settings
+                this.updateFavoritesList();
+                
+                // Update favorites tour
+                const favTour = TOURS.find(t => t.id === 'favorites');
+                if (favTour) {
+                    favTour.stops = this.favorites.map(id => LOCATIONS.findIndex(l => l.id === id)).filter(i => i >= 0);
+                }
+            }
+            
+            updateFavoritesList() {
+                const list = document.getElementById('favorites-list');
+                if (this.favorites.length === 0) {
+                    list.innerHTML = 'No favorites yet. Click the heart on any location to save it!';
+                    return;
+                }
+                
+                list.innerHTML = this.favorites.map(id => {
+                    const loc = LOCATIONS.find(l => l.id === id);
+                    if (!loc) return '';
+                    const idx = LOCATIONS.indexOf(loc);
+                    return `<div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <span style="cursor: pointer;" onclick="goToLocation(${idx})">${loc.name}</span>
+                        <button onclick="favoritesManager.toggle(${id})" style="background: none; border: none; cursor: pointer; font-size: 1rem;">❌</button>
+                    </div>`;
+                }).join('');
+            }
+        }
+        
+        // =====================================================
+        // SETTINGS MANAGER
+        // =====================================================
+        class SettingsManager {
+            constructor() {
+                this.defaults = {
+                    quality: 'high',
+                    volume: 80,
+                    autoAudio: true,
+                    weatherEffects: true,
+                    atmosphereEffects: true,
+                    smoothTransitions: true,
+                    tourDuration: 12,
+                    showWelcome: true
+                };
+                this.settings = { ...this.defaults, ...storage.get('settings', {}) };
+            }
+            
+            get(key) {
+                return this.settings[key];
+            }
+            
+            set(key, value) {
+                this.settings[key] = value;
+                storage.set('settings', this.settings);
+                this.apply(key, value);
+            }
+            
+            apply(key, value) {
+                switch(key) {
+                    case 'quality':
+                        this.applyQuality(value);
+                        break;
+                    case 'volume':
+                        audioManager.setMasterVolume(value / 100);
+                        break;
+                    case 'tourDuration':
+                        CONFIG.autoPlayInterval = value * 1000;
+                        break;
+                    case 'smoothTransitions':
+                        CONFIG.transitionDuration = value ? 800 : 100;
+                        break;
+                }
+            }
+            
+            applyQuality(preset) {
+                switch(preset) {
+                    case 'low':
+                        // Disable heavy effects
+                        document.getElementById('rain-canvas').style.display = 'none';
+                        document.getElementById('atmosphere-layer').style.display = 'none';
+                        break;
+                    case 'medium':
+                        document.getElementById('rain-canvas').style.display = 'block';
+                        document.getElementById('atmosphere-layer').style.display = 'none';
+                        break;
+                    case 'high':
+                    case 'ultra':
+                        document.getElementById('rain-canvas').style.display = 'block';
+                        document.getElementById('atmosphere-layer').style.display = 'block';
+                        break;
+                }
+            }
+            
+            applyAll() {
+                Object.entries(this.settings).forEach(([key, value]) => {
+                    this.apply(key, value);
+                });
+            }
+            
+            reset() {
+                this.settings = { ...this.defaults };
+                storage.set('settings', this.settings);
+                this.applyAll();
+            }
+        }
         
         // =====================================================
         // AUDIO MANAGER - Web Audio API
@@ -406,11 +839,9 @@
             
             updateWeatherAudio() {
                 if (!this.initialized) return;
-                // Rain audio scales with intensity
                 if (this.rainIntensity > 0) {
                     const rainVol = this.rainIntensity / 100 * 0.8;
                     this.setTrackVolume('rain', rainVol);
-                    // Birds quiet down in rain
                     if (this.tracks.birds) {
                         const birdVol = this.currentMix.birds || 0.5;
                         const reducedBirds = birdVol * (1 - this.rainIntensity / 150);
@@ -419,7 +850,6 @@
                 } else {
                     this.setTrackVolume('rain', 0);
                 }
-                // Wind audio scales with strength
                 if (this.tracks.wind) {
                     const windVol = (this.currentMix.wind || 0) * (this.windStrength * 2);
                     this.tracks.wind.gain.gain.setValueAtTime(Math.min(1, windVol) * this.masterVolume, this.context.currentTime);
@@ -446,7 +876,6 @@
             setTimeOfDay(time) {
                 this.currentTime = time;
                 this.atmosphereLayer.className = `time-${time}`;
-                // Adjust birds based on time
                 if (audioManager.initialized && audioManager.tracks.birds) {
                     let birdMod = 1;
                     switch(time) {
@@ -485,8 +914,11 @@
         // =====================================================
         let streetViewPanorama = null, streetViewService = null, miniMap = null, currentMarker = null, allMarkers = [];
         let currentIndex = 0, isTransitioning = false, isAutoPlaying = false, autoPlayTimer = null, mapsLoaded = false;
+        let photoMode = false, activeTour = null, tourIndex = 0;
         const audioManager = new AudioManager();
         const atmosphereManager = new AtmosphereManager();
+        const settingsManager = new SettingsManager();
+        let favoritesManager;
         let effectStates = { ocean: true, birds: true, wind: false, volcanic: false, mist: false };
         
         // =====================================================
@@ -504,10 +936,34 @@
             initMiniMap();
             createLocationDots();
             populateDropdown();
-            goToLocation(0);
+            
+            // Check URL for shared location
+            const urlParams = new URLSearchParams(window.location.search);
+            const sharedLoc = urlParams.get('loc');
+            if (sharedLoc) {
+                const idx = LOCATIONS.findIndex(l => l.id === parseInt(sharedLoc));
+                if (idx >= 0) currentIndex = idx;
+            }
+            
+            goToLocation(currentIndex);
             setupEventListeners();
             streetViewPanorama.addListener('pano_changed', () => document.getElementById('loading').classList.add('hidden'));
             document.getElementById('audio-unlock').classList.add('visible');
+            
+            // Initialize favorites
+            favoritesManager = new FavoritesManager();
+            favoritesManager.updateUI();
+            
+            // Apply saved settings
+            settingsManager.applyAll();
+            initSettingsUI();
+            
+            // Show welcome modal if first visit
+            if (settingsManager.get('showWelcome')) {
+                setTimeout(() => {
+                    document.getElementById('welcome-modal').classList.add('visible');
+                }, 500);
+            }
         }
         
         function initMiniMap() {
@@ -552,6 +1008,38 @@
         
         function populateDropdown() {
             const dropdown = document.getElementById('location-dropdown');
+            dropdown.innerHTML = '<option value="" disabled>🗺️ Choose a destination...</option>';
+            
+            // Add Favorites section if there are favorites
+            const favs = storage.get('favorites', []);
+            if (favs.length > 0) {
+                const favGroup = document.createElement('optgroup');
+                favGroup.label = '❤️ My Favorites';
+                favs.forEach(id => {
+                    const loc = LOCATIONS.find(l => l.id === id);
+                    if (loc) {
+                        const idx = LOCATIONS.indexOf(loc);
+                        const option = document.createElement('option');
+                        option.value = idx;
+                        option.textContent = loc.name;
+                        favGroup.appendChild(option);
+                    }
+                });
+                dropdown.appendChild(favGroup);
+            }
+            
+            // Add Tours section
+            const tourGroup = document.createElement('optgroup');
+            tourGroup.label = '🎯 Guided Tours';
+            TOURS.filter(t => t.stops.length > 0 || t.id === 'favorites').forEach(tour => {
+                const option = document.createElement('option');
+                option.value = 'tour:' + tour.id;
+                option.textContent = `${tour.name} (${tour.stops.length} stops)`;
+                tourGroup.appendChild(option);
+            });
+            dropdown.appendChild(tourGroup);
+            
+            // Add regions
             const regions = {};
             LOCATIONS.forEach((loc, index) => { if (!regions[loc.region]) regions[loc.region] = []; regions[loc.region].push({ ...loc, index }); });
             Object.keys(regions).forEach(region => {
@@ -560,8 +1048,15 @@
                 regions[region].forEach(loc => { const option = document.createElement('option'); option.value = loc.index; option.textContent = loc.name; optgroup.appendChild(option); });
                 dropdown.appendChild(optgroup);
             });
-            dropdown.value = '0';
-            dropdown.addEventListener('change', (e) => goToLocation(parseInt(e.target.value)));
+            dropdown.value = currentIndex.toString();
+            dropdown.addEventListener('change', (e) => {
+                const val = e.target.value;
+                if (val.startsWith('tour:')) {
+                    startTour(val.replace('tour:', ''));
+                } else {
+                    goToLocation(parseInt(val));
+                }
+            });
         }
         
         function updateLocationDots() {
@@ -585,12 +1080,14 @@
         // =====================================================
         function goToLocation(index) {
             if (index < 0 || index >= LOCATIONS.length || isTransitioning) return;
-            if (index === currentIndex && streetViewPanorama.getPano()) return;
+            if (index === currentIndex && streetViewPanorama && streetViewPanorama.getPano()) return;
             isTransitioning = true;
             const location = LOCATIONS[index];
             document.getElementById('loading-location-name').textContent = location.name;
             const overlay = document.getElementById('transition-overlay');
-            overlay.classList.add('active');
+            if (settingsManager.get('smoothTransitions')) {
+                overlay.classList.add('active');
+            }
             
             setTimeout(() => {
                 const searchLocation = new google.maps.LatLng(location.lat, location.lng);
@@ -605,6 +1102,7 @@
                         document.getElementById('location-dropdown').value = index;
                         updateAudioForLocation(location);
                         atmosphereManager.applyLocationAtmosphere(location);
+                        if (favoritesManager) favoritesManager.updateUI();
                         if (location.defaultRain !== undefined) {
                             const rainSlider = document.getElementById('rain-slider');
                             rainSlider.value = location.defaultRain;
@@ -616,6 +1114,7 @@
                         distance > 100 ? showCoverageStatus() : hideCoverageStatus();
                         setTimeout(() => { overlay.classList.remove('active'); isTransitioning = false; }, 300);
                     } else {
+                        // Try wider radius
                         streetViewService.getPanorama({ location: searchLocation, radius: 1000, preference: google.maps.StreetViewPreference.NEAREST }, (data2, status2) => {
                             if (status2 === google.maps.StreetViewStatus.OK) {
                                 streetViewPanorama.setPano(data2.location.pano);
@@ -627,6 +1126,7 @@
                                 document.getElementById('location-dropdown').value = index;
                                 updateAudioForLocation(location);
                                 atmosphereManager.applyLocationAtmosphere(location);
+                                if (favoritesManager) favoritesManager.updateUI();
                                 showCoverageStatus();
                                 setTimeout(() => { overlay.classList.remove('active'); isTransitioning = false; }, 300);
                             } else {
@@ -638,7 +1138,7 @@
                         });
                     }
                 });
-            }, CONFIG.transitionDuration / 2);
+            }, settingsManager.get('smoothTransitions') ? CONFIG.transitionDuration / 2 : 50);
         }
         
         function updateAudioForLocation(location) {
@@ -655,12 +1155,157 @@
             audioManager.crossfadeTo(targetMix);
         }
         
-        function nextLocation() { goToLocation((currentIndex + 1) % LOCATIONS.length); }
-        function prevLocation() { goToLocation((currentIndex - 1 + LOCATIONS.length) % LOCATIONS.length); }
+        function nextLocation() { 
+            if (activeTour) {
+                tourIndex++;
+                if (tourIndex >= activeTour.stops.length) {
+                    tourIndex = 0; // Loop tour
+                }
+                goToLocation(activeTour.stops[tourIndex]);
+            } else {
+                goToLocation((currentIndex + 1) % LOCATIONS.length); 
+            }
+        }
+        
+        function prevLocation() { 
+            if (activeTour) {
+                tourIndex--;
+                if (tourIndex < 0) {
+                    tourIndex = activeTour.stops.length - 1;
+                }
+                goToLocation(activeTour.stops[tourIndex]);
+            } else {
+                goToLocation((currentIndex - 1 + LOCATIONS.length) % LOCATIONS.length); 
+            }
+        }
+        
         function updateUI(location) {
             document.getElementById('location-name').textContent = location.name;
             document.getElementById('location-desc').textContent = location.desc;
-            document.getElementById('location-counter').textContent = `Location ${currentIndex + 1} of ${LOCATIONS.length}`;
+            const counter = activeTour 
+                ? `Tour: ${tourIndex + 1} of ${activeTour.stops.length}`
+                : `Location ${currentIndex + 1} of ${LOCATIONS.length}`;
+            document.getElementById('location-counter').textContent = counter;
+        }
+        
+        // =====================================================
+        // TOURS
+        // =====================================================
+        function startTour(tourId) {
+            const tour = TOURS.find(t => t.id === tourId);
+            if (!tour) return;
+            
+            // For favorites tour, use current favorites
+            if (tourId === 'favorites') {
+                tour.stops = favoritesManager.getAll().map(id => LOCATIONS.findIndex(l => l.id === id)).filter(i => i >= 0);
+                if (tour.stops.length === 0) {
+                    showToast('Add some favorites first!');
+                    return;
+                }
+            }
+            
+            activeTour = tour;
+            tourIndex = 0;
+            goToLocation(tour.stops[0]);
+            
+            // Start auto-play
+            if (!isAutoPlaying) toggleAutoPlay();
+        }
+        
+        function endTour() {
+            activeTour = null;
+            tourIndex = 0;
+            if (isAutoPlaying) toggleAutoPlay();
+        }
+        
+        // =====================================================
+        // PHOTO MODE
+        // =====================================================
+        function togglePhotoMode() {
+            photoMode = !photoMode;
+            document.body.classList.toggle('photo-mode', photoMode);
+            document.getElementById('photo-mode-btn').classList.toggle('active', photoMode);
+        }
+        
+        function takeScreenshot() {
+            // Use the street view canvas
+            const container = document.getElementById('street-view-container');
+            const canvas = container.querySelector('canvas');
+            if (canvas) {
+                const link = document.createElement('a');
+                link.download = `bigislandvr-${LOCATIONS[currentIndex].name.replace(/\s+/g, '-').toLowerCase()}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                showToast('📸 Screenshot saved!');
+            } else {
+                showToast('Screenshot not available');
+            }
+        }
+        
+        function shareLocation() {
+            const loc = LOCATIONS[currentIndex];
+            const url = `${window.location.origin}${window.location.pathname}?loc=${loc.id}`;
+            navigator.clipboard.writeText(url).then(() => {
+                showToast('🔗 Link copied to clipboard!');
+            }).catch(() => {
+                showToast('Could not copy link');
+            });
+        }
+        
+        function showToast(message) {
+            const toast = document.getElementById('share-toast');
+            toast.textContent = message;
+            toast.classList.add('visible');
+            setTimeout(() => toast.classList.remove('visible'), 2000);
+        }
+        
+        // =====================================================
+        // SETTINGS UI
+        // =====================================================
+        function initSettingsUI() {
+            // Quality presets
+            document.querySelectorAll('.quality-btn').forEach(btn => {
+                if (btn.dataset.quality === settingsManager.get('quality')) {
+                    btn.classList.add('active');
+                }
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.quality-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    settingsManager.set('quality', btn.dataset.quality);
+                });
+            });
+            
+            // Volume slider in settings
+            const settingsVolume = document.getElementById('settings-volume-slider');
+            settingsVolume.value = settingsManager.get('volume');
+            document.getElementById('settings-volume-value').textContent = `${settingsManager.get('volume')}%`;
+            settingsVolume.addEventListener('input', (e) => {
+                const val = parseInt(e.target.value);
+                document.getElementById('settings-volume-value').textContent = `${val}%`;
+                document.getElementById('volume-slider').value = val;
+                document.getElementById('volume-value').textContent = `${val}%`;
+                settingsManager.set('volume', val);
+            });
+            
+            // Tour duration
+            const tourDuration = document.getElementById('tour-duration-slider');
+            tourDuration.value = settingsManager.get('tourDuration');
+            document.getElementById('tour-duration-value').textContent = `${settingsManager.get('tourDuration')}s`;
+            tourDuration.addEventListener('input', (e) => {
+                const val = parseInt(e.target.value);
+                document.getElementById('tour-duration-value').textContent = `${val}s`;
+                settingsManager.set('tourDuration', val);
+            });
+            
+            // Toggle settings
+            const toggleSettings = ['weather-effects', 'atmosphere', 'transitions', 'auto-audio'];
+            toggleSettings.forEach(setting => {
+                const toggle = document.getElementById(`${setting}-toggle`);
+                if (toggle) {
+                    const key = setting.replace(/-/g, '');
+                    toggle.classList.toggle('on', settingsManager.get(key + 'Effects') !== false);
+                }
+            });
         }
         
         // =====================================================
@@ -687,15 +1332,57 @@
             document.getElementById('fullscreen-btn').addEventListener('click', toggleFullscreen);
             document.getElementById('audio-unlock').addEventListener('click', async () => { await audioManager.init(); updateAudioForLocation(LOCATIONS[currentIndex]); });
             
+            // Favorite button
+            document.getElementById('favorite-btn').addEventListener('click', () => {
+                const loc = LOCATIONS[currentIndex];
+                favoritesManager.toggle(loc.id);
+                populateDropdown(); // Refresh dropdown
+            });
+            
+            // Photo mode buttons
+            document.getElementById('photo-mode-btn').addEventListener('click', togglePhotoMode);
+            document.getElementById('screenshot-btn').addEventListener('click', takeScreenshot);
+            document.getElementById('share-btn').addEventListener('click', shareLocation);
+            document.getElementById('exit-photo-btn').addEventListener('click', togglePhotoMode);
+            
+            // Settings panel
+            document.getElementById('settings-btn').addEventListener('click', () => {
+                document.getElementById('settings-panel').classList.add('open');
+            });
+            document.getElementById('settings-close').addEventListener('click', () => {
+                document.getElementById('settings-panel').classList.remove('open');
+            });
+            document.getElementById('clear-data-btn').addEventListener('click', () => {
+                if (confirm('Clear all saved preferences and favorites?')) {
+                    storage.clear();
+                    location.reload();
+                }
+            });
+            
+            // Welcome modal
+            document.getElementById('start-exploring-btn').addEventListener('click', () => {
+                closeWelcome();
+            });
+            document.getElementById('take-tour-btn').addEventListener('click', () => {
+                closeWelcome();
+                startTour('volcano'); // Start with volcano tour
+            });
+            document.getElementById('dont-show-again').addEventListener('change', (e) => {
+                settingsManager.set('showWelcome', !e.target.checked);
+            });
+            
+            // Effect toggles
             document.querySelectorAll('.toggle-switch').forEach(toggle => {
                 const handleToggle = () => {
                     toggle.classList.toggle('on');
                     const effect = toggle.dataset.effect;
                     const isOn = toggle.classList.contains('on');
                     toggle.setAttribute('aria-checked', isOn);
-                    effectStates[effect] = isOn;
-                    if (effect === 'mist') atmosphereManager.setMist(isOn, LOCATIONS[currentIndex]?.atmosphere?.volcanic);
-                    else audioManager.toggleTrack(effect, isOn);
+                    if (effect) {
+                        effectStates[effect] = isOn;
+                        if (effect === 'mist') atmosphereManager.setMist(isOn, LOCATIONS[currentIndex]?.atmosphere?.volcanic);
+                        else audioManager.toggleTrack(effect, isOn);
+                    }
                 };
                 toggle.addEventListener('click', handleToggle);
                 toggle.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleToggle(); } });
@@ -726,6 +1413,7 @@
                 const value = parseInt(e.target.value);
                 document.getElementById('volume-value').textContent = `${value}%`;
                 audioManager.setMasterVolume(value / 100);
+                settingsManager.set('volume', value);
             });
             
             document.addEventListener('visibilitychange', () => {
@@ -735,12 +1423,25 @@
             document.addEventListener('click', () => audioManager.resume(), { once: true });
         }
         
+        function closeWelcome() {
+            document.getElementById('welcome-modal').classList.remove('visible');
+        }
+        
         function onKeyDown(e) {
+            // Don't handle if typing in input
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+            
             switch(e.key) {
                 case 'ArrowRight': nextLocation(); break;
                 case 'ArrowLeft': prevLocation(); break;
                 case ' ': e.preventDefault(); toggleAutoPlay(); break;
                 case 'f': case 'F': toggleFullscreen(); break;
+                case 'p': case 'P': togglePhotoMode(); break;
+                case 'Escape': 
+                    if (photoMode) togglePhotoMode();
+                    if (activeTour) endTour();
+                    document.getElementById('settings-panel').classList.remove('open');
+                    break;
                 case 'm': case 'M':
                     const volumeSlider = document.getElementById('volume-slider');
                     if (audioManager.masterVolume > 0) { audioManager.setMasterVolume(0); volumeSlider.value = 0; document.getElementById('volume-value').textContent = '0%'; }
@@ -752,8 +1453,17 @@
         function toggleAutoPlay() {
             isAutoPlaying = !isAutoPlaying;
             const btn = document.getElementById('play-btn'), icon = document.getElementById('play-icon'), text = document.getElementById('play-text');
-            if (isAutoPlaying) { icon.textContent = '⏸️'; text.textContent = 'Pause'; btn.classList.add('active'); autoPlayTimer = setInterval(nextLocation, CONFIG.autoPlayInterval); }
-            else { icon.textContent = '▶️'; text.textContent = 'Auto Tour'; btn.classList.remove('active'); clearInterval(autoPlayTimer); }
+            if (isAutoPlaying) { 
+                icon.textContent = '⏸️'; 
+                text.textContent = activeTour ? 'Pause Tour' : 'Pause'; 
+                btn.classList.add('active'); 
+                autoPlayTimer = setInterval(nextLocation, CONFIG.autoPlayInterval); 
+            } else { 
+                icon.textContent = '▶️'; 
+                text.textContent = activeTour ? 'Resume Tour' : 'Auto Tour'; 
+                btn.classList.remove('active'); 
+                clearInterval(autoPlayTimer); 
+            }
         }
         
         function toggleFullscreen() {
@@ -797,6 +1507,11 @@
         }
         
         function updateRainIntensity(intensity) {
+            if (!settingsManager.get('weatherEffects')) {
+                rainActive = false;
+                rainCanvas.classList.remove('active');
+                return;
+            }
             audioManager.setRainIntensity(intensity);
             if (intensity > 0) {
                 if (!rainActive) { rainActive = true; rainCanvas.classList.add('active'); updateRain(); }
@@ -828,6 +1543,10 @@
         
         window.initMap = initMap;
         loadGoogleMapsAPI();
+        
+        // Console welcome message
+        console.log('%c🌴 Big Island VR v' + CONFIG.version, 'font-size: 20px; font-weight: bold; color: #2A9D8F;');
+        console.log('%cExplore Hawaii virtually! Made with aloha. 🌺', 'font-size: 14px; color: #7FCDCD;');
     </script>
 </body>
 </html>
