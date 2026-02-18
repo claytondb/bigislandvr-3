@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Shader Debug - Mask Outlines</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #1a1a1a; color: white; font-family: system-ui, sans-serif; overflow: hidden; }
+        #container { width: 100vw; height: 100vh; }
+        #controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.9);
+            padding: 20px;
+            border-radius: 12px;
+            width: 300px;
+            z-index: 100;
+        }
+        h2 { margin-bottom: 15px; font-size: 1.1rem; }
+        .control-group { margin-bottom: 12px; }
+        label { display: block; margin-bottom: 5px; font-size: 0.85rem; color: #aaa; }
+        input[type="range"] { width: 100%; }
+        .value { float: right; }
+        .legend { margin: 15px 0; padding: 10px; background: #222; border-radius: 8px; font-size: 0.85rem; }
+        .legend-item { display: flex; align-items: center; margin: 5px 0; }
+        .legend-color { width: 20px; height: 20px; border-radius: 4px; margin-right: 10px; }
+        .location-btn {
+            display: block; width: 100%; padding: 8px; margin: 4px 0;
+            background: #333; border: none; color: white; border-radius: 6px;
+            cursor: pointer; text-align: left; font-size: 0.85rem;
+        }
+        .location-btn:hover { background: #444; }
+        .location-btn.active { background: #2a9d8f; }
+        .toggle { display: flex; align-items: center; gap: 10px; margin: 10px 0; }
+        .toggle input { width: 20px; height: 20px; }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+    
+    <div id="controls">
+        <h2>🔍 Debug Mask Outlines</h2>
+        
+        <div class="legend">
+            <div class="legend-item"><div class="legend-color" style="background: #FF1493;"></div> Sky/Cloud mask (pink)</div>
+            <div class="legend-item"><div class="legend-color" style="background: #FF8C00;"></div> Water mask (orange)</div>
+            <div class="legend-item"><div class="legend-color" style="background: #9932CC;"></div> Vegetation mask (purple)</div>
+        </div>
+        
+        <div class="toggle">
+            <input type="checkbox" id="showOutlines" checked>
+            <label for="showOutlines">Show mask outlines</label>
+        </div>
+        
+        <div class="toggle">
+            <input type="checkbox" id="showEffects" checked>
+            <label for="showEffects">Show motion effects</label>
+        </div>
+        
+        <hr style="border-color: #333; margin: 15px 0;">
+        
+        <div class="control-group">
+            <label>☁️ Cloud Drift <span class="value" id="sky-val" style="color:#FF1493">100%</span></label>
+            <input type="range" id="sky" min="0" max="100" value="100">
+        </div>
+        
+        <div class="control-group">
+            <label>🌊 Water Ripples <span class="value" id="water-val" style="color:#FF8C00">50%</span></label>
+            <input type="range" id="water" min="0" max="100" value="50">
+        </div>
+        
+        <div class="control-group">
+            <label>🌿 Vegetation Sway <span class="value" id="veg-val" style="color:#9932CC">30%</span></label>
+            <input type="range" id="veg" min="0" max="100" value="30">
+        </div>
+        
+        <hr style="border-color: #333; margin: 15px 0;">
+        
+        <label>Location:</label>
+        <button class="location-btn active" data-loc="alii-drive">🏖️ Ali'i Drive</button>
+        <button class="location-btn" data-loc="hilo-bayfront">🌊 Hilo Bayfront</button>
+        <button class="location-btn" data-loc="punaluu-beach">🐢 Punalu'u Beach</button>
+        <button class="location-btn" data-loc="keaau">📍 Keaʻau</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        const vertexShader = `
+            varying vec2 vUv;
+            void main() {
+                vUv = uv;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+        `;
+        
+        const fragmentShader = `
+            uniform sampler2D panorama;
+            uniform sampler2D skyMask;
+            uniform sampler2D waterMask;
+            uniform sampler2D vegMask;
+            uniform float time;
+            uniform float skyIntensity;
+            uniform float waterIntensity;
+            uniform float vegIntensity;
+            uniform bool showOutlines;
+            uniform bool showEffects;
+            uniform vec2 resolution;
+            varying vec2 vUv;
+            
+            // Noise
+            vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+            vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+            vec3 permute(vec3 x) { return mod289(((x*34.0)+1.0)*x); }
+            
+            float snoise(vec2 v) {
+                const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);
+                vec2 i = floor(v + dot(v, C.yy));
+                vec2 x0 = v - i + dot(i, C.xx);
+                vec2 i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+                vec4 x12 = x0.xyxy + C.xxzz;
+                x12.xy -= i1;
+                i = mod289(i);
+                vec3 p = permute(permute(i.y + vec3(0.0, i1.y, 1.0)) + i.x + vec3(0.0, i1.x, 1.0));
+                vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);
+                m = m*m; m = m*m;
+                vec3 x = 2.0 * fract(p * C.www) - 1.0;
+                vec3 h = abs(x) - 0.5;
+                vec3 ox = floor(x + 0.5);
+                vec3 a0 = x - ox;
+                m *= 1.79284291400159 - 0.85373472095314 * (a0*a0 + h*h);
+                vec3 g;
+                g.x = a0.x * x0.x + h.x * x0.y;
+                g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+                return 130.0 * dot(m, g);
+            }
+            
+            // Detect edges using Sobel filter
+            float detectEdge(sampler2D mask, vec2 uv, vec2 texelSize) {
+                float tl = texture2D(mask, uv + vec2(-texelSize.x, texelSize.y)).r;
+                float t  = texture2D(mask, uv + vec2(0.0, texelSize.y)).r;
+                float tr = texture2D(mask, uv + vec2(texelSize.x, texelSize.y)).r;
+                float l  = texture2D(mask, uv + vec2(-texelSize.x, 0.0)).r;
+                float r  = texture2D(mask, uv + vec2(texelSize.x, 0.0)).r;
+                float bl = texture2D(mask, uv + vec2(-texelSize.x, -texelSize.y)).r;
+                float b  = texture2D(mask, uv + vec2(0.0, -texelSize.y)).r;
+                float br = texture2D(mask, uv + vec2(texelSize.x, -texelSize.y)).r;
+                
+                float gx = -tl - 2.0*l - bl + tr + 2.0*r + br;
+                float gy = -tl - 2.0*t - tr + bl + 2.0*b + br;
+                
+                return sqrt(gx*gx + gy*gy);
+            }
+            
+            void main() {
+                vec2 uv = vUv;
+                vec2 distortion = vec2(0.0);
+                
+                // Sample masks
+                float sky = texture2D(skyMask, uv).r;
+                float water = texture2D(waterMask, uv).r;
+                float veg = texture2D(vegMask, uv).r;
+                
+                // Apply effects if enabled
+                if (showEffects) {
+                    if (sky > 0.1 && skyIntensity > 0.0) {
+                        float drift = snoise(uv * 2.0 + time * 0.03) * 0.004;
+                        float morph = snoise(uv * 3.0 + time * 0.05) * 0.003;
+                        distortion += vec2(drift, morph * 0.3) * skyIntensity * sky;
+                    }
+                    
+                    if (water > 0.1 && waterIntensity > 0.0) {
+                        float wave1 = sin(uv.x * 30.0 + time * 1.5) * 0.002;
+                        float wave2 = sin(uv.y * 25.0 + time * 1.2) * 0.0015;
+                        float ripple = snoise(uv * 15.0 + time * 0.5) * 0.003;
+                        distortion += vec2(wave1 + ripple, wave2 + ripple) * waterIntensity * water;
+                    }
+                    
+                    if (veg > 0.1 && vegIntensity > 0.0) {
+                        float sway = sin(time * 0.6 + uv.x * 10.0) * 0.003;
+                        float rustle = snoise(uv * 12.0 + time * 0.4) * 0.002;
+                        distortion += vec2(sway + rustle, rustle * 0.2) * vegIntensity * veg;
+                    }
+                }
+                
+                vec4 color = texture2D(panorama, uv + distortion);
+                
+                // Draw outlines if enabled
+                if (showOutlines) {
+                    vec2 texelSize = vec2(1.0 / 640.0, 1.0 / 640.0);  // Approximate
+                    
+                    float skyEdge = detectEdge(skyMask, uv, texelSize);
+                    float waterEdge = detectEdge(waterMask, uv, texelSize);
+                    float vegEdge = detectEdge(vegMask, uv, texelSize);
+                    
+                    // Pink for sky (FF1493)
+                    if (skyEdge > 0.3) {
+                        color.rgb = mix(color.rgb, vec3(1.0, 0.08, 0.58), 0.9);
+                    }
+                    
+                    // Orange for water (FF8C00)
+                    if (waterEdge > 0.3) {
+                        color.rgb = mix(color.rgb, vec3(1.0, 0.55, 0.0), 0.9);
+                    }
+                    
+                    // Purple for vegetation (9932CC)
+                    if (vegEdge > 0.3) {
+                        color.rgb = mix(color.rgb, vec3(0.6, 0.2, 0.8), 0.9);
+                    }
+                }
+                
+                gl_FragColor = color;
+            }
+        `;
+        
+        let scene, camera, renderer, material;
+        let isUserInteracting = false, lon = 0, lat = 0;
+        let onPointerDownLon = 0, onPointerDownLat = 0, onPointerDownX = 0, onPointerDownY = 0;
+        
+        const settings = { 
+            skyIntensity: 1.0, waterIntensity: 0.5, vegIntensity: 0.3,
+            showOutlines: true, showEffects: true
+        };
+        
+        function init() {
+            const container = document.getElementById('container');
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1100);
+            renderer = new THREE.WebGLRenderer();
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            container.appendChild(renderer.domElement);
+            
+            loadLocation('alii-drive');
+            
+            container.addEventListener('pointerdown', onPointerDown);
+            container.addEventListener('pointermove', onPointerMove);
+            container.addEventListener('pointerup', onPointerUp);
+            container.addEventListener('wheel', onWheel);
+            window.addEventListener('resize', onResize);
+            
+            // Sliders
+            ['sky', 'water', 'veg'].forEach(type => {
+                document.getElementById(type).addEventListener('input', (e) => {
+                    settings[type + 'Intensity'] = e.target.value / 100;
+                    document.getElementById(type + '-val').textContent = e.target.value + '%';
+                });
+            });
+            
+            // Toggles
+            document.getElementById('showOutlines').addEventListener('change', (e) => {
+                settings.showOutlines = e.target.checked;
+            });
+            document.getElementById('showEffects').addEventListener('change', (e) => {
+                settings.showEffects = e.target.checked;
+            });
+            
+            // Location buttons
+            document.querySelectorAll('.location-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.location-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    loadLocation(btn.dataset.loc);
+                });
+            });
+            
+            animate();
+        }
+        
+        function loadLocation(loc) {
+            const loader = new THREE.TextureLoader();
+            
+            Promise.all([
+                new Promise(r => loader.load(`panoramas/${loc}.jpg`, r)),
+                new Promise(r => loader.load(`masks/${loc}-sky.png`, r)),
+                new Promise(r => loader.load(`masks/${loc}-water.png`, r)),
+                new Promise(r => loader.load(`masks/${loc}-veg.png`, r))
+            ]).then(([pano, sky, water, veg]) => {
+                const oldMesh = scene.getObjectByName('panorama');
+                if (oldMesh) scene.remove(oldMesh);
+                
+                material = new THREE.ShaderMaterial({
+                    uniforms: {
+                        panorama: { value: pano },
+                        skyMask: { value: sky },
+                        waterMask: { value: water },
+                        vegMask: { value: veg },
+                        time: { value: 0 },
+                        skyIntensity: { value: settings.skyIntensity },
+                        waterIntensity: { value: settings.waterIntensity },
+                        vegIntensity: { value: settings.vegIntensity },
+                        showOutlines: { value: settings.showOutlines },
+                        showEffects: { value: settings.showEffects },
+                        resolution: { value: new THREE.Vector2(pano.image.width, pano.image.height) }
+                    },
+                    vertexShader,
+                    fragmentShader,
+                    side: THREE.BackSide
+                });
+                
+                const geometry = new THREE.SphereGeometry(500, 60, 40);
+                const mesh = new THREE.Mesh(geometry, material);
+                mesh.name = 'panorama';
+                scene.add(mesh);
+            });
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            if (material) {
+                material.uniforms.time.value = performance.now() / 1000;
+                material.uniforms.skyIntensity.value = settings.skyIntensity;
+                material.uniforms.waterIntensity.value = settings.waterIntensity;
+                material.uniforms.vegIntensity.value = settings.vegIntensity;
+                material.uniforms.showOutlines.value = settings.showOutlines;
+                material.uniforms.showEffects.value = settings.showEffects;
+            }
+            lat = Math.max(-85, Math.min(85, lat));
+            const phi = THREE.MathUtils.degToRad(90 - lat);
+            const theta = THREE.MathUtils.degToRad(lon);
+            camera.position.set(100 * Math.sin(phi) * Math.cos(theta), 100 * Math.cos(phi), 100 * Math.sin(phi) * Math.sin(theta));
+            camera.lookAt(0, 0, 0);
+            renderer.render(scene, camera);
+        }
+        
+        function onPointerDown(e) { isUserInteracting = true; onPointerDownX = e.clientX; onPointerDownY = e.clientY; onPointerDownLon = lon; onPointerDownLat = lat; }
+        function onPointerMove(e) { if (isUserInteracting) { lon = (onPointerDownX - e.clientX) * 0.1 + onPointerDownLon; lat = (e.clientY - onPointerDownY) * 0.1 + onPointerDownLat; } }
+        function onPointerUp() { isUserInteracting = false; }
+        function onWheel(e) { camera.fov = Math.max(30, Math.min(90, camera.fov + e.deltaY * 0.05)); camera.updateProjectionMatrix(); }
+        function onResize() { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); }
+        
+        init();
+    </script>
+</body>
+</html>
