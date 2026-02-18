@@ -1,0 +1,34 @@
+# AI Enhancement Pipeline Dependencies
+# =====================================
+# Install these to enable AI upscaling and depth estimation
+#
+# Usage:
+#   pip install -r requirements-ai.txt
+#
+# Or with venv (recommended):
+#   python -m venv .venv
+#   source .venv/bin/activate  # or .venv\Scripts\activate on Windows
+#   pip install -r requirements-ai.txt
+
+# Core dependencies (already available in base Python)
+numpy>=1.24.0
+Pillow>=10.0.0
+requests>=2.31.0
+
+# Real-ESRGAN for AI upscaling (4x)
+realesrgan>=0.3.0
+basicsr>=1.4.2
+
+# Depth Anything v2 for depth estimation
+transformers>=4.35.0
+torch>=2.0.0
+torchvision>=0.15.0
+
+# OpenCV for image processing
+opencv-python>=4.8.0
+
+# Optional: accelerate for faster inference
+accelerate>=0.24.0
+
+# Optional: progress bars
+rich>=13.0.0

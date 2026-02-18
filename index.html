@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <meta name="description" content="Explore the Big Island of Hawaii through immersive 360° panoramas">
+    <meta name="description" content="Explore the Big Island of Hawaii through immersive 360° Street View panoramas">
     <meta name="theme-color" content="#0D3B66">
     <title>Big Island VR - Explore Hawaiʻi</title>
     
@@ -93,9 +93,12 @@
             position: relative;
         }
         
-        #canvas-container {
+        #street-view-container {
             width: 100%;
             height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
         }
         
         /* =====================================================
@@ -184,24 +187,116 @@
         }
         
         /* =====================================================
-           INFO PANEL - Glass Morphism
+           TRANSITION OVERLAY - Traveling Animation
+           ===================================================== */
+        #transition-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--color-lava-black);
+            z-index: 15;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #transition-overlay.active {
+            opacity: 1;
+        }
+        
+        .travel-animation {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-4);
+        }
+        
+        #transition-overlay.active .travel-animation {
+            display: flex;
+        }
+        
+        .travel-car {
+            font-size: 3rem;
+            animation: drive 1s ease-in-out infinite;
+        }
+        
+        @keyframes drive {
+            0%, 100% { transform: translateX(-10px) rotate(-2deg); }
+            50% { transform: translateX(10px) rotate(2deg); }
+        }
+        
+        .travel-road {
+            display: flex;
+            gap: 8px;
+            margin-top: var(--space-2);
+        }
+        
+        .road-dash {
+            width: 20px;
+            height: 4px;
+            background: var(--color-seafoam);
+            border-radius: 2px;
+            animation: roadMove 0.5s linear infinite;
+        }
+        
+        .road-dash:nth-child(2) { animation-delay: 0.1s; }
+        .road-dash:nth-child(3) { animation-delay: 0.2s; }
+        .road-dash:nth-child(4) { animation-delay: 0.3s; }
+        .road-dash:nth-child(5) { animation-delay: 0.4s; }
+        
+        @keyframes roadMove {
+            0% { opacity: 0.3; transform: translateX(10px); }
+            50% { opacity: 1; }
+            100% { opacity: 0.3; transform: translateX(-10px); }
+        }
+        
+        .travel-info {
+            text-align: center;
+            color: var(--color-plumeria);
+        }
+        
+        .travel-from-to {
+            font-size: 0.9rem;
+            color: var(--color-seafoam);
+            margin-bottom: var(--space-2);
+        }
+        
+        .travel-distance {
+            font-size: 1.5rem;
+            font-weight: 600;
+            font-family: var(--font-display);
+        }
+        
+        .travel-time {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: var(--space-1);
+        }
+        
+        /* =====================================================
+           INFO PANEL - Glass Morphism with Info Card
            ===================================================== */
         #info {
             position: absolute;
             top: var(--space-5);
             left: var(--space-5);
-            background: rgba(26, 26, 26, 0.75);
+            background: rgba(26, 26, 26, 0.85);
             backdrop-filter: blur(20px) saturate(180%);
             -webkit-backdrop-filter: blur(20px) saturate(180%);
             padding: var(--space-4) var(--space-5);
             border-radius: var(--radius-lg);
             border: 1px solid rgba(255, 255, 255, 0.08);
             z-index: 50;
-            max-width: 280px;
+            max-width: 340px;
             box-shadow: 
                 0 8px 32px rgba(0, 0, 0, 0.4),
                 inset 0 1px 0 rgba(255, 255, 255, 0.05);
             animation: fadeUp var(--duration-slow) var(--ease-out-expo);
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
         }
         
         @keyframes fadeUp {
@@ -236,11 +331,89 @@
             line-height: 1.2;
         }
         
+        #location-hawaiian {
+            font-family: var(--font-accent);
+            font-style: italic;
+            font-size: 0.9rem;
+            color: var(--color-pikake);
+            margin-bottom: var(--space-2);
+        }
+        
         #location-desc {
             font-size: 0.875rem;
             color: rgba(255, 255, 255, 0.6);
             line-height: 1.4;
             margin-bottom: var(--space-3);
+        }
+        
+        /* Location Info Card */
+        .info-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-md);
+            padding: var(--space-3);
+            margin-bottom: var(--space-3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .info-card-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--color-seafoam);
+            margin-bottom: var(--space-2);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .info-card-content {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.5;
+        }
+        
+        .info-card-content ul {
+            margin: 0;
+            padding-left: var(--space-4);
+        }
+        
+        .info-card-content li {
+            margin-bottom: var(--space-1);
+        }
+        
+        .info-toggle {
+            background: none;
+            border: none;
+            color: var(--color-seafoam);
+            font-size: 0.8rem;
+            cursor: pointer;
+            padding: var(--space-1) 0;
+            display: flex;
+            align-items: center;
+            gap: var(--space-1);
+            transition: color var(--duration-fast);
+        }
+        
+        .info-toggle:hover {
+            color: var(--color-plumeria);
+        }
+        
+        .info-toggle-icon {
+            transition: transform var(--duration-fast);
+        }
+        
+        .info-toggle.expanded .info-toggle-icon {
+            transform: rotate(180deg);
+        }
+        
+        .info-details {
+            display: none;
+            margin-top: var(--space-3);
+        }
+        
+        .info-details.visible {
+            display: block;
         }
         
         .location-dots {
@@ -275,11 +448,328 @@
             background: var(--color-seafoam);
         }
         
+        .location-dot.in-tour {
+            background: var(--color-pikake);
+        }
+        
         #location-counter {
             font-size: 0.75rem;
             color: var(--color-seafoam);
             font-weight: 500;
             letter-spacing: 0.02em;
+        }
+        
+        /* =====================================================
+           LOCATION SELECTOR
+           ===================================================== */
+        #location-selector {
+            position: absolute;
+            top: var(--space-5);
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 50;
+            animation: fadeUp var(--duration-slow) var(--ease-out-expo) 0.1s both;
+        }
+        
+        #location-dropdown {
+            background: rgba(26, 26, 26, 0.85);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: var(--radius-md);
+            color: var(--color-plumeria);
+            padding: var(--space-3) var(--space-5);
+            padding-right: var(--space-6);
+            font-family: var(--font-primary);
+            font-size: 0.95rem;
+            cursor: pointer;
+            min-width: 280px;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237FCDCD' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            transition: all var(--duration-fast) var(--ease-natural);
+        }
+        
+        #location-dropdown:hover {
+            border-color: var(--color-seafoam);
+        }
+        
+        #location-dropdown:focus {
+            outline: 2px solid var(--color-shallow-water);
+            outline-offset: 2px;
+        }
+        
+        #location-dropdown option {
+            background: var(--color-pahoehoe);
+            color: var(--color-plumeria);
+            padding: var(--space-2);
+        }
+        
+        #location-dropdown optgroup {
+            background: var(--color-lava-black);
+            color: var(--color-seafoam);
+            font-weight: 600;
+        }
+        
+        /* =====================================================
+           TOUR PANEL
+           ===================================================== */
+        #tour-panel {
+            position: absolute;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(26, 26, 26, 0.9);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-lg);
+            padding: var(--space-3) var(--space-4);
+            z-index: 55;
+            display: none;
+            min-width: 320px;
+        }
+        
+        #tour-panel.visible {
+            display: block;
+            animation: fadeUp var(--duration-normal) var(--ease-out-expo);
+        }
+        
+        .tour-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--space-3);
+            padding-bottom: var(--space-2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .tour-title {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+        
+        .tour-close {
+            background: none;
+            border: none;
+            color: var(--color-seafoam);
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: var(--space-1);
+            transition: color var(--duration-fast);
+        }
+        
+        .tour-close:hover {
+            color: var(--color-hibiscus);
+        }
+        
+        .tour-progress {
+            margin-bottom: var(--space-3);
+        }
+        
+        .tour-progress-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: var(--space-2);
+        }
+        
+        .tour-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--color-ti-leaf), var(--color-seafoam));
+            border-radius: 3px;
+            transition: width var(--duration-normal) var(--ease-out-expo);
+        }
+        
+        .tour-progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .tour-stops {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-2);
+            margin-bottom: var(--space-3);
+        }
+        
+        .tour-stop {
+            padding: var(--space-1) var(--space-2);
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            transition: all var(--duration-fast);
+            border: 1px solid transparent;
+        }
+        
+        .tour-stop:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .tour-stop.active {
+            background: rgba(42, 157, 143, 0.3);
+            border-color: var(--color-ti-leaf);
+            color: var(--color-plumeria);
+        }
+        
+        .tour-stop.completed {
+            background: rgba(127, 205, 205, 0.2);
+            color: var(--color-seafoam);
+        }
+        
+        .tour-controls {
+            display: flex;
+            gap: var(--space-2);
+        }
+        
+        .tour-btn {
+            flex: 1;
+            padding: var(--space-2) var(--space-3);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-sm);
+            color: var(--color-plumeria);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all var(--duration-fast);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-1);
+        }
+        
+        .tour-btn:hover {
+            background: rgba(42, 157, 143, 0.2);
+            border-color: var(--color-ti-leaf);
+        }
+        
+        .tour-btn.primary {
+            background: var(--color-ti-leaf);
+            border-color: var(--color-ti-leaf);
+        }
+        
+        .tour-btn.primary:hover {
+            background: #25897c;
+        }
+        
+        /* =====================================================
+           TOUR SELECTOR
+           ===================================================== */
+        #tour-selector {
+            position: absolute;
+            top: var(--space-5);
+            right: 230px;
+            z-index: 50;
+            animation: fadeUp var(--duration-slow) var(--ease-out-expo) 0.1s both;
+        }
+        
+        #tour-dropdown {
+            background: rgba(26, 26, 26, 0.85);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(244, 162, 97, 0.4);
+            border-radius: var(--radius-md);
+            color: var(--color-pikake);
+            padding: var(--space-2) var(--space-4);
+            padding-right: var(--space-5);
+            font-family: var(--font-primary);
+            font-size: 0.85rem;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23F4A261' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            transition: all var(--duration-fast) var(--ease-natural);
+        }
+        
+        #tour-dropdown:hover {
+            border-color: var(--color-pikake);
+            background-color: rgba(244, 162, 97, 0.1);
+        }
+        
+        /* =====================================================
+           MINI MAP - Enhanced
+           ===================================================== */
+        #mini-map-container {
+            position: absolute;
+            bottom: var(--space-5);
+            left: var(--space-5);
+            width: 220px;
+            height: 170px;
+            background: rgba(26, 26, 26, 0.85);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            overflow: hidden;
+            z-index: 50;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            animation: fadeUp var(--duration-slow) var(--ease-out-expo) 0.2s both;
+        }
+        
+        #mini-map {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .mini-map-controls {
+            position: absolute;
+            top: var(--space-2);
+            right: var(--space-2);
+            display: flex;
+            gap: var(--space-1);
+            z-index: 10;
+        }
+        
+        .map-type-btn {
+            width: 28px;
+            height: 28px;
+            background: rgba(26, 26, 26, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-sm);
+            color: var(--color-plumeria);
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--duration-fast);
+        }
+        
+        .map-type-btn:hover {
+            background: rgba(42, 157, 143, 0.3);
+            border-color: var(--color-ti-leaf);
+        }
+        
+        .map-type-btn.active {
+            background: var(--color-ti-leaf);
+            border-color: var(--color-ti-leaf);
+        }
+        
+        .mini-map-label {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: var(--space-2);
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            font-size: 0.7rem;
+            color: var(--color-seafoam);
+            text-align: center;
+            pointer-events: none;
+        }
+        
+        /* Pulsing current marker */
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 1; }
         }
         
         /* =====================================================
@@ -289,7 +779,7 @@
             position: absolute;
             top: var(--space-5);
             right: var(--space-5);
-            background: rgba(26, 26, 26, 0.75);
+            background: rgba(26, 26, 26, 0.85);
             backdrop-filter: blur(20px) saturate(180%);
             -webkit-backdrop-filter: blur(20px) saturate(180%);
             padding: var(--space-4);
@@ -427,7 +917,7 @@
         }
         
         .control-btn {
-            background: rgba(26, 26, 26, 0.75);
+            background: rgba(26, 26, 26, 0.85);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -506,7 +996,7 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: 10;
+            z-index: 20;
             opacity: 0;
             transition: opacity var(--duration-slow) var(--ease-natural);
         }
@@ -516,9 +1006,9 @@
         }
         
         /* =====================================================
-           VR MODE BUTTON
+           FULLSCREEN BUTTON
            ===================================================== */
-        #vr-btn {
+        #fullscreen-btn {
             position: absolute;
             bottom: var(--space-5);
             right: var(--space-5);
@@ -540,53 +1030,56 @@
             animation: fadeUp var(--duration-slow) var(--ease-out-expo) 0.3s both;
         }
         
-        #vr-btn:hover {
+        #fullscreen-btn:hover {
             transform: translateY(-2px) scale(1.02);
             box-shadow: 0 6px 25px rgba(155, 93, 229, 0.5);
         }
         
-        #vr-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
         /* =====================================================
-           ONBOARDING TOOLTIP
+           ERROR MESSAGE
            ===================================================== */
-        #onboarding {
+        #error-message {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(26, 26, 26, 0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            padding: var(--space-5) var(--space-6);
+            background: rgba(230, 57, 70, 0.9);
+            color: white;
+            padding: var(--space-5);
             border-radius: var(--radius-lg);
-            border: 1px solid rgba(255, 255, 255, 0.1);
             text-align: center;
+            z-index: 200;
+            display: none;
+            max-width: 400px;
+        }
+        
+        #error-message h3 {
+            margin-bottom: var(--space-2);
+        }
+        
+        #error-message.visible {
+            display: block;
+        }
+        
+        /* =====================================================
+           COVERAGE STATUS
+           ===================================================== */
+        #coverage-status {
+            position: absolute;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(244, 162, 97, 0.9);
+            color: var(--color-lava-black);
+            padding: var(--space-2) var(--space-4);
+            border-radius: var(--radius-md);
+            font-size: 0.8rem;
             z-index: 60;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity var(--duration-normal) var(--ease-natural);
+            display: none;
         }
         
-        #onboarding.visible {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        
-        #onboarding p {
-            font-size: 1rem;
-            line-height: 1.6;
-            color: var(--color-plumeria);
-        }
-        
-        #onboarding .hint-text {
-            color: var(--color-seafoam);
-            margin-top: var(--space-2);
-            font-size: 0.875rem;
+        #coverage-status.visible {
+            display: block;
         }
         
         /* =====================================================
@@ -594,11 +1087,20 @@
            ===================================================== */
         @media (max-width: 1024px) {
             #info {
-                max-width: 240px;
+                max-width: 280px;
             }
             
             #effects {
                 min-width: 180px;
+            }
+            
+            #mini-map-container {
+                width: 180px;
+                height: 140px;
+            }
+            
+            #tour-selector {
+                right: 220px;
             }
         }
         
@@ -612,6 +1114,37 @@
                 left: var(--space-4);
                 right: var(--space-4);
                 max-width: none;
+                max-height: 200px;
+            }
+            
+            #location-selector {
+                top: var(--space-4);
+                width: calc(100% - 120px);
+                left: var(--space-4);
+                transform: none;
+            }
+            
+            #location-dropdown {
+                width: 100%;
+                min-width: auto;
+            }
+            
+            #tour-selector {
+                top: var(--space-4);
+                right: var(--space-4);
+                left: auto;
+            }
+            
+            #tour-panel {
+                top: 60px;
+                left: var(--space-4);
+                right: var(--space-4);
+                transform: none;
+                min-width: auto;
+            }
+            
+            #mini-map-container {
+                display: none;
             }
             
             #effects {
@@ -642,7 +1175,7 @@
                 font-size: 0.7rem;
             }
             
-            #vr-btn {
+            #fullscreen-btn {
                 bottom: auto;
                 top: var(--space-4);
                 right: var(--space-4);
@@ -687,6 +1220,9 @@
             outline: 2px solid var(--color-shallow-water);
             outline-offset: 2px;
         }
+        
+        /* Hide default Street View UI elements we're replacing */
+        .gm-style-cc, .gmnoprint { display: none !important; }
     </style>
 </head>
 <body>
@@ -699,19 +1235,86 @@
             <div class="loading-progress">
                 <div class="loading-progress-bar"></div>
             </div>
-            <p class="loading-location">Loading <span id="loading-location-name">Hilo Bayfront</span>...</p>
+            <p class="loading-location">Loading <span id="loading-location-name">Street View</span>...</p>
         </div>
         
-        <!-- Three.js canvas -->
-        <div id="canvas-container"></div>
+        <!-- Transition overlay for smooth fades with travel animation -->
+        <div id="transition-overlay">
+            <div class="travel-animation">
+                <div class="travel-car">🚗</div>
+                <div class="travel-road">
+                    <div class="road-dash"></div>
+                    <div class="road-dash"></div>
+                    <div class="road-dash"></div>
+                    <div class="road-dash"></div>
+                    <div class="road-dash"></div>
+                </div>
+                <div class="travel-info">
+                    <div class="travel-from-to">
+                        <span id="travel-from">Location A</span> → <span id="travel-to">Location B</span>
+                    </div>
+                    <div class="travel-distance" id="travel-distance">25 miles</div>
+                    <div class="travel-time" id="travel-time">~35 min drive</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Google Street View container -->
+        <div id="street-view-container"></div>
         
         <!-- Rain overlay -->
         <canvas id="rain-canvas"></canvas>
         
-        <!-- Onboarding tooltip -->
-        <div id="onboarding">
-            <p>Drag to look around</p>
-            <p class="hint-text">← → to explore more locations</p>
+        <!-- Error message -->
+        <div id="error-message">
+            <h3>📍 No Street View Here</h3>
+            <p>Trying nearby location...</p>
+        </div>
+        
+        <!-- Coverage status -->
+        <div id="coverage-status">⚠️ Limited coverage - showing nearest available view</div>
+        
+        <!-- Location selector dropdown -->
+        <div id="location-selector">
+            <select id="location-dropdown" aria-label="Select location">
+                <option value="" disabled>🗺️ Choose a destination...</option>
+            </select>
+        </div>
+        
+        <!-- Tour selector -->
+        <div id="tour-selector">
+            <select id="tour-dropdown" aria-label="Select tour">
+                <option value="">🎯 Guided Tours</option>
+            </select>
+        </div>
+        
+        <!-- Tour panel -->
+        <div id="tour-panel">
+            <div class="tour-header">
+                <div class="tour-title">
+                    <span>🗺️</span>
+                    <span id="active-tour-name">Tour Name</span>
+                </div>
+                <button class="tour-close" id="tour-close" aria-label="Close tour">✕</button>
+            </div>
+            <div class="tour-progress">
+                <div class="tour-progress-bar">
+                    <div class="tour-progress-fill" id="tour-progress-fill" style="width: 0%"></div>
+                </div>
+                <div class="tour-progress-text">
+                    <span id="tour-stop-text">Stop 1 of 5</span>
+                    <span id="tour-time-remaining">~45 min remaining</span>
+                </div>
+            </div>
+            <div class="tour-stops" id="tour-stops"></div>
+            <div class="tour-controls">
+                <button class="tour-btn" id="tour-prev">⬅️ Previous</button>
+                <button class="tour-btn primary" id="tour-play">
+                    <span id="tour-play-icon">▶️</span>
+                    <span id="tour-play-text">Start</span>
+                </button>
+                <button class="tour-btn" id="tour-next">Next ➡️</button>
+            </div>
         </div>
         
         <!-- Info panel -->
@@ -720,10 +1323,45 @@
                 <span>🌴</span>
                 <span>Big Island VR</span>
             </div>
-            <h2 id="location-name">Hilo Bayfront</h2>
-            <p id="location-desc">Downtown Hilo along Kamehameha Avenue</p>
+            <h2 id="location-name">Loading...</h2>
+            <p id="location-hawaiian"></p>
+            <p id="location-desc">Real 360° Street View from Hawaiʻi</p>
+            
+            <button class="info-toggle" id="info-toggle">
+                <span class="info-toggle-icon">▼</span>
+                <span>More Info</span>
+            </button>
+            
+            <div class="info-details" id="info-details">
+                <div class="info-card" id="history-card">
+                    <div class="info-card-header">
+                        <span>📜</span>
+                        <span>History & Culture</span>
+                    </div>
+                    <div class="info-card-content" id="location-history"></div>
+                </div>
+                
+                <div class="info-card" id="things-card">
+                    <div class="info-card-header">
+                        <span>👀</span>
+                        <span>Things to See</span>
+                    </div>
+                    <div class="info-card-content" id="location-things"></div>
+                </div>
+            </div>
+            
             <div class="location-dots" id="location-dots"></div>
-            <div id="location-counter">Location 1 of 10</div>
+            <div id="location-counter">Location 1 of 32</div>
+        </div>
+        
+        <!-- Mini map with controls -->
+        <div id="mini-map-container">
+            <div class="mini-map-controls">
+                <button class="map-type-btn active" id="map-terrain" title="Terrain view">🗻</button>
+                <button class="map-type-btn" id="map-satellite" title="Satellite view">🛰️</button>
+            </div>
+            <div id="mini-map"></div>
+            <div class="mini-map-label">Click to teleport</div>
         </div>
         
         <!-- Effects panel -->
@@ -782,7 +1420,7 @@
             </button>
             <button class="control-btn" id="play-btn" aria-label="Toggle auto-play">
                 <span id="play-icon">▶️</span>
-                <span id="play-text">Auto Play</span>
+                <span id="play-text">Auto Tour</span>
             </button>
             <button class="control-btn" id="next-btn" aria-label="Next location">
                 <span>Next</span>
@@ -790,82 +1428,566 @@
             </button>
         </div>
         
-        <!-- VR Mode Button -->
-        <button id="vr-btn" aria-label="Enter VR mode">
-            <span>🥽</span>
-            <span>Enter VR</span>
+        <!-- Fullscreen Button -->
+        <button id="fullscreen-btn" aria-label="Toggle fullscreen">
+            <span>⛶</span>
+            <span>Fullscreen</span>
         </button>
         
         <!-- Keyboard hints -->
         <div id="hints">
             <kbd>←</kbd> <kbd>→</kbd> Navigate &nbsp;·&nbsp; 
-            <kbd>Space</kbd> Auto-play &nbsp;·&nbsp;
+            <kbd>Space</kbd> Auto-tour &nbsp;·&nbsp;
+            <kbd>T</kbd> Tours &nbsp;·&nbsp;
             Drag to look around
         </div>
     </div>
     
-    <!-- Three.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    
+    <!-- Google Maps JavaScript API -->
     <script>
         // =====================================================
-        // BIG ISLAND VR - ENHANCED PANORAMA VIEWER
+        // BIG ISLAND VR - REAL STREET VIEW PANORAMAS
+        // Enhanced with Tours, Info Cards, and Polish
         // =====================================================
         
+        const API_KEY = 'AIzaSyBmSDHrsQunVjxhZ4UHQ0asdUY6vZVFszY';
+        
         const CONFIG = {
-            transitionDuration: 1500,
-            autoPlayInterval: 8000,
-            onboardingDelay: 3000,
-            onboardingDuration: 5000,
-            rainIntensity: 0.5
+            transitionDuration: 1200,
+            autoPlayInterval: 15000,
+            tourAutoPlayInterval: 12000,
+            searchRadius: 500,
+            showTravelAnimation: true
         };
         
-        // Demo locations (will be replaced with real data)
+        // =====================================================
+        // 32 REAL BIG ISLAND LOCATIONS WITH RICH INFO
+        // =====================================================
+        
         const LOCATIONS = [
+            // ===== HILO AREA (1-5) =====
             {
                 id: 1,
                 name: "Hilo Bayfront",
-                desc: "Downtown Hilo along Kamehameha Avenue",
-                lat: 19.7241,
-                lng: -155.0868,
-                panorama: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=4096&h=2048&fit=crop",
-                audio: { ocean: 0.8, birds: 0.6 }
+                hawaiian: "Kūkuihaele",
+                desc: "Downtown Hilo along Kamehameha Avenue with views of Hilo Bay",
+                region: "Hilo",
+                lat: 19.7297,
+                lng: -155.0900,
+                heading: 45,
+                pitch: 0,
+                audio: { ocean: 0.8, birds: 0.6 },
+                history: "Hilo is one of Hawaii's oldest towns, established in the 1820s by missionaries. The bayfront has been rebuilt twice after devastating tsunamis in 1946 and 1960.",
+                things: ["Hilo Farmers Market (Wed & Sat)", "Historic buildings from the 1900s", "Views of Mauna Kea on clear days", "Coconut Island (Mokuola) across the bay"]
             },
             {
                 id: 2,
                 name: "Banyan Drive",
-                desc: "Historic Banyan trees along the bay",
-                lat: 19.7220,
-                lng: -155.0790,
-                panorama: "https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?w=4096&h=2048&fit=crop",
-                audio: { ocean: 0.5, birds: 0.8 }
+                hawaiian: "Ke ala niu",
+                desc: "Historic avenue lined with banyan trees planted by celebrities",
+                region: "Hilo",
+                lat: 19.7235,
+                lng: -155.0772,
+                heading: 180,
+                pitch: 0,
+                audio: { ocean: 0.5, birds: 0.8 },
+                history: "Starting in 1933, visiting dignitaries planted these banyan trees. Plaques identify trees planted by Babe Ruth, Amelia Earhart, King George V, and more.",
+                things: ["Celebrity banyan trees with plaques", "Queen Liliʻuokalani Gardens nearby", "Views of Hilo Bay", "Historic hotels"]
             },
             {
                 id: 3,
-                name: "Keaʻau Town",
-                desc: "Small town on the road to Pāhoa",
-                lat: 19.6411,
-                lng: -155.0378,
-                panorama: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=4096&h=2048&fit=crop",
-                audio: { birds: 0.9, wind: 0.3 }
+                name: "Rainbow Falls",
+                hawaiian: "Waiānuenue — 'rainbow water'",
+                desc: "Iconic 80-foot waterfall in Wailuku River State Park",
+                region: "Hilo",
+                lat: 19.7189,
+                lng: -155.1065,
+                heading: 270,
+                pitch: -10,
+                audio: { birds: 0.9, wind: 0.3 },
+                history: "According to Hawaiian legend, this is the home of Hina, goddess of the moon. The cave behind the falls was said to be her dwelling place.",
+                things: ["Rainbow viewing in morning mist", "Massive banyan tree at overlook", "Short walk to Boiling Pots upstream", "Free parking and easy access"]
             },
             {
                 id: 4,
-                name: "Rainbow Falls",
-                desc: "Iconic waterfall just outside Hilo",
-                lat: 19.7205,
-                lng: -155.0951,
-                panorama: "https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?w=4096&h=2048&fit=crop",
-                audio: { birds: 0.7, ocean: 0.2 }
+                name: "Hilo Farmers Market",
+                hawaiian: "Mākeke",
+                desc: "Vibrant outdoor market in downtown Hilo with local produce",
+                region: "Hilo",
+                lat: 19.7244,
+                lng: -155.0896,
+                heading: 90,
+                pitch: 0,
+                audio: { birds: 0.4 },
+                history: "One of the best farmers markets in Hawaii, open since 1988. Features over 200 vendors on big market days.",
+                things: ["Fresh tropical fruits and flowers", "Local crafts and souvenirs", "Food vendors with plate lunches", "Best on Wednesday and Saturday"]
             },
             {
                 id: 5,
+                name: "Pepeʻekeo Scenic Drive",
+                hawaiian: "Old Māmalahoa Highway",
+                desc: "4-mile scenic detour through a lush tropical rainforest",
+                region: "Hilo",
+                lat: 19.8333,
+                lng: -155.1056,
+                heading: 0,
+                pitch: 0,
+                audio: { birds: 0.9, rain: 0.2 },
+                history: "This was once the main highway connecting Hilo to Hamakua. The narrow road winds past one-lane bridges and tropical vegetation.",
+                things: ["Hawaii Tropical Botanical Garden", "One-lane bridges", "Onomea Bay lookout", "Lush ferns and flowering plants"]
+            },
+            
+            // ===== HAMAKUA COAST (6-8) =====
+            {
+                id: 6,
+                name: "Akaka Falls State Park",
+                hawaiian: "ʻAkaka — 'split, crack'",
+                desc: "442-foot waterfall, one of the tallest in Hawaii",
+                region: "Hamakua",
+                lat: 19.8536,
+                lng: -155.1528,
+                heading: 180,
+                pitch: 0,
+                audio: { birds: 0.8, wind: 0.4 },
+                history: "The park was established in 1968. The name may refer to the vertical split in the cliff or to the legendary chief Akaka.",
+                things: ["442-foot main falls", "Kahūnā Falls (100 ft)", "0.4-mile loop trail", "Lush bamboo forest"]
+            },
+            {
+                id: 7,
+                name: "Waipiʻo Valley Lookout",
+                hawaiian: "Waipiʻo — 'curved water'",
+                desc: "Dramatic overlook of the Valley of the Kings",
+                region: "Hamakua",
+                lat: 20.1197,
+                lng: -155.5878,
+                heading: 270,
+                pitch: -5,
+                audio: { wind: 0.6, birds: 0.5 },
+                history: "Sacred valley that was home to Hawaiian ali'i (royalty). Kamehameha I spent his youth here. Once home to 10,000 people, now fewer than 100.",
+                things: ["1,400-foot cliff views", "Hiʻilawe Falls (1,450 ft)", "Black sand beach below", "Taro fields in the valley"]
+            },
+            {
+                id: 8,
+                name: "Honoka'a Town",
+                hawaiian: "Honoka'a — 'rolling bay'",
+                desc: "Historic sugar plantation town on the Hamakua Coast",
+                region: "Hamakua",
+                lat: 20.0789,
+                lng: -155.4669,
+                heading: 90,
+                pitch: 0,
+                audio: { birds: 0.5 },
+                history: "Founded in the 1880s as a sugar town, Honoka'a was once the third-largest city in Hawaii. The sugar industry closed in 1994.",
+                things: ["Historic 1930s theater (The People's Theatre)", "Antique shops and galleries", "Tex Drive-In malasadas", "Western Week rodeo (May)"]
+            },
+            
+            // ===== VOLCANO AREA (9-13) =====
+            {
+                id: 9,
                 name: "Volcano Village",
-                desc: "Misty forest near Kīlauea",
-                lat: 19.4400,
-                lng: -155.2364,
-                panorama: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=4096&h=2048&fit=crop",
-                audio: { birds: 0.6, rain: 0.4, wind: 0.5 }
+                hawaiian: "Keokea",
+                desc: "Misty rainforest village at 4,000 feet near Kīlauea",
+                region: "Volcano",
+                lat: 19.4329,
+                lng: -155.2339,
+                heading: 90,
+                pitch: 0,
+                audio: { birds: 0.8, rain: 0.3, wind: 0.4 },
+                history: "This arts community developed alongside Volcano House hotel and Hawaii Volcanoes National Park. Many residents are artists drawn to the mystical atmosphere.",
+                things: ["Local art galleries", "Volcano Garden Arts", "Thai Thai Restaurant", "Cool mountain climate"]
+            },
+            {
+                id: 10,
+                name: "Kilauea Visitor Center",
+                hawaiian: "Kīlauea — 'spewing, much spreading'",
+                desc: "Gateway to Hawaiʻi Volcanoes National Park",
+                region: "Volcano",
+                lat: 19.4313,
+                lng: -155.2570,
+                heading: 180,
+                pitch: 0,
+                audio: { wind: 0.5, birds: 0.3 },
+                history: "The park was established in 1916, making it one of the oldest national parks. Kīlauea is one of the world's most active volcanoes.",
+                things: ["Park ranger programs", "Volcano House restaurant", "Museum exhibits", "Trail information"]
+            },
+            {
+                id: 11,
+                name: "Crater Rim Drive",
+                hawaiian: "Kīlauea Caldera",
+                desc: "Scenic drive around Kīlauea's summit caldera",
+                region: "Volcano",
+                lat: 19.4078,
+                lng: -155.2672,
+                heading: 45,
+                pitch: 0,
+                audio: { wind: 0.7 },
+                history: "The caldera formed over centuries of eruptions and collapses. Halemaʻumaʻu crater within is the legendary home of Pele, goddess of fire.",
+                things: ["Steam vents", "Sulfur banks (Haʻakulamanu)", "Jaggar Museum viewpoint", "Volcanic fumes (check air quality)"]
+            },
+            {
+                id: 12,
+                name: "Chain of Craters Road",
+                hawaiian: "Ke ala pele",
+                desc: "19-mile drive through lava fields to the coast",
+                region: "Volcano",
+                lat: 19.3053,
+                lng: -155.1014,
+                heading: 180,
+                pitch: 0,
+                audio: { wind: 0.7, ocean: 0.4 },
+                history: "This road descends 3,700 feet through multiple lava flows. The coastal section was buried by lava in the 1970s-90s.",
+                things: ["Puʻu Loa petroglyphs", "Hōlei Sea Arch", "Active lava viewing (when flowing)", "Stark volcanic landscapes"]
+            },
+            {
+                id: 13,
+                name: "Thurston Lava Tube",
+                hawaiian: "Nāhuku — 'protuberances'",
+                desc: "500-year-old lava tube through ohia forest",
+                region: "Volcano",
+                lat: 19.4142,
+                lng: -155.2391,
+                heading: 0,
+                pitch: 0,
+                audio: { birds: 0.9 },
+                history: "Discovered in 1913 by Lorrin Thurston, this tube formed when the outer surface of a lava flow cooled while molten rock continued flowing inside.",
+                things: ["Lit 600-foot tube walk", "Native ohia and fern forest", "Extended unlit tube section", "Native bird sounds"]
+            },
+            
+            // ===== KAʻŪ DISTRICT (14-16) =====
+            {
+                id: 14,
+                name: "Punaluʻu Black Sand Beach",
+                hawaiian: "Punaluʻu — 'coral diving'",
+                desc: "Iconic black sand beach famous for green sea turtles",
+                region: "Ka'ū",
+                lat: 19.1361,
+                lng: -155.5042,
+                heading: 180,
+                pitch: 0,
+                audio: { ocean: 0.9, birds: 0.3 },
+                history: "The black sand is created by volcanic basalt fragmented by ocean waves. Hawaiian green sea turtles (honu) bask on the beach daily.",
+                things: ["Endangered green sea turtles", "Black sand (don't take it!)", "Coconut palm grove", "Swimming (strong currents)"]
+            },
+            {
+                id: 15,
+                name: "South Point (Ka Lae)",
+                hawaiian: "Ka Lae — 'the point'",
+                desc: "Southernmost point in the United States",
+                region: "Ka'ū",
+                lat: 18.9108,
+                lng: -155.6822,
+                heading: 180,
+                pitch: 0,
+                audio: { wind: 1.0, ocean: 0.8 },
+                history: "First Polynesian landing site in Hawaii around 400 AD. Ancient fishing canoe mooring holes still visible in the rocks.",
+                things: ["Southernmost point in USA", "Cliff jumping spot", "Green Sand Beach nearby (2.5 mi hike)", "Constant trade winds"]
+            },
+            {
+                id: 16,
+                name: "Nāʻālehu Town",
+                hawaiian: "Nāʻālehu — 'the volcanic ashes'",
+                desc: "Southernmost town in the United States",
+                region: "Ka'ū",
+                lat: 19.0642,
+                lng: -155.5822,
+                heading: 90,
+                pitch: 0,
+                audio: { birds: 0.5 },
+                history: "Historic sugar town that's reinventing itself. Home to the famous Punalu'u Bake Shop known for its Hawaiian sweetbread.",
+                things: ["Punalu'u Bake Shop", "Mark Twain's monkeypod tree", "Southernmost bakery in USA", "Gateway to South Point"]
+            },
+            
+            // ===== KONA COAST (17-22) =====
+            {
+                id: 17,
+                name: "Aliʻi Drive, Kailua-Kona",
+                hawaiian: "Ke alanui o nā aliʻi — 'road of the chiefs'",
+                desc: "Historic oceanfront street in downtown Kona",
+                region: "Kona",
+                lat: 19.6400,
+                lng: -155.9969,
+                heading: 270,
+                pitch: 0,
+                audio: { ocean: 0.9, birds: 0.4 },
+                history: "Named for the Hawaiian royalty who lived here. King Kamehameha I spent his final years nearby at Kamakahonu.",
+                things: ["Huliheʻe Palace", "Mokuaikaua Church (Hawaii's oldest)", "Sea wall at sunset", "Shops and restaurants"]
+            },
+            {
+                id: 18,
+                name: "Kailua Pier",
+                hawaiian: "Kailua — 'two seas'",
+                desc: "Heart of Kona — finish line of IRONMAN World Championship",
+                region: "Kona",
+                lat: 19.6392,
+                lng: -155.9987,
+                heading: 270,
+                pitch: 0,
+                audio: { ocean: 1.0 },
+                history: "The pier has been central to Kona since ancient times. Today it's famous as the start/finish of the IRONMAN World Championship held every October.",
+                things: ["IRONMAN finish line", "Sport fishing charters", "Sunset cruises", "Snorkeling at King Kam beach"]
+            },
+            {
+                id: 19,
+                name: "Keauhou Bay",
+                hawaiian: "Keauhou — 'new era'",
+                desc: "Birthplace of Kamehameha III and great snorkeling spot",
+                region: "Kona",
+                lat: 19.5611,
+                lng: -155.9647,
+                heading: 270,
+                pitch: 0,
+                audio: { ocean: 0.8, birds: 0.3 },
+                history: "Kamehameha III was born here in 1813 and revived from apparent death by a kahuna (priest), thus the name 'new era.' Heiau ruins dot the shoreline.",
+                things: ["Manta ray night snorkeling", "Kayak and SUP rentals", "Heʻeia and Kapuanoni Heiau", "Fair Wind cruises to Kealakekua"]
+            },
+            {
+                id: 20,
+                name: "Kealakekua Bay",
+                hawaiian: "Kealakekua — 'pathway of the god'",
+                desc: "Marine sanctuary where Captain Cook was killed",
+                region: "Kona",
+                lat: 19.4778,
+                lng: -155.9333,
+                heading: 270,
+                pitch: 0,
+                audio: { ocean: 0.7, birds: 0.5 },
+                history: "Captain James Cook was killed here on February 14, 1779, in a confrontation with Hawaiians. A white monument marks the spot.",
+                things: ["Captain Cook Monument", "Best snorkeling on Big Island", "Spinner dolphins", "Kayak access only (no road)"]
+            },
+            {
+                id: 21,
+                name: "Puʻuhonua o Hōnaunau",
+                hawaiian: "Place of Refuge — 'puʻuhonua'",
+                desc: "Ancient Hawaiian sanctuary and sacred site",
+                region: "Kona",
+                lat: 19.4225,
+                lng: -155.9108,
+                heading: 180,
+                pitch: 0,
+                audio: { ocean: 0.6, birds: 0.4 },
+                history: "Defeated warriors, kapu breakers, and non-combatants could find sanctuary here. After performing rituals, they could return home safely.",
+                things: ["Restored temple (heiau)", "Royal fishponds", "Carved kiʻi (god images)", "Hale o Keawe mausoleum"]
+            },
+            {
+                id: 22,
+                name: "Hapuna Beach",
+                hawaiian: "Hapuna — 'spring of life'",
+                desc: "Rated best beach in the US multiple times",
+                region: "Kona",
+                lat: 19.9925,
+                lng: -155.8275,
+                heading: 270,
+                pitch: 0,
+                audio: { ocean: 1.0 },
+                history: "This white sand beach is one of the largest on the Big Island. The sand comes from parrotfish that eat coral and excrete sand.",
+                things: ["Half-mile white sand beach", "Excellent swimming and bodyboarding", "Full facilities and parking ($10)", "Westin Hapuna Beach Resort"]
+            },
+            
+            // ===== KOHALA COAST (23-26) =====
+            {
+                id: 23,
+                name: "Mauna Lani Resort",
+                hawaiian: "Mauna Lani — 'mountain reaching heaven'",
+                desc: "Luxury resort area with ancient fishponds and petroglyphs",
+                region: "Kohala",
+                lat: 19.9283,
+                lng: -155.8711,
+                heading: 0,
+                pitch: 0,
+                audio: { ocean: 0.5, birds: 0.4 },
+                history: "The Kalāhuipuaʻa fishponds here are over 800 years old. Ancient Hawaiians stocked them with fish for the aliʻi.",
+                things: ["Ancient fishponds still in use", "Puakō Petroglyph Archaeological Preserve", "Two championship golf courses", "Luxury Auberge resort"]
+            },
+            {
+                id: 24,
+                name: "Waikoloa Village",
+                hawaiian: "Waikoloa — 'water of ducks'",
+                desc: "Master-planned resort community on the lava fields",
+                region: "Kohala",
+                lat: 19.9142,
+                lng: -155.7906,
+                heading: 90,
+                pitch: 0,
+                audio: { birds: 0.4 },
+                history: "Built starting in the 1970s on what was barren lava. The King's Trail (Ala Mauka-Makai) petroglyphs are preserved nearby.",
+                things: ["Kings' Shops and Queens' Marketplace", "Petroglyph trail at Kings' Shops", "Dolphin Quest at Hilton", "Anaehoomalu Bay (A-Bay)"]
+            },
+            {
+                id: 25,
+                name: "Hāwī Town",
+                hawaiian: "Hāwī — 'bend, curve'",
+                desc: "Charming art galleries and shops in North Kohala",
+                region: "Kohala",
+                lat: 20.2411,
+                lng: -155.8339,
+                heading: 180,
+                pitch: 0,
+                audio: { birds: 0.5, wind: 0.4 },
+                history: "Once a thriving sugar town, Hawi reinvented itself as an arts community after the plantation closed in 1975. Original wooden buildings remain.",
+                things: ["Bamboo Restaurant (famous for local cuisine)", "Art galleries and boutiques", "Gateway to Pololu Valley", "Original King Kamehameha statue"]
+            },
+            {
+                id: 26,
+                name: "Pololu Valley Lookout",
+                hawaiian: "Pololu — 'long spear'",
+                desc: "Dramatic viewpoint of remote windward valley",
+                region: "Kohala",
+                lat: 20.2058,
+                lng: -155.7361,
+                heading: 0,
+                pitch: -5,
+                audio: { wind: 0.8, ocean: 0.4 },
+                history: "The end of the road in North Kohala. Like Waipiʻo, this was once a thriving taro-growing valley. A steep trail leads to the black sand beach.",
+                things: ["Dramatic cliff viewpoint", "Steep trail to beach (0.5 mi)", "Black sand beach", "Wild and rugged scenery"]
+            },
+            
+            // ===== WAIMEA & SADDLE (27-29) =====
+            {
+                id: 27,
+                name: "Waimea Town Center",
+                hawaiian: "Waimea/Kamuela — 'reddish water'",
+                desc: "Paniolo (Hawaiian cowboy) country at 2,700 feet",
+                region: "Waimea",
+                lat: 20.0234,
+                lng: -155.6659,
+                heading: 0,
+                pitch: 0,
+                audio: { wind: 0.5, birds: 0.6 },
+                history: "Home to Parker Ranch, one of the largest cattle ranches in the US (130,000 acres). John Parker started it in 1847. The cowboy tradition continues today.",
+                things: ["Parker Ranch Store & Museum", "Merriman's Restaurant (farm-to-table pioneer)", "Waimea Cherry Blossom Festival (Feb)", "Cool upcountry climate"]
+            },
+            {
+                id: 28,
+                name: "Mauna Kea Access Road",
+                hawaiian: "Mauna a Wākea — 'mountain of Wākea'",
+                desc: "Road to the summit observatories at 13,796 feet",
+                region: "Saddle",
+                lat: 19.7588,
+                lng: -155.4569,
+                heading: 0,
+                pitch: 10,
+                audio: { wind: 0.9 },
+                history: "Mauna Kea is sacred to Hawaiians — the realm of the snow goddess Poliʻahu. World-class astronomical observatories operate at the summit.",
+                things: ["Onizuka Visitor Center (9,200 ft)", "Summit observatories (4WD required)", "Stargazing programs", "Snow in winter!"]
+            },
+            {
+                id: 29,
+                name: "Saddle Road Viewpoint",
+                hawaiian: "Māmalahoa Highway",
+                desc: "Between Mauna Kea and Mauna Loa at 6,500 feet",
+                region: "Saddle",
+                lat: 19.6833,
+                lng: -155.4667,
+                heading: 270,
+                pitch: 0,
+                audio: { wind: 0.8 },
+                history: "Saddle Road connects Hilo to Kona between Hawaii's two massive volcanoes. Once notorious, it was completely rebuilt and improved in 2013.",
+                things: ["Views of both mountains", "Kipuka (forest island) access", "Hunting area (wild pigs, game birds)", "Military base (Pohakuloa)"]
+            },
+            
+            // ===== PUNA DISTRICT (30-32) =====
+            {
+                id: 30,
+                name: "Pāhoa Village",
+                hawaiian: "Pāhoa — 'dagger'",
+                desc: "Funky town with historic wooden boardwalk",
+                region: "Puna",
+                lat: 19.4959,
+                lng: -154.9437,
+                heading: 180,
+                pitch: 0,
+                audio: { birds: 0.6 },
+                history: "Old plantation town with wooden storefronts from the 1900s. Known for its alternative, artistic community. Barely spared by 2018 lava flows.",
+                things: ["Historic wooden boardwalk", "Kalapana Cultural Center", "Gateway to Puna coast", "Alternative shops and cafes"]
+            },
+            {
+                id: 31,
+                name: "Kapoho Tide Pools",
+                hawaiian: "Wai'ōpae — 'shrimp water'",
+                desc: "Volcanic tide pools formed by 2018 lava (now covered)",
+                region: "Puna",
+                lat: 19.4969,
+                lng: -154.8172,
+                heading: 90,
+                pitch: 0,
+                audio: { ocean: 0.7 },
+                history: "The famous tide pools were tragically buried by lava in May 2018. New land formed where homes and natural pools once existed.",
+                things: ["New lava land from 2018", "Changed coastline", "Isaac Hale Beach Park nearby", "Pohoiki boat ramp"]
+            },
+            {
+                id: 32,
+                name: "Keaʻau Town",
+                hawaiian: "Keaʻau — 'the current'",
+                desc: "Gateway town to the Puna district",
+                region: "Puna",
+                lat: 19.6222,
+                lng: -155.0386,
+                heading: 0,
+                pitch: 0,
+                audio: { birds: 0.7 },
+                history: "Small town at the junction of Highway 11 and the Keaʻau-Pāhoa Road. Main shopping area for Puna residents.",
+                things: ["Keaʻau Shopping Center", "Gateway to lower Puna", "Local plate lunch shops", "Affordable housing area"]
+            }
+        ];
+        
+        // =====================================================
+        // GUIDED TOURS
+        // =====================================================
+        
+        const TOURS = [
+            {
+                id: 'volcano-day',
+                name: 'Volcano Day Trip',
+                emoji: '🌋',
+                description: 'Explore Hawaiʻi Volcanoes National Park',
+                stops: [3, 9, 10, 11, 12, 13], // Rainbow Falls, Volcano Village, HVNP, Crater Rim, Chain of Craters, Thurston
+                duration: '4-5 hours',
+                difficulty: 'Easy'
+            },
+            {
+                id: 'kona-coast',
+                name: 'Kona Coast Explorer',
+                emoji: '🏖️',
+                description: 'Historic Kona and beautiful beaches',
+                stops: [17, 18, 19, 20, 21, 22], // Ali'i Drive through Hapuna
+                duration: '5-6 hours',
+                difficulty: 'Easy'
+            },
+            {
+                id: 'hamakua-heritage',
+                name: 'Hamakua Heritage',
+                emoji: '🌿',
+                description: 'Waterfalls and valleys of the Hamakua Coast',
+                stops: [5, 6, 8, 7], // Pepe'ekeo, Akaka Falls, Honoka'a, Waipi'o
+                duration: '4 hours',
+                difficulty: 'Moderate'
+            },
+            {
+                id: 'kohala-north',
+                name: 'North Kohala Adventure',
+                emoji: '🤠',
+                description: 'Cowboy country and hidden valleys',
+                stops: [27, 25, 26], // Waimea, Hawi, Pololu
+                duration: '3-4 hours',
+                difficulty: 'Moderate'
+            },
+            {
+                id: 'southern-route',
+                name: 'Southern Route',
+                emoji: '🐢',
+                description: 'Ka'ū beaches and the southernmost point',
+                stops: [14, 16, 15], // Punalu'u, Nā'ālehu, South Point
+                duration: '4-5 hours',
+                difficulty: 'Moderate'
+            },
+            {
+                id: 'full-island',
+                name: 'Full Island Circle',
+                emoji: '🗺️',
+                description: 'Complete Big Island experience',
+                stops: [1, 3, 6, 7, 27, 25, 22, 17, 21, 14, 15, 10, 12],
+                duration: '10-12 hours',
+                difficulty: 'Full Day'
             }
         ];
         
@@ -873,64 +1995,154 @@
         // STATE
         // =====================================================
         
-        let scene, camera, renderer;
-        let currentSphere, nextSphere;
+        let streetViewPanorama = null;
+        let streetViewService = null;
+        let miniMap = null;
+        let currentMarker = null;
+        let allMarkers = [];
+        let tourPolyline = null;
         let currentIndex = 0;
+        let previousIndex = 0;
         let isTransitioning = false;
         let isAutoPlaying = false;
         let autoPlayTimer = null;
-        let hasInteracted = false;
+        let mapsLoaded = false;
+        let mapType = 'terrain';
         
-        // Mouse controls
-        let isMouseDown = false;
-        let mouseX = 0, mouseY = 0;
-        let lon = 0, lat = 0;
-        let phi = 0, theta = 0;
+        // Tour state
+        let activeTour = null;
+        let tourStopIndex = 0;
+        let isTourPlaying = false;
+        let tourTimer = null;
         
         // =====================================================
-        // THREE.JS SETUP
+        // INITIALIZE GOOGLE MAPS
         // =====================================================
         
-        function init() {
-            const container = document.getElementById('canvas-container');
+        function initMap() {
+            mapsLoaded = true;
             
-            // Create location dots
+            // Initialize Street View service
+            streetViewService = new google.maps.StreetViewService();
+            
+            // Create Street View panorama
+            const streetViewContainer = document.getElementById('street-view-container');
+            streetViewPanorama = new google.maps.StreetViewPanorama(streetViewContainer, {
+                pov: { heading: 0, pitch: 0 },
+                zoom: 1,
+                addressControl: false,
+                showRoadLabels: false,
+                linksControl: true,
+                panControl: false,
+                enableCloseButton: false,
+                fullscreenControl: false,
+                motionTracking: false,
+                motionTrackingControl: false,
+                zoomControl: false
+            });
+            
+            // Initialize mini map
+            initMiniMap();
+            
+            // Create UI elements
             createLocationDots();
+            populateDropdown();
+            populateTourDropdown();
             
-            // Scene
-            scene = new THREE.Scene();
+            // Load first location
+            goToLocation(0);
             
-            // Camera
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(0, 0, 0.1);
+            // Set up event listeners
+            setupEventListeners();
             
-            // Renderer
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            container.appendChild(renderer.domElement);
+            // Listen for panorama changes
+            streetViewPanorama.addListener('pano_changed', () => {
+                document.getElementById('loading').classList.add('hidden');
+            });
+        }
+        
+        function initMiniMap() {
+            const mapContainer = document.getElementById('mini-map');
             
-            // Load first panorama
-            loadPanorama(LOCATIONS[0], true);
+            miniMap = new google.maps.Map(mapContainer, {
+                center: { lat: 19.6, lng: -155.5 },
+                zoom: 8,
+                mapTypeId: 'terrain',
+                disableDefaultUI: true,
+                gestureHandling: 'cooperative',
+                styles: getMapStyles()
+            });
             
-            // Events
-            window.addEventListener('resize', onResize);
-            renderer.domElement.addEventListener('mousedown', onMouseDown);
-            renderer.domElement.addEventListener('mousemove', onMouseMove);
-            renderer.domElement.addEventListener('mouseup', onMouseUp);
-            renderer.domElement.addEventListener('touchstart', onTouchStart, { passive: true });
-            renderer.domElement.addEventListener('touchmove', onTouchMove, { passive: true });
-            renderer.domElement.addEventListener('touchend', onMouseUp);
-            document.addEventListener('keydown', onKeyDown);
+            // Add markers for all locations
+            LOCATIONS.forEach((loc, index) => {
+                const marker = new google.maps.Marker({
+                    position: { lat: loc.lat, lng: loc.lng },
+                    map: miniMap,
+                    title: loc.name,
+                    icon: createMarkerIcon(index, false)
+                });
+                
+                marker.addListener('click', () => {
+                    goToLocation(index);
+                });
+                
+                allMarkers.push(marker);
+            });
             
-            // Check VR support
-            checkVRSupport();
+            currentMarker = allMarkers[0];
             
-            // Start render loop
-            animate();
+            // Map type toggle buttons
+            document.getElementById('map-terrain').addEventListener('click', () => setMapType('terrain'));
+            document.getElementById('map-satellite').addEventListener('click', () => setMapType('satellite'));
+        }
+        
+        function getMapStyles() {
+            return [
+                { elementType: 'geometry', stylers: [{ color: '#1a1a1a' }] },
+                { elementType: 'labels.text.fill', stylers: [{ color: '#7FCDCD' }] },
+                { elementType: 'labels.text.stroke', stylers: [{ color: '#1a1a1a' }] },
+                { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#0D3B66' }] },
+                { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#2D2D2D' }] },
+                { featureType: 'poi', stylers: [{ visibility: 'off' }] }
+            ];
+        }
+        
+        function createMarkerIcon(index, isActive, isInTour = false) {
+            let color = '#7FCDCD';
+            let scale = 6;
+            let strokeWeight = 2;
             
-            // Show onboarding after delay
-            setTimeout(showOnboarding, CONFIG.onboardingDelay);
+            if (isActive) {
+                color = '#2A9D8F';
+                scale = 10;
+                strokeWeight = 3;
+            } else if (isInTour) {
+                color = '#F4A261';
+            }
+            
+            return {
+                path: google.maps.SymbolPath.CIRCLE,
+                scale: scale,
+                fillColor: color,
+                fillOpacity: 0.9,
+                strokeColor: '#FAF8F5',
+                strokeWeight: strokeWeight
+            };
+        }
+        
+        function setMapType(type) {
+            mapType = type;
+            
+            document.getElementById('map-terrain').classList.toggle('active', type === 'terrain');
+            document.getElementById('map-satellite').classList.toggle('active', type === 'satellite');
+            
+            if (type === 'satellite') {
+                miniMap.setMapTypeId('hybrid');
+                miniMap.setOptions({ styles: [] });
+            } else {
+                miniMap.setMapTypeId('terrain');
+                miniMap.setOptions({ styles: getMapStyles() });
+            }
         }
         
         function createLocationDots() {
@@ -955,193 +2167,582 @@
             });
         }
         
+        function populateDropdown() {
+            const dropdown = document.getElementById('location-dropdown');
+            
+            const regions = {};
+            LOCATIONS.forEach((loc, index) => {
+                if (!regions[loc.region]) regions[loc.region] = [];
+                regions[loc.region].push({ ...loc, index });
+            });
+            
+            Object.keys(regions).forEach(region => {
+                const optgroup = document.createElement('optgroup');
+                optgroup.label = `📍 ${region}`;
+                
+                regions[region].forEach(loc => {
+                    const option = document.createElement('option');
+                    option.value = loc.index;
+                    option.textContent = loc.name;
+                    optgroup.appendChild(option);
+                });
+                
+                dropdown.appendChild(optgroup);
+            });
+            
+            dropdown.value = '0';
+            
+            dropdown.addEventListener('change', (e) => {
+                goToLocation(parseInt(e.target.value));
+            });
+        }
+        
+        function populateTourDropdown() {
+            const dropdown = document.getElementById('tour-dropdown');
+            
+            TOURS.forEach(tour => {
+                const option = document.createElement('option');
+                option.value = tour.id;
+                option.textContent = `${tour.emoji} ${tour.name}`;
+                dropdown.appendChild(option);
+            });
+            
+            dropdown.addEventListener('change', (e) => {
+                if (e.target.value) {
+                    startTour(e.target.value);
+                }
+            });
+        }
+        
         function updateLocationDots() {
             const dots = document.querySelectorAll('.location-dot');
             dots.forEach((dot, index) => {
-                dot.classList.remove('active');
+                dot.classList.remove('active', 'in-tour');
                 if (index === currentIndex) {
                     dot.classList.add('active');
                 } else if (index < currentIndex) {
                     dot.classList.add('visited');
                 }
+                
+                // Highlight tour stops
+                if (activeTour) {
+                    const locId = LOCATIONS[index].id;
+                    if (activeTour.stops.includes(locId)) {
+                        dot.classList.add('in-tour');
+                    }
+                }
             });
         }
         
-        function loadPanorama(location, isFirst = false) {
-            const textureLoader = new THREE.TextureLoader();
+        function updateMiniMapMarkers() {
+            const tourStopIds = activeTour ? activeTour.stops : [];
             
-            // Update loading location name
-            const loadingName = document.getElementById('loading-location-name');
-            if (loadingName) loadingName.textContent = location.name;
+            allMarkers.forEach((marker, index) => {
+                const locId = LOCATIONS[index].id;
+                const isInTour = tourStopIds.includes(locId);
+                marker.setIcon(createMarkerIcon(index, index === currentIndex, isInTour));
+            });
             
-            textureLoader.load(
-                location.panorama,
-                (texture) => {
-                    texture.mapping = THREE.EquirectangularReflectionMapping;
-                    
-                    const geometry = new THREE.SphereGeometry(500, 60, 40);
-                    geometry.scale(-1, 1, 1);
-                    
-                    const material = new THREE.MeshBasicMaterial({
-                        map: texture,
-                        transparent: true,
-                        opacity: isFirst ? 1 : 0
-                    });
-                    
-                    const sphere = new THREE.Mesh(geometry, material);
-                    scene.add(sphere);
-                    
-                    if (isFirst) {
-                        currentSphere = sphere;
-                        document.getElementById('loading').classList.add('hidden');
-                    } else {
-                        nextSphere = sphere;
-                        transitionTo(sphere);
-                    }
-                    
-                    updateUI(location);
-                },
-                undefined,
-                (error) => {
-                    console.error('Error loading panorama:', error);
-                }
-            );
+            // Animate current marker
+            if (allMarkers[currentIndex]) {
+                animateMarker(allMarkers[currentIndex]);
+            }
+            
+            // Draw tour route line
+            if (activeTour && !tourPolyline) {
+                drawTourRoute();
+            }
+            
+            // Pan to current location
+            const loc = LOCATIONS[currentIndex];
+            miniMap.panTo({ lat: loc.lat, lng: loc.lng });
         }
         
-        function transitionTo(newSphere) {
-            if (isTransitioning) return;
-            isTransitioning = true;
+        function animateMarker(marker) {
+            // Pulse animation using icon scale
+            let scale = 10;
+            let growing = false;
             
-            const duration = CONFIG.transitionDuration;
-            const startTime = performance.now();
-            
-            function animateTransition(time) {
-                const elapsed = time - startTime;
-                const progress = Math.min(elapsed / duration, 1);
-                
-                // Smooth easing (ease-out-expo)
-                const eased = 1 - Math.pow(1 - progress, 3);
-                
-                if (currentSphere) {
-                    currentSphere.material.opacity = 1 - eased;
-                }
-                newSphere.material.opacity = eased;
-                
-                if (progress < 1) {
-                    requestAnimationFrame(animateTransition);
+            const animate = () => {
+                if (growing) {
+                    scale += 0.5;
+                    if (scale >= 12) growing = false;
                 } else {
-                    if (currentSphere) {
-                        scene.remove(currentSphere);
-                        currentSphere.material.dispose();
-                        currentSphere.geometry.dispose();
-                    }
-                    currentSphere = newSphere;
-                    nextSphere = null;
-                    isTransitioning = false;
+                    scale -= 0.5;
+                    if (scale <= 8) growing = true;
+                }
+                
+                marker.setIcon({
+                    path: google.maps.SymbolPath.CIRCLE,
+                    scale: scale,
+                    fillColor: '#2A9D8F',
+                    fillOpacity: 0.9,
+                    strokeColor: '#FAF8F5',
+                    strokeWeight: 3
+                });
+            };
+            
+            // Run a few times
+            let count = 0;
+            const interval = setInterval(() => {
+                animate();
+                count++;
+                if (count > 12) {
+                    clearInterval(interval);
+                    marker.setIcon(createMarkerIcon(currentIndex, true));
+                }
+            }, 100);
+        }
+        
+        function drawTourRoute() {
+            if (tourPolyline) {
+                tourPolyline.setMap(null);
+            }
+            
+            if (!activeTour) return;
+            
+            const path = activeTour.stops.map(id => {
+                const loc = LOCATIONS.find(l => l.id === id);
+                return { lat: loc.lat, lng: loc.lng };
+            });
+            
+            tourPolyline = new google.maps.Polyline({
+                path: path,
+                geodesic: true,
+                strokeColor: '#F4A261',
+                strokeOpacity: 0.8,
+                strokeWeight: 3
+            });
+            
+            tourPolyline.setMap(miniMap);
+        }
+        
+        function clearTourRoute() {
+            if (tourPolyline) {
+                tourPolyline.setMap(null);
+                tourPolyline = null;
+            }
+        }
+        
+        // =====================================================
+        // LOCATION NAVIGATION
+        // =====================================================
+        
+        function goToLocation(index) {
+            if (index < 0 || index >= LOCATIONS.length || isTransitioning) return;
+            if (index === currentIndex && streetViewPanorama.getPano()) return;
+            
+            isTransitioning = true;
+            previousIndex = currentIndex;
+            const location = LOCATIONS[index];
+            const previousLocation = LOCATIONS[previousIndex];
+            
+            document.getElementById('loading-location-name').textContent = location.name;
+            
+            const overlay = document.getElementById('transition-overlay');
+            
+            // Show travel info for distant locations
+            if (CONFIG.showTravelAnimation && previousIndex !== index) {
+                const distance = getDistanceFromLatLng(
+                    previousLocation.lat, previousLocation.lng,
+                    location.lat, location.lng
+                );
+                
+                if (distance > 5000) { // More than 5km
+                    showTravelAnimation(previousLocation, location, distance);
                 }
             }
             
-            requestAnimationFrame(animateTransition);
+            overlay.classList.add('active');
+            
+            setTimeout(() => {
+                const searchLocation = new google.maps.LatLng(location.lat, location.lng);
+                
+                streetViewService.getPanorama(
+                    {
+                        location: searchLocation,
+                        radius: CONFIG.searchRadius,
+                        preference: google.maps.StreetViewPreference.NEAREST,
+                        source: google.maps.StreetViewSource.OUTDOOR
+                    },
+                    (data, status) => {
+                        if (status === google.maps.StreetViewStatus.OK) {
+                            // Smooth heading transition
+                            smoothPanoramaTransition(data, location);
+                            
+                            currentIndex = index;
+                            updateUI(location);
+                            updateLocationDots();
+                            updateMiniMapMarkers();
+                            
+                            document.getElementById('location-dropdown').value = index;
+                            
+                            const foundLat = data.location.latLng.lat();
+                            const foundLng = data.location.latLng.lng();
+                            const dist = getDistanceFromLatLng(location.lat, location.lng, foundLat, foundLng);
+                            
+                            if (dist > 100) {
+                                showCoverageStatus();
+                            } else {
+                                hideCoverageStatus();
+                            }
+                            
+                            setTimeout(() => {
+                                overlay.classList.remove('active');
+                                isTransitioning = false;
+                            }, 400);
+                            
+                        } else {
+                            // Wider search fallback
+                            streetViewService.getPanorama(
+                                {
+                                    location: searchLocation,
+                                    radius: 1000,
+                                    preference: google.maps.StreetViewPreference.NEAREST
+                                },
+                                (data2, status2) => {
+                                    if (status2 === google.maps.StreetViewStatus.OK) {
+                                        smoothPanoramaTransition(data2, location);
+                                        
+                                        currentIndex = index;
+                                        updateUI(location);
+                                        updateLocationDots();
+                                        updateMiniMapMarkers();
+                                        document.getElementById('location-dropdown').value = index;
+                                        
+                                        showCoverageStatus();
+                                        
+                                        setTimeout(() => {
+                                            overlay.classList.remove('active');
+                                            isTransitioning = false;
+                                        }, 400);
+                                    } else {
+                                        showError(`No Street View coverage near ${location.name}`);
+                                        overlay.classList.remove('active');
+                                        isTransitioning = false;
+                                        
+                                        setTimeout(() => {
+                                            hideError();
+                                            nextLocation();
+                                        }, 2000);
+                                    }
+                                }
+                            );
+                        }
+                    }
+                );
+            }, CONFIG.transitionDuration / 2);
         }
         
-        function goToLocation(index) {
-            if (index < 0 || index >= LOCATIONS.length || isTransitioning || index === currentIndex) return;
-            currentIndex = index;
-            loadPanorama(LOCATIONS[index]);
-            updateLocationDots();
+        function smoothPanoramaTransition(data, location) {
+            streetViewPanorama.setPano(data.location.pano);
+            
+            // Animate heading rotation
+            const currentPov = streetViewPanorama.getPov();
+            const targetHeading = location.heading || 0;
+            const targetPitch = location.pitch || 0;
+            
+            // Direct set for now (can add easing later)
+            streetViewPanorama.setPov({
+                heading: targetHeading,
+                pitch: targetPitch
+            });
+        }
+        
+        function showTravelAnimation(from, to, distanceMeters) {
+            const miles = (distanceMeters / 1609.34).toFixed(1);
+            const driveMinutes = Math.round(distanceMeters / 1000 * 2); // ~30 mph average
+            
+            document.getElementById('travel-from').textContent = from.name;
+            document.getElementById('travel-to').textContent = to.name;
+            document.getElementById('travel-distance').textContent = `${miles} miles`;
+            document.getElementById('travel-time').textContent = `~${driveMinutes} min drive`;
         }
         
         function nextLocation() {
-            const next = (currentIndex + 1) % LOCATIONS.length;
-            goToLocation(next);
+            if (activeTour) {
+                tourNext();
+            } else {
+                const next = (currentIndex + 1) % LOCATIONS.length;
+                goToLocation(next);
+            }
         }
         
         function prevLocation() {
-            const prev = (currentIndex - 1 + LOCATIONS.length) % LOCATIONS.length;
-            goToLocation(prev);
+            if (activeTour) {
+                tourPrev();
+            } else {
+                const prev = (currentIndex - 1 + LOCATIONS.length) % LOCATIONS.length;
+                goToLocation(prev);
+            }
         }
         
         function updateUI(location) {
             document.getElementById('location-name').textContent = location.name;
+            document.getElementById('location-hawaiian').textContent = location.hawaiian || '';
             document.getElementById('location-desc').textContent = location.desc;
             document.getElementById('location-counter').textContent = 
                 `Location ${currentIndex + 1} of ${LOCATIONS.length}`;
-        }
-        
-        // =====================================================
-        // ONBOARDING
-        // =====================================================
-        
-        function showOnboarding() {
-            if (hasInteracted) return;
             
-            const onboarding = document.getElementById('onboarding');
-            onboarding.classList.add('visible');
+            // Update info cards
+            document.getElementById('location-history').textContent = location.history || 'Historical information coming soon.';
             
-            setTimeout(() => {
-                onboarding.classList.remove('visible');
-            }, CONFIG.onboardingDuration);
-        }
-        
-        function hideOnboarding() {
-            hasInteracted = true;
-            document.getElementById('onboarding').classList.remove('visible');
-        }
-        
-        // =====================================================
-        // CONTROLS
-        // =====================================================
-        
-        function onMouseDown(e) {
-            isMouseDown = true;
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-            hideOnboarding();
-        }
-        
-        function onMouseMove(e) {
-            if (!isMouseDown) return;
+            const thingsEl = document.getElementById('location-things');
+            if (location.things && location.things.length > 0) {
+                thingsEl.innerHTML = '<ul>' + location.things.map(t => `<li>${t}</li>`).join('') + '</ul>';
+            } else {
+                thingsEl.textContent = 'Explore and discover!';
+            }
             
-            const deltaX = e.clientX - mouseX;
-            const deltaY = e.clientY - mouseY;
-            
-            lon -= deltaX * 0.1;
-            lat += deltaY * 0.1;
-            lat = Math.max(-85, Math.min(85, lat));
-            
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-        }
-        
-        function onMouseUp() {
-            isMouseDown = false;
-        }
-        
-        function onTouchStart(e) {
-            if (e.touches.length === 1) {
-                mouseX = e.touches[0].clientX;
-                mouseY = e.touches[0].clientY;
-                hideOnboarding();
+            // Update tour panel if active
+            if (activeTour) {
+                updateTourProgress();
             }
         }
         
-        function onTouchMove(e) {
-            if (e.touches.length === 1) {
-                const deltaX = e.touches[0].clientX - mouseX;
-                const deltaY = e.touches[0].clientY - mouseY;
-                
-                lon -= deltaX * 0.1;
-                lat += deltaY * 0.1;
-                lat = Math.max(-85, Math.min(85, lat));
-                
-                mouseX = e.touches[0].clientX;
-                mouseY = e.touches[0].clientY;
+        // =====================================================
+        // TOUR SYSTEM
+        // =====================================================
+        
+        function startTour(tourId) {
+            const tour = TOURS.find(t => t.id === tourId);
+            if (!tour) return;
+            
+            activeTour = tour;
+            tourStopIndex = 0;
+            isTourPlaying = false;
+            
+            // Show tour panel
+            document.getElementById('tour-panel').classList.add('visible');
+            document.getElementById('active-tour-name').textContent = `${tour.emoji} ${tour.name}`;
+            
+            // Create tour stop buttons
+            const stopsContainer = document.getElementById('tour-stops');
+            stopsContainer.innerHTML = '';
+            
+            tour.stops.forEach((locId, idx) => {
+                const loc = LOCATIONS.find(l => l.id === locId);
+                const stop = document.createElement('div');
+                stop.className = 'tour-stop' + (idx === 0 ? ' active' : '');
+                stop.textContent = `${idx + 1}. ${loc.name.split(' ')[0]}`;
+                stop.addEventListener('click', () => {
+                    tourStopIndex = idx;
+                    const locIndex = LOCATIONS.findIndex(l => l.id === locId);
+                    goToLocation(locIndex);
+                    updateTourProgress();
+                });
+                stopsContainer.appendChild(stop);
+            });
+            
+            // Update markers and route
+            updateMiniMapMarkers();
+            drawTourRoute();
+            updateLocationDots();
+            
+            // Go to first stop
+            const firstLocIndex = LOCATIONS.findIndex(l => l.id === tour.stops[0]);
+            goToLocation(firstLocIndex);
+            
+            updateTourProgress();
+        }
+        
+        function updateTourProgress() {
+            if (!activeTour) return;
+            
+            const progress = ((tourStopIndex + 1) / activeTour.stops.length) * 100;
+            document.getElementById('tour-progress-fill').style.width = `${progress}%`;
+            document.getElementById('tour-stop-text').textContent = 
+                `Stop ${tourStopIndex + 1} of ${activeTour.stops.length}`;
+            
+            const stopsRemaining = activeTour.stops.length - tourStopIndex - 1;
+            const minRemaining = stopsRemaining * 8; // ~8 min per stop
+            document.getElementById('tour-time-remaining').textContent = 
+                stopsRemaining > 0 ? `~${minRemaining} min remaining` : 'Tour complete! 🎉';
+            
+            // Update stop buttons
+            const stops = document.querySelectorAll('.tour-stop');
+            stops.forEach((stop, idx) => {
+                stop.classList.remove('active', 'completed');
+                if (idx === tourStopIndex) {
+                    stop.classList.add('active');
+                } else if (idx < tourStopIndex) {
+                    stop.classList.add('completed');
+                }
+            });
+            
+            // Update play button
+            const playIcon = document.getElementById('tour-play-icon');
+            const playText = document.getElementById('tour-play-text');
+            playIcon.textContent = isTourPlaying ? '⏸️' : '▶️';
+            playText.textContent = isTourPlaying ? 'Pause' : 'Play';
+        }
+        
+        function tourNext() {
+            if (!activeTour) return;
+            
+            if (tourStopIndex < activeTour.stops.length - 1) {
+                tourStopIndex++;
+                const locIndex = LOCATIONS.findIndex(l => l.id === activeTour.stops[tourStopIndex]);
+                goToLocation(locIndex);
+                updateTourProgress();
+            } else {
+                // Tour complete
+                if (isTourPlaying) {
+                    toggleTourPlay();
+                }
             }
+        }
+        
+        function tourPrev() {
+            if (!activeTour) return;
+            
+            if (tourStopIndex > 0) {
+                tourStopIndex--;
+                const locIndex = LOCATIONS.findIndex(l => l.id === activeTour.stops[tourStopIndex]);
+                goToLocation(locIndex);
+                updateTourProgress();
+            }
+        }
+        
+        function toggleTourPlay() {
+            isTourPlaying = !isTourPlaying;
+            
+            if (isTourPlaying) {
+                tourTimer = setInterval(() => {
+                    if (tourStopIndex < activeTour.stops.length - 1) {
+                        tourNext();
+                    } else {
+                        toggleTourPlay();
+                    }
+                }, CONFIG.tourAutoPlayInterval);
+            } else {
+                clearInterval(tourTimer);
+            }
+            
+            updateTourProgress();
+        }
+        
+        function closeTour() {
+            activeTour = null;
+            tourStopIndex = 0;
+            isTourPlaying = false;
+            clearInterval(tourTimer);
+            
+            document.getElementById('tour-panel').classList.remove('visible');
+            document.getElementById('tour-dropdown').value = '';
+            
+            clearTourRoute();
+            updateMiniMapMarkers();
+            updateLocationDots();
+        }
+        
+        // =====================================================
+        // HELPERS
+        // =====================================================
+        
+        function getDistanceFromLatLng(lat1, lng1, lat2, lng2) {
+            const R = 6371000;
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLng = (lng2 - lng1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                      Math.sin(dLng/2) * Math.sin(dLng/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        }
+        
+        function showError(message) {
+            const el = document.getElementById('error-message');
+            el.querySelector('p').textContent = message;
+            el.classList.add('visible');
+        }
+        
+        function hideError() {
+            document.getElementById('error-message').classList.remove('visible');
+        }
+        
+        function showCoverageStatus() {
+            document.getElementById('coverage-status').classList.add('visible');
+            setTimeout(hideCoverageStatus, 3000);
+        }
+        
+        function hideCoverageStatus() {
+            document.getElementById('coverage-status').classList.remove('visible');
+        }
+        
+        // =====================================================
+        // EVENT LISTENERS
+        // =====================================================
+        
+        function setupEventListeners() {
+            // Navigation buttons
+            document.getElementById('prev-btn').addEventListener('click', prevLocation);
+            document.getElementById('next-btn').addEventListener('click', nextLocation);
+            document.getElementById('play-btn').addEventListener('click', toggleAutoPlay);
+            
+            // Tour controls
+            document.getElementById('tour-prev').addEventListener('click', tourPrev);
+            document.getElementById('tour-next').addEventListener('click', tourNext);
+            document.getElementById('tour-play').addEventListener('click', toggleTourPlay);
+            document.getElementById('tour-close').addEventListener('click', closeTour);
+            
+            // Info panel toggle
+            document.getElementById('info-toggle').addEventListener('click', () => {
+                const toggle = document.getElementById('info-toggle');
+                const details = document.getElementById('info-details');
+                toggle.classList.toggle('expanded');
+                details.classList.toggle('visible');
+            });
+            
+            // Keyboard navigation
+            document.addEventListener('keydown', onKeyDown);
+            
+            // Fullscreen
+            document.getElementById('fullscreen-btn').addEventListener('click', toggleFullscreen);
+            
+            // Effect toggles
+            document.querySelectorAll('.toggle-switch').forEach(toggle => {
+                const handleToggle = () => {
+                    toggle.classList.toggle('on');
+                    const effect = toggle.dataset.effect;
+                    const isOn = toggle.classList.contains('on');
+                    toggle.setAttribute('aria-checked', isOn);
+                    
+                    if (effect === 'rain') {
+                        toggleRain(isOn);
+                    }
+                };
+                
+                toggle.addEventListener('click', handleToggle);
+                toggle.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleToggle();
+                    }
+                });
+            });
+            
+            // Volume slider
+            const volumeSlider = document.getElementById('volume-slider');
+            const volumeValue = document.getElementById('volume-value');
+            
+            volumeSlider.addEventListener('input', (e) => {
+                volumeValue.textContent = `${e.target.value}%`;
+            });
+            
+            // Visibility change
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    if (isAutoPlaying) clearInterval(autoPlayTimer);
+                    if (isTourPlaying) clearInterval(tourTimer);
+                } else {
+                    if (isAutoPlaying) autoPlayTimer = setInterval(nextLocation, CONFIG.autoPlayInterval);
+                    if (isTourPlaying) tourTimer = setInterval(tourNext, CONFIG.tourAutoPlayInterval);
+                }
+            });
         }
         
         function onKeyDown(e) {
-            hideOnboarding();
-            
             switch(e.key) {
                 case 'ArrowRight':
                     nextLocation();
@@ -1151,7 +2752,23 @@
                     break;
                 case ' ':
                     e.preventDefault();
-                    toggleAutoPlay();
+                    if (activeTour) {
+                        toggleTourPlay();
+                    } else {
+                        toggleAutoPlay();
+                    }
+                    break;
+                case 'f':
+                case 'F':
+                    toggleFullscreen();
+                    break;
+                case 't':
+                case 'T':
+                    // Focus tour dropdown
+                    document.getElementById('tour-dropdown').focus();
+                    break;
+                case 'Escape':
+                    if (activeTour) closeTour();
                     break;
             }
         }
@@ -1169,47 +2786,20 @@
                 autoPlayTimer = setInterval(nextLocation, CONFIG.autoPlayInterval);
             } else {
                 icon.textContent = '▶️';
-                text.textContent = 'Auto Play';
+                text.textContent = 'Auto Tour';
                 btn.classList.remove('active');
                 clearInterval(autoPlayTimer);
             }
         }
         
-        function onResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            
-            // Update rain canvas
-            rainCanvas.width = window.innerWidth;
-            rainCanvas.height = window.innerHeight;
-        }
-        
-        // =====================================================
-        // VR SUPPORT
-        // =====================================================
-        
-        function checkVRSupport() {
-            const vrBtn = document.getElementById('vr-btn');
-            
-            if ('xr' in navigator) {
-                navigator.xr.isSessionSupported('immersive-vr').then((supported) => {
-                    if (!supported) {
-                        vrBtn.disabled = true;
-                        vrBtn.title = 'VR not supported on this device';
-                    }
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log('Fullscreen error:', err);
                 });
             } else {
-                vrBtn.disabled = true;
-                vrBtn.title = 'WebXR not available';
+                document.exitFullscreen();
             }
-            
-            vrBtn.addEventListener('click', enterVR);
-        }
-        
-        function enterVR() {
-            // VR implementation would go here
-            alert('VR mode coming soon! 🥽\n\nFor now, drag to look around in 360°.');
         }
         
         // =====================================================
@@ -1220,6 +2810,7 @@
         const rainCtx = rainCanvas.getContext('2d');
         let raindrops = [];
         let rainActive = false;
+        let rainAnimationFrame = null;
         
         function initRain() {
             rainCanvas.width = window.innerWidth;
@@ -1258,92 +2849,44 @@
                 }
             });
             
-            requestAnimationFrame(updateRain);
+            rainAnimationFrame = requestAnimationFrame(updateRain);
         }
         
         function toggleRain(on) {
             rainActive = on;
             rainCanvas.classList.toggle('active', on);
-            if (on) updateRain();
+            if (on) {
+                updateRain();
+            } else if (rainAnimationFrame) {
+                cancelAnimationFrame(rainAnimationFrame);
+            }
         }
         
-        // =====================================================
-        // EFFECT TOGGLES
-        // =====================================================
-        
-        document.querySelectorAll('.toggle-switch').forEach(toggle => {
-            const handleToggle = () => {
-                toggle.classList.toggle('on');
-                const effect = toggle.dataset.effect;
-                const isOn = toggle.classList.contains('on');
-                toggle.setAttribute('aria-checked', isOn);
-                
-                if (effect === 'rain') {
-                    toggleRain(isOn);
-                }
-                
-                console.log(`${effect}: ${isOn ? 'on' : 'off'}`);
-            };
-            
-            toggle.addEventListener('click', handleToggle);
-            toggle.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    handleToggle();
-                }
-            });
-        });
-        
-        // Volume slider
-        const volumeSlider = document.getElementById('volume-slider');
-        const volumeValue = document.getElementById('volume-value');
-        
-        volumeSlider.addEventListener('input', (e) => {
-            volumeValue.textContent = `${e.target.value}%`;
+        window.addEventListener('resize', () => {
+            rainCanvas.width = window.innerWidth;
+            rainCanvas.height = window.innerHeight;
         });
         
         // =====================================================
-        // BUTTON CONTROLS
-        // =====================================================
-        
-        document.getElementById('prev-btn').addEventListener('click', prevLocation);
-        document.getElementById('next-btn').addEventListener('click', nextLocation);
-        document.getElementById('play-btn').addEventListener('click', toggleAutoPlay);
-        
-        // =====================================================
-        // RENDER LOOP
-        // =====================================================
-        
-        function animate() {
-            requestAnimationFrame(animate);
-            
-            phi = THREE.MathUtils.degToRad(90 - lat);
-            theta = THREE.MathUtils.degToRad(lon);
-            
-            camera.lookAt(
-                500 * Math.sin(phi) * Math.cos(theta),
-                500 * Math.cos(phi),
-                500 * Math.sin(phi) * Math.sin(theta)
-            );
-            
-            renderer.render(scene, camera);
-        }
-        
-        // =====================================================
-        // INIT
+        // INITIALIZE
         // =====================================================
         
         initRain();
-        init();
         
-        // Handle visibility change (pause autoplay when tab is hidden)
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden && isAutoPlaying) {
-                clearInterval(autoPlayTimer);
-            } else if (!document.hidden && isAutoPlaying) {
-                autoPlayTimer = setInterval(nextLocation, CONFIG.autoPlayInterval);
-            }
-        });
+        function loadGoogleMapsAPI() {
+            const script = document.createElement('script');
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${API_KEY}&callback=initMap`;
+            script.async = true;
+            script.defer = true;
+            script.onerror = () => {
+                showError('Failed to load Google Maps. Please check your internet connection.');
+            };
+            document.head.appendChild(script);
+        }
+        
+        window.initMap = initMap;
+        
+        loadGoogleMapsAPI();
     </script>
 </body>
 </html>

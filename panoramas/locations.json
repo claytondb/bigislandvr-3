@@ -1,0 +1,629 @@
+{
+  "version": "1.0",
+  "last_updated": "2026-02-17",
+  "description": "Big Island VR location database - panoramas, depth maps, and audio settings",
+  "routes": {
+    "hilo_bayfront": [
+      "Banyan Drive Start",
+      "Liliuokalani Gardens",
+      "Coconut Island Viewpoint",
+      "Hilo Bay Pier",
+      "Downtown Hilo"
+    ],
+    "hawaii_volcanoes": [
+      "Park Entrance",
+      "Kilauea Visitor Center",
+      "Steam Vents",
+      "Jaggar Museum Overlook",
+      "Halema'uma'u Crater",
+      "Chain of Craters Road",
+      "Holei Sea Arch"
+    ],
+    "saddle_road": [
+      "Saddle Road Start (Hilo Side)",
+      "Mauna Kea Access Road",
+      "Pu'u Huluhulu",
+      "Kipuka Ki",
+      "Saddle Summit"
+    ],
+    "kona_coast": [
+      "Kailua-Kona Pier",
+      "Ali'i Drive",
+      "Magic Sands Beach",
+      "Keauhou Bay",
+      "Kealakekua Bay"
+    ],
+    "hamakua_coast": [
+      "Akaka Falls",
+      "Waipio Valley Lookout",
+      "Honoka'a Town",
+      "Laupahoehoe Point"
+    ],
+    "south_point": [
+      "South Point Road",
+      "Ka Lae (South Point)",
+      "Green Sand Beach Trailhead",
+      "Punalu'u Black Sand Beach"
+    ]
+  },
+  "locations": [
+    {
+      "name": "Banyan Drive Start",
+      "description": "Historic drive lined with banyan trees planted by celebrities",
+      "lat": 19.726,
+      "lng": -155.082,
+      "region": "Hilo",
+      "route": "hilo_bayfront",
+      "audio_mix": {
+        "ocean": 0.3,
+        "birds": 0.5,
+        "wind": 0.2,
+        "ambient": "rainforest_light"
+      },
+      "nearby": [
+        "Liliuokalani Gardens",
+        "Hilo Bay Pier"
+      ]
+    },
+    {
+      "name": "Liliuokalani Gardens",
+      "description": "Beautiful Japanese garden on Hilo Bay with pagodas and koi ponds",
+      "lat": 19.7245,
+      "lng": -155.0792,
+      "region": "Hilo",
+      "route": "hilo_bayfront",
+      "audio_mix": {
+        "water": 0.4,
+        "birds": 0.4,
+        "wind": 0.2,
+        "ambient": "garden_peaceful"
+      },
+      "nearby": [
+        "Banyan Drive Start",
+        "Coconut Island Viewpoint"
+      ]
+    },
+    {
+      "name": "Coconut Island Viewpoint",
+      "description": "View of Moku Ola (Coconut Island) from Liliuokalani Gardens bridge",
+      "lat": 19.7235,
+      "lng": -155.078,
+      "region": "Hilo",
+      "route": "hilo_bayfront",
+      "audio_mix": {
+        "ocean": 0.5,
+        "birds": 0.3,
+        "wind": 0.2
+      },
+      "nearby": [
+        "Liliuokalani Gardens",
+        "Hilo Bay Pier"
+      ],
+      "pano_id": "mbqeC_kUxjsPZxcLlbqOFg",
+      "panorama_path": "/mnt/c/Users/clayt/OneDrive/Documents/dc-bigislandvr-3/panoramas/processed/6b1b1ac8e1b5_panorama.jpg",
+      "depth_path": null,
+      "processed": true
+    },
+    {
+      "name": "Hilo Bay Pier",
+      "description": "Historic pier with views of Hilo Bay and Mauna Kea",
+      "lat": 19.729,
+      "lng": -155.087,
+      "region": "Hilo",
+      "route": "hilo_bayfront",
+      "audio_mix": {
+        "ocean": 0.6,
+        "harbor": 0.2,
+        "birds": 0.2
+      },
+      "nearby": [
+        "Downtown Hilo",
+        "Banyan Drive Start"
+      ],
+      "pano_id": "tdkSC9MEMErekDComm0iCg",
+      "panorama_path": "/mnt/c/Users/clayt/OneDrive/Documents/dc-bigislandvr-3/panoramas/processed/037713065259_panorama.jpg",
+      "depth_path": null,
+      "processed": true
+    },
+    {
+      "name": "Downtown Hilo",
+      "description": "Historic downtown with classic Hawaiian storefronts",
+      "lat": 19.7241,
+      "lng": -155.0868,
+      "region": "Hilo",
+      "route": "hilo_bayfront",
+      "audio_mix": {
+        "town": 0.4,
+        "birds": 0.3,
+        "ambient": "small_town"
+      },
+      "nearby": [
+        "Hilo Bay Pier",
+        "Banyan Drive Start"
+      ],
+      "pano_id": "-Xv9-rbq2rw4KSyZoNCyag",
+      "panorama_path": "/mnt/c/Users/clayt/OneDrive/Documents/dc-bigislandvr-3/panoramas/processed/14db86d34551_panorama.jpg",
+      "depth_path": null,
+      "processed": true
+    },
+    {
+      "name": "Park Entrance",
+      "description": "Hawaii Volcanoes National Park entrance gate",
+      "lat": 19.43,
+      "lng": -155.25,
+      "region": "Volcano",
+      "route": "hawaii_volcanoes",
+      "audio_mix": {
+        "forest": 0.5,
+        "birds": 0.4,
+        "wind": 0.1
+      },
+      "nearby": [
+        "Kilauea Visitor Center"
+      ]
+    },
+    {
+      "name": "Kilauea Visitor Center",
+      "description": "Main visitor center with exhibits on volcanism",
+      "lat": 19.4318,
+      "lng": -155.2579,
+      "region": "Volcano",
+      "route": "hawaii_volcanoes",
+      "audio_mix": {
+        "forest": 0.4,
+        "birds": 0.4,
+        "ambient": "visitor_center"
+      },
+      "nearby": [
+        "Park Entrance",
+        "Steam Vents"
+      ]
+    },
+    {
+      "name": "Steam Vents",
+      "description": "Geothermal steam rising from volcanic fissures",
+      "lat": 19.429,
+      "lng": -155.261,
+      "region": "Volcano",
+      "route": "hawaii_volcanoes",
+      "audio_mix": {
+        "steam": 0.5,
+        "wind": 0.3,
+        "volcanic": 0.2
+      },
+      "nearby": [
+        "Kilauea Visitor Center",
+        "Jaggar Museum Overlook"
+      ],
+      "pano_id": "LwhblGlGuH7iVJp7uD7qwg",
+      "panorama_path": "/mnt/c/Users/clayt/OneDrive/Documents/dc-bigislandvr-3/panoramas/processed/895966e45fd7_panorama.jpg",
+      "depth_path": null,
+      "processed": true
+    },
+    {
+      "name": "Jaggar Museum Overlook",
+      "description": "Overlook of Kilauea caldera (museum closed but viewpoint accessible)",
+      "lat": 19.4207,
+      "lng": -155.2879,
+      "region": "Volcano",
+      "route": "hawaii_volcanoes",
+      "audio_mix": {
+        "wind": 0.5,
+        "volcanic": 0.3,
+        "ambient": "crater_overlook"
+      },
+      "nearby": [
+        "Steam Vents",
+        "Halema'uma'u Crater"
+      ],
+      "pano_id": "t3o3vDEgI14Jqq16F0n0wg",
+      "panorama_path": "/mnt/c/Users/clayt/OneDrive/Documents/dc-bigislandvr-3/panoramas/processed/3993a37ba38e_panorama.jpg",
+      "depth_path": null,
+      "processed": true
+    },
+    {
+      "name": "Halema'uma'u Crater",
+      "description": "Active volcanic crater within Kilauea caldera",
+      "lat": 19.405,
+      "lng": -155.281,
+      "region": "Volcano",
+      "route": "hawaii_volcanoes",
+      "audio_mix": {
+        "volcanic": 0.5,
+        "wind": 0.4,
+        "rumble": 0.1
+      },
+      "nearby": [
+        "Jaggar Museum Overlook",
+        "Chain of Craters Road"
+      ]
+    },
+    {
+      "name": "Chain of Craters Road",
+      "description": "Scenic road descending through lava fields to the coast",
+      "lat": 19.365,
+      "lng": -155.145,
+      "region": "Volcano",
+      "route": "hawaii_volcanoes",
+      "audio_mix": {
+        "wind": 0.5,
+        "volcanic_desert": 0.3,
+        "birds": 0.2
+      },
+      "nearby": [
+        "Halema'uma'u Crater",
+        "Holei Sea Arch"
+      ]
+    },
+    {
+      "name": "Holei Sea Arch",
+      "description": "Natural lava rock arch at the end of Chain of Craters Road",
+      "lat": 19.29,
+      "lng": -155.097,
+      "region": "Volcano",
+      "route": "hawaii_volcanoes",
+      "audio_mix": {
+        "ocean": 0.6,
+        "wind": 0.3,
+        "waves_crash": 0.1
+      },
+      "nearby": [
+        "Chain of Craters Road"
+      ]
+    },
+    {
+      "name": "Saddle Road Start (Hilo Side)",
+      "description": "Beginning of Saddle Road from Hilo side",
+      "lat": 19.695,
+      "lng": -155.14,
+      "region": "Saddle",
+      "route": "saddle_road",
+      "audio_mix": {
+        "forest": 0.4,
+        "birds": 0.4,
+        "wind": 0.2
+      },
+      "nearby": [
+        "Mauna Kea Access Road"
+      ]
+    },
+    {
+      "name": "Mauna Kea Access Road",
+      "description": "Junction of Saddle Road and Mauna Kea summit access",
+      "lat": 19.756,
+      "lng": -155.456,
+      "region": "Saddle",
+      "route": "saddle_road",
+      "audio_mix": {
+        "highland": 0.4,
+        "wind": 0.5,
+        "birds": 0.1
+      },
+      "nearby": [
+        "Saddle Road Start (Hilo Side)",
+        "Pu'u Huluhulu"
+      ]
+    },
+    {
+      "name": "Pu'u Huluhulu",
+      "description": "Forested cinder cone between Mauna Kea and Mauna Loa",
+      "lat": 19.698,
+      "lng": -155.432,
+      "region": "Saddle",
+      "route": "saddle_road",
+      "audio_mix": {
+        "forest": 0.5,
+        "birds": 0.3,
+        "wind": 0.2
+      },
+      "nearby": [
+        "Mauna Kea Access Road",
+        "Kipuka Ki"
+      ]
+    },
+    {
+      "name": "Kipuka Ki",
+      "description": "Island of old forest surrounded by younger lava flows",
+      "lat": 19.69,
+      "lng": -155.41,
+      "region": "Saddle",
+      "route": "saddle_road",
+      "audio_mix": {
+        "forest": 0.6,
+        "birds": 0.3,
+        "wind": 0.1
+      },
+      "nearby": [
+        "Pu'u Huluhulu",
+        "Saddle Summit"
+      ]
+    },
+    {
+      "name": "Saddle Summit",
+      "description": "Highest point of Saddle Road between the two mountains",
+      "lat": 19.69,
+      "lng": -155.52,
+      "region": "Saddle",
+      "route": "saddle_road",
+      "audio_mix": {
+        "wind": 0.6,
+        "highland": 0.3,
+        "silence": 0.1
+      },
+      "nearby": [
+        "Kipuka Ki"
+      ]
+    },
+    {
+      "name": "Kailua-Kona Pier",
+      "description": "Historic pier in downtown Kona",
+      "lat": 19.64,
+      "lng": -155.996,
+      "region": "Kona",
+      "route": "kona_coast",
+      "audio_mix": {
+        "ocean": 0.4,
+        "harbor": 0.3,
+        "town": 0.3
+      },
+      "nearby": [
+        "Ali'i Drive"
+      ]
+    },
+    {
+      "name": "Ali'i Drive",
+      "description": "Scenic oceanfront drive through Kona",
+      "lat": 19.63,
+      "lng": -155.99,
+      "region": "Kona",
+      "route": "kona_coast",
+      "audio_mix": {
+        "ocean": 0.5,
+        "traffic_light": 0.2,
+        "birds": 0.3
+      },
+      "nearby": [
+        "Kailua-Kona Pier",
+        "Magic Sands Beach"
+      ]
+    },
+    {
+      "name": "Magic Sands Beach",
+      "description": "Popular beach with dramatic wave action",
+      "lat": 19.583,
+      "lng": -155.969,
+      "region": "Kona",
+      "route": "kona_coast",
+      "audio_mix": {
+        "ocean": 0.6,
+        "waves_crash": 0.3,
+        "birds": 0.1
+      },
+      "nearby": [
+        "Ali'i Drive",
+        "Keauhou Bay"
+      ]
+    },
+    {
+      "name": "Keauhou Bay",
+      "description": "Historic bay with calm waters, great for snorkeling",
+      "lat": 19.562,
+      "lng": -155.964,
+      "region": "Kona",
+      "route": "kona_coast",
+      "audio_mix": {
+        "ocean": 0.5,
+        "harbor": 0.2,
+        "birds": 0.3
+      },
+      "nearby": [
+        "Magic Sands Beach",
+        "Kealakekua Bay"
+      ]
+    },
+    {
+      "name": "Kealakekua Bay",
+      "description": "Marine sanctuary and Captain Cook monument",
+      "lat": 19.48,
+      "lng": -155.931,
+      "region": "Kona",
+      "route": "kona_coast",
+      "audio_mix": {
+        "ocean": 0.6,
+        "dolphins": 0.2,
+        "birds": 0.2
+      },
+      "nearby": [
+        "Keauhou Bay"
+      ]
+    },
+    {
+      "name": "Akaka Falls",
+      "description": "Stunning 442-foot waterfall in lush rainforest",
+      "lat": 19.853,
+      "lng": -155.152,
+      "region": "Hamakua",
+      "route": "hamakua_coast",
+      "audio_mix": {
+        "waterfall": 0.6,
+        "forest": 0.3,
+        "birds": 0.1
+      },
+      "nearby": [
+        "Honoka'a Town"
+      ]
+    },
+    {
+      "name": "Waipio Valley Lookout",
+      "description": "Breathtaking overlook of the Valley of the Kings",
+      "lat": 20.12,
+      "lng": -155.587,
+      "region": "Hamakua",
+      "route": "hamakua_coast",
+      "audio_mix": {
+        "wind": 0.4,
+        "ocean_distant": 0.3,
+        "forest": 0.3
+      },
+      "nearby": [
+        "Honoka'a Town"
+      ]
+    },
+    {
+      "name": "Honoka'a Town",
+      "description": "Charming historic plantation town",
+      "lat": 20.079,
+      "lng": -155.468,
+      "region": "Hamakua",
+      "route": "hamakua_coast",
+      "audio_mix": {
+        "town": 0.4,
+        "wind": 0.3,
+        "birds": 0.3
+      },
+      "nearby": [
+        "Akaka Falls",
+        "Waipio Valley Lookout"
+      ]
+    },
+    {
+      "name": "Laupahoehoe Point",
+      "description": "Scenic lava peninsula with powerful surf",
+      "lat": 19.988,
+      "lng": -155.237,
+      "region": "Hamakua",
+      "route": "hamakua_coast",
+      "audio_mix": {
+        "ocean": 0.6,
+        "waves_crash": 0.3,
+        "wind": 0.1
+      },
+      "nearby": [
+        "Akaka Falls",
+        "Honoka'a Town"
+      ]
+    },
+    {
+      "name": "South Point Road",
+      "description": "Scenic drive to the southernmost point in the USA",
+      "lat": 19.06,
+      "lng": -155.67,
+      "region": "Ka'u",
+      "route": "south_point",
+      "audio_mix": {
+        "wind": 0.6,
+        "grassland": 0.3,
+        "birds": 0.1
+      },
+      "nearby": [
+        "Ka Lae (South Point)"
+      ]
+    },
+    {
+      "name": "Ka Lae (South Point)",
+      "description": "Southernmost point in the United States",
+      "lat": 18.914,
+      "lng": -155.682,
+      "region": "Ka'u",
+      "route": "south_point",
+      "audio_mix": {
+        "wind": 0.5,
+        "ocean": 0.4,
+        "cliffs": 0.1
+      },
+      "nearby": [
+        "South Point Road",
+        "Green Sand Beach Trailhead"
+      ]
+    },
+    {
+      "name": "Green Sand Beach Trailhead",
+      "description": "Starting point for hike to Papakolea Green Sand Beach",
+      "lat": 18.935,
+      "lng": -155.652,
+      "region": "Ka'u",
+      "route": "south_point",
+      "audio_mix": {
+        "wind": 0.5,
+        "ocean_distant": 0.3,
+        "desert": 0.2
+      },
+      "nearby": [
+        "Ka Lae (South Point)",
+        "Punalu'u Black Sand Beach"
+      ]
+    },
+    {
+      "name": "Punalu'u Black Sand Beach",
+      "description": "Famous black sand beach with sea turtles",
+      "lat": 19.136,
+      "lng": -155.505,
+      "region": "Ka'u",
+      "route": "south_point",
+      "audio_mix": {
+        "ocean": 0.5,
+        "waves_gentle": 0.3,
+        "palms": 0.2
+      },
+      "nearby": [
+        "Green Sand Beach Trailhead"
+      ]
+    }
+  ],
+  "audio_presets": {
+    "rainforest_light": {
+      "description": "Light rainfall, tropical birds, gentle rustling",
+      "layers": [
+        "rain_light",
+        "birds_tropical",
+        "leaves_rustle"
+      ]
+    },
+    "garden_peaceful": {
+      "description": "Koi pond, gentle breeze, songbirds",
+      "layers": [
+        "water_pond",
+        "wind_gentle",
+        "birds_song"
+      ]
+    },
+    "crater_overlook": {
+      "description": "Wind, volcanic ambiance, distant rumble",
+      "layers": [
+        "wind_strong",
+        "volcanic_hum",
+        "silence"
+      ]
+    },
+    "small_town": {
+      "description": "Light activity, birds, occasional car",
+      "layers": [
+        "ambient_town",
+        "birds_general",
+        "traffic_distant"
+      ]
+    },
+    "visitor_center": {
+      "description": "Indoor/outdoor transition, people, exhibits",
+      "layers": [
+        "people_murmur",
+        "birds_outside",
+        "indoor_ambient"
+      ]
+    }
+  },
+  "metadata": {
+    "total_locations": 28,
+    "regions": [
+      "Hilo",
+      "Volcano",
+      "Saddle",
+      "Kona",
+      "Hamakua",
+      "Ka'u"
+    ],
+    "api_key": "AIzaSyBmSDHrsQunVjxhZ4UHQ0asdUY6vZVFszY",
+    "coordinate_system": "WGS84",
+    "projection": "equirectangular"
+  }
+}

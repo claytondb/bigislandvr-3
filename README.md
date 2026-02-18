@@ -1,187 +1,122 @@
-# Big Island VR 3.0 - Immersive Panorama Experience
+# 🌴 Big Island VR - Explore Hawaiʻi
 
-Explore the Big Island of Hawaii through AI-upscaled panoramas with depth-based transitions, spatial audio, and VR support.
+An immersive 360° virtual reality experience of the Big Island of Hawaii using real Google Street View panoramas.
 
-## Features
+**E komo mai** — Welcome!
 
-### Viewer Capabilities
-- 🖼️ **Equirectangular Panoramas** - Proper spherical projection for immersive viewing
-- 🔄 **Depth-Based Transitions** - Parallax morphing between locations using depth maps
-- 📱 **Gyroscope Support** - Look around naturally on mobile devices
-- 🥽 **WebXR VR** - Full VR headset support (Quest, Vive, etc.)
-- 🌧️ **Ambient Weather** - Dynamic rain and wind particle systems
-- 🐦 **Spatial Audio** - Location-aware bird sounds, ocean waves, wind
-- 🎯 **60fps Performance** - Optimized for smooth mobile experience
+## ✨ Features
 
-### Python Pipeline
-- 🖼️ **Download** - Fetch Street View panoramas via Google API
-- 🧵 **Stitch** - Combine perspective views into equirectangular
-- 🔍 **Depth Estimation** - Generate depth maps with Depth Anything v2
-- ⬆️ **Upscale** - AI enhance to 4K+ with Real-ESRGAN
-- 🎬 **Transitions** - Generate depth-warped transition frames
+### 🗺️ 32 Real Locations
+Explore the entire Big Island through authentic Street View panoramas:
 
-## Quick Start
+- **Hilo Area** - Bayfront, Banyan Drive, Rainbow Falls, Farmers Market, Pepe'ekeo Scenic Drive
+- **Hamakua Coast** - Akaka Falls, Waipi'o Valley Lookout, Honoka'a Town
+- **Volcano** - Village, National Park, Crater Rim, Chain of Craters, Thurston Lava Tube
+- **Ka'ū District** - Punalu'u Black Sand Beach, South Point (Ka Lae), Nā'ālehu
+- **Kona Coast** - Ali'i Drive, Kailua Pier, Keauhou Bay, Kealakekua Bay, Place of Refuge, Hapuna Beach
+- **Kohala** - Mauna Lani, Waikoloa, Hāwī Town, Pololu Valley Lookout
+- **Waimea & Saddle** - Waimea Town, Mauna Kea Access Road, Saddle Road Viewpoint
+- **Puna** - Pāhoa Village, Kapoho, Kea'au Town
 
-### View Panoramas
-1. Open `index.html` in a modern browser
-2. Drag to look around (or use gyroscope on mobile)
-3. Arrow keys or buttons to navigate
-4. Toggle weather/audio effects on the right panel
+### 🎯 Guided Tours
+Six curated tour routes with auto-play:
 
-### VR Mode
-- Click "🥽 Enter VR" with a connected headset
-- Look around naturally
-- Use controller buttons to navigate
+| Tour | Description | Stops | Duration |
+|------|-------------|-------|----------|
+| 🌋 Volcano Day Trip | Explore Hawaiʻi Volcanoes National Park | 6 | 4-5 hours |
+| 🏖️ Kona Coast Explorer | Historic Kona and beautiful beaches | 6 | 5-6 hours |
+| 🌿 Hamakua Heritage | Waterfalls and valleys | 4 | 4 hours |
+| 🤠 North Kohala Adventure | Cowboy country and hidden valleys | 3 | 3-4 hours |
+| 🐢 Southern Route | Ka'ū beaches and South Point | 3 | 4-5 hours |
+| 🗺️ Full Island Circle | Complete Big Island experience | 13 | 10-12 hours |
 
-### Mobile Gyroscope
-- Tap "📱 Gyro" to enable motion controls
-- iOS requires permission prompt
+### 📍 Location Info Cards
+Each location includes:
+- **Hawaiian name** with meaning
+- **History & Culture** - Background and significance
+- **Things to See** - What not to miss
 
-## Controls
+### 🗺️ Enhanced Mini-Map
+- Pulsing marker for current location
+- Route lines showing tour paths
+- Satellite/terrain view toggle
+- Click any marker to teleport
 
-| Input | Action |
-|-------|--------|
-| Drag / Touch | Look around |
-| ← / → | Previous / Next location |
-| Space | Toggle auto-play |
-| F | Fullscreen |
-| Scroll | Zoom in/out |
+### 🚗 Travel Animations
+When traveling between distant locations:
+- Driving animation with road effect
+- Distance in miles
+- Estimated drive time
 
-## Directory Structure
+### 🎛️ Ambient Effects
+- 🌧️ Rain overlay effect
+- 💨 Wind sounds (audio)
+- 🐦 Bird sounds (audio)
+- 🌊 Ocean waves (audio)
+- 🔊 Master volume control
 
-```
-dc-bigislandvr-3/
-├── index.html              # Main viewer (all features)
-├── README.md
-├── audio/                  # Ambient audio files
-├── panoramas/
-│   ├── original/           # Downloaded raw images
-│   ├── stitched/           # Equirectangular panoramas
-│   ├── depth/              # Depth maps (grayscale PNG)
-│   ├── upscaled/           # AI-enhanced panoramas
-│   └── transitions/        # Transition frame sequences
-├── public/
-│   └── depth_maps.json     # Panorama-depth mapping
-├── scripts/
-│   ├── requirements.txt    # Python dependencies
-│   ├── download_panoramas.py
-│   ├── stitch_panorama.py
-│   ├── depth_estimation.py # Depth Anything v2
-│   ├── generate_transitions.py
-│   └── upscale.py          # Real-ESRGAN
-└── docs/
-```
+## ⌨️ Keyboard Shortcuts
 
-## Python Pipeline Setup
+| Key | Action |
+|-----|--------|
+| `←` `→` | Previous / Next location |
+| `Space` | Toggle auto-play / tour play |
+| `T` | Open tour selector |
+| `F` | Toggle fullscreen |
+| `Esc` | Close active tour |
 
-### 1. Install Dependencies
+## 🖥️ Usage
 
-```bash
-cd scripts
-pip install -r requirements.txt
+Just open `index.html` in a modern browser. No build step required!
 
-# For GPU acceleration (recommended):
-pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
-```
+Works best in:
+- Chrome (recommended)
+- Firefox
+- Safari
+- Edge
 
-### 2. Download Panoramas
+## 📱 Responsive Design
 
-```bash
-python download_panoramas.py [route_name]
+Fully responsive for:
+- Desktop browsers
+- Tablets
+- Mobile phones (portrait and landscape)
 
-# Routes: hilo_bayfront, keaau, volcano, saddle_road
-# Downloads from Google Street View API
-```
+## 🔧 Technical Details
 
-### 3. Stitch to Equirectangular
+- **Single-file architecture** - Everything in one HTML file
+- **Google Street View API** - Real panorama imagery
+- **Google Maps API** - Mini-map with markers and routes
+- **CSS Variables** - Hawaiian-themed design tokens
+- **No external dependencies** - Just the Google APIs
 
-```bash
-python stitch_panorama.py
+## 🎨 Design System
 
-# Combines 4-direction images into equirectangular
-```
+Hawaiian-inspired color palette:
 
-### 4. Generate Depth Maps
+| Token | Color | Use |
+|-------|-------|-----|
+| Kona Blue | `#0D3B66` | Deep ocean |
+| Pacific Teal | `#1A6B7C` | Ocean tones |
+| Seafoam | `#7FCDCD` | Accents |
+| Ti Leaf | `#2A9D8F` | Primary actions |
+| Pikake | `#F4A261` | Tours/highlights |
+| Hibiscus | `#E63946` | Alerts |
+| Lava Black | `#1A1A1A` | Backgrounds |
+| Plumeria | `#FAF8F5` | Text |
 
-```bash
-python depth_estimation.py [input_dir] [output_dir]
+## 📸 Screenshots
 
-# Uses Depth Anything v2 (auto-downloads model)
-# Outputs: grayscale PNG depth maps
-```
+*Coming soon*
 
-### 5. AI Upscale (Optional)
+## 📄 License
 
-```bash
-python upscale.py
+MIT License - Feel free to use and modify!
 
-# Uses Real-ESRGAN for 4x upscaling
-```
+## 🌺 Mahalo!
 
-### 6. Generate Transitions (Optional)
+Made with aloha for Hawaii lovers everywhere.
 
-```bash
-python generate_transitions.py --frames 30 --mode depth_warp
+---
 
-# Creates depth-warped transition frames between panoramas
-# Outputs: image sequences + MP4 videos
-```
-
-## Tech Stack
-
-- **Viewer**: Three.js r152, WebGL 2.0, WebXR
-- **Audio**: Howler.js with Web Audio API spatial positioning
-- **Depth AI**: Depth Anything v2 (HuggingFace Transformers)
-- **Upscaling**: Real-ESRGAN
-- **Transitions**: OpenCV depth warping + optical flow
-
-## Performance Targets
-
-| Device | Target FPS | Notes |
-|--------|------------|-------|
-| Desktop | 60 | Full effects |
-| Mobile | 60 | Reduced particles |
-| VR | 72+ | Simplified shaders |
-
-## Audio Sources
-
-The viewer uses ambient audio from Freesound.org (Creative Commons):
-- Ocean waves
-- Bird songs (Hawaiian forest)
-- Wind
-- Rain
-
-Replace with your own audio files in `audio/` for production.
-
-## Browser Compatibility
-
-| Browser | Desktop | Mobile | VR |
-|---------|---------|--------|-----|
-| Chrome | ✅ | ✅ | ✅ |
-| Firefox | ✅ | ✅ | ✅ |
-| Safari | ✅ | ✅ | ❌ |
-| Edge | ✅ | ✅ | ✅ |
-
-WebXR requires HTTPS in production.
-
-## API Keys
-
-The download script uses Google Street View API. The key in the script is rate-limited. For heavy usage, replace with your own:
-
-```python
-# scripts/download_panoramas.py
-API_KEY = "your-api-key-here"
-```
-
-## License
-
-MIT - Use freely for personal or commercial projects.
-
-## Roadmap
-
-- [ ] Pre-cached depth maps for demo locations
-- [ ] WebGPU renderer option
-- [ ] Volumetric fog effect
-- [ ] Time-of-day lighting
-- [ ] Hotspot navigation UI
-- [ ] Offline PWA support
+*"The Big Island is not just a destination—it's a state of mind."*

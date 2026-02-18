@@ -1,0 +1,58 @@
+{
+  "timestamp": "2026-02-17T20:12:38.052042",
+  "total": 5,
+  "successful": 5,
+  "failed": 0,
+  "results": [
+    {
+      "name": "Coconut Island Viewpoint",
+      "lat": 19.7235,
+      "lng": -155.078,
+      "success": true,
+      "pano_id": "mbqeC_kUxjsPZxcLlbqOFg",
+      "panorama_path": "/mnt/c/Users/clayt/OneDrive/Documents/dc-bigislandvr-3/panoramas/processed/6b1b1ac8e1b5_panorama.jpg",
+      "depth_path": null,
+      "error": null
+    },
+    {
+      "name": "Hilo Bay Pier",
+      "lat": 19.729,
+      "lng": -155.087,
+      "success": true,
+      "pano_id": "tdkSC9MEMErekDComm0iCg",
+      "panorama_path": "/mnt/c/Users/clayt/OneDrive/Documents/dc-bigislandvr-3/panoramas/processed/037713065259_panorama.jpg",
+      "depth_path": null,
+      "error": null
+    },
+    {
+      "name": "Downtown Hilo",
+      "lat": 19.7241,
+      "lng": -155.0868,
+      "success": true,
+      "pano_id": "-Xv9-rbq2rw4KSyZoNCyag",
+      "panorama_path": "/mnt/c/Users/clayt/OneDrive/Documents/dc-bigislandvr-3/panoramas/processed/14db86d34551_panorama.jpg",
+      "depth_path": null,
+      "error": null
+    },
+    {
+      "name": "Steam Vents",
+      "lat": 19.429,
+      "lng": -155.261,
+      "success": true,
+      "pano_id": "LwhblGlGuH7iVJp7uD7qwg",
+      "panorama_path": "/mnt/c/Users/clayt/OneDrive/Documents/dc-bigislandvr-3/panoramas/processed/895966e45fd7_panorama.jpg",
+      "depth_path": null,
+      "error": null
+    },
+    {
+      "name": "Jaggar Museum Overlook",
+      "lat": 19.4207,
+      "lng": -155.2879,
+      "success": true,
+      "pano_id": "t3o3vDEgI14Jqq16F0n0wg",
+      "panorama_path": "/mnt/c/Users/clayt/OneDrive/Documents/dc-bigislandvr-3/panoramas/processed/3993a37ba38e_panorama.jpg",
+      "depth_path": null,
+      "error": null
+    }
+  ]
+}
