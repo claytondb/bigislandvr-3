@@ -201,8 +201,8 @@
         #rain-canvas.active { opacity: 1; }
         
         /* Scene Animation Shader Overlay */
-        #shader-animation-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 12; opacity: 0; transition: opacity 0.5s ease; mix-blend-mode: normal; }
-        #shader-animation-canvas.active { opacity: 1; }
+        #shader-animation-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 12; opacity: 0; transition: opacity 0.5s ease; mix-blend-mode: overlay; }
+        #shader-animation-canvas.active { opacity: 0.8; }
         
         /* =====================================================
            PARTICLE SYSTEMS
@@ -290,9 +290,21 @@
         #time-travel { position: absolute; bottom: 200px; right: var(--space-5); background: rgba(26, 26, 26, 0.85); backdrop-filter: blur(20px); padding: var(--space-3) var(--space-4); border-radius: var(--radius-lg); border: 1px solid rgba(255, 255, 255, 0.08); z-index: 50; min-width: 180px; display: none; }
         #time-travel.visible { display: block; animation: fadeUp var(--duration-slow) var(--ease-out-expo); }
         .time-travel-header { display: flex; align-items: center; gap: var(--space-2); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-pikake); margin-bottom: var(--space-2); }
-        .time-travel-year { font-size: 1.5rem; font-weight: 600; font-family: var(--font-display); text-align: center; color: var(--color-plumeria); margin-bottom: var(--space-2); }
-        #time-travel-slider { width: 100%; }
-        .time-travel-range { display: flex; justify-content: space-between; font-size: 0.65rem; color: rgba(255, 255, 255, 0.5); margin-top: var(--space-1); }
+        .time-travel-year { font-size: 1.2rem; font-weight: 600; font-family: var(--font-display); text-align: center; color: var(--color-plumeria); margin-bottom: var(--space-2); }
+        .time-travel-options { display: flex; flex-direction: column; gap: 6px; }
+        .time-travel-option { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+        .time-travel-option:hover { background: rgba(255,255,255,0.1); border-color: var(--color-seafoam); }
+        .time-travel-option.active { background: rgba(42,157,143,0.2); border-color: var(--color-ti-leaf); }
+        .time-travel-option input[type="radio"] { accent-color: var(--color-ti-leaf); }
+        .time-travel-option label { cursor: pointer; font-size: 0.85rem; color: var(--color-plumeria); flex: 1; }
+        .time-travel-loading { font-size: 0.8rem; color: rgba(255,255,255,0.5); text-align: center; padding: 8px; }
+        
+        /* Search suggestions */
+        .search-suggestion { padding: 10px 12px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.2s; font-size: 0.85rem; }
+        .search-suggestion:hover { background: rgba(42,157,143,0.2); }
+        .search-suggestion:last-child { border-bottom: none; }
+        .search-suggestion-name { color: var(--color-plumeria); font-weight: 500; }
+        .search-suggestion-address { color: rgba(255,255,255,0.5); font-size: 0.75rem; margin-top: 2px; }
         
         /* =====================================================
            ACHIEVEMENTS & DISCOVERIES
@@ -428,9 +440,17 @@
         <button id="audio-unlock"><span>🔊</span><span>Click to Enable Audio</span></button>
         
         <div id="location-selector">
-            <select id="location-dropdown" aria-label="Select location">
-                <option value="" disabled>🗺️ Choose a destination...</option>
-            </select>
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <select id="location-dropdown" aria-label="Select location">
+                    <option value="" disabled>🗺️ Choose a destination...</option>
+                </select>
+                <div style="position: relative;">
+                    <input type="text" id="destination-search" placeholder="🔍 Search any place..." 
+                        style="background: rgba(26, 26, 26, 0.85); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: var(--radius-md); color: var(--color-plumeria); padding: var(--space-3) var(--space-4); font-family: var(--font-primary); font-size: 0.95rem; width: 220px; transition: all 0.2s;"
+                        autocomplete="off">
+                    <div id="search-suggestions" style="position: absolute; top: 100%; left: 0; right: 0; background: rgba(26, 26, 26, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: var(--radius-md); margin-top: 4px; max-height: 300px; overflow-y: auto; display: none; z-index: 100;"></div>
+                </div>
+            </div>
         </div>
         
         <!-- Weather Widget -->
@@ -448,12 +468,13 @@
             <div class="info-brand"><span>🌴</span><span>Big Island VR</span></div>
             <h2 id="location-name">Loading...</h2>
             <p id="location-desc">Real 360° Street View from Hawaiʻi</p>
+            <p id="location-summary" style="font-size: 0.8rem; color: rgba(255,255,255,0.7); line-height: 1.4; margin: 8px 0; padding: 8px; background: rgba(42,157,143,0.1); border-radius: 8px; border-left: 3px solid var(--color-ti-leaf); display: none;"></p>
             <div class="location-dots" id="location-dots"></div>
             <div id="location-counter">Location 1 of 15</div>
         </div>
         
-        <!-- Achievements Panel -->
-        <div id="achievements-panel">
+        <!-- Achievements Panel (hidden) -->
+        <div id="achievements-panel" style="display: none;">
             <div class="achievements-header">🏆 Achievements</div>
             <div class="achievement-progress">
                 <span class="achievement-icon">📍</span>
@@ -476,7 +497,11 @@
         </div>
         
         <div id="effects">
-            <div class="effects-header"><span>🎛️</span><span>Effects</span></div>
+            <div class="effects-header" id="effects-header" style="cursor: pointer; user-select: none;">
+                <span>🎛️</span><span>Effects</span>
+                <span id="effects-toggle" style="margin-left: auto; font-size: 0.8rem; opacity: 0.6;">▼</span>
+            </div>
+            <div id="effects-content">
             
             <!-- AUDIO SECTION -->
             <div class="effects-section">
@@ -521,22 +546,11 @@
             <div class="effects-section">
                 <div class="section-title">✨ Visual Post-Processing</div>
                 <div class="effect-row"><span class="effect-label"><span class="effect-icon">🔆</span><span>Vignette</span></span><div class="toggle-switch on" data-effect="vignette" role="switch" aria-checked="true" tabindex="0"></div></div>
-                <div class="effect-row"><span class="effect-label"><span class="effect-icon">☀️</span><span>Lens Flare</span></span><div class="toggle-switch" data-effect="lensflare" role="switch" aria-checked="false" tabindex="0"></div></div>
                 <div class="effect-row"><span class="effect-label"><span class="effect-icon">💫</span><span>Bloom</span></span><div class="toggle-switch" data-effect="bloom" role="switch" aria-checked="false" tabindex="0"></div></div>
-                <div class="slider-row">
-                    <div class="slider-label"><span>🎨 Color Grade</span></div>
-                    <select id="color-grade-select" class="color-grade-dropdown" style="width: 100%; padding: 6px; background: var(--color-pahoehoe); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: var(--color-plumeria); font-size: 0.8rem;">
-                        <option value="none">None</option>
-                        <option value="vivid">Vivid</option>
-                        <option value="cinematic">Cinematic</option>
-                        <option value="vintage">Vintage</option>
-                        <option value="tropical">Tropical</option>
-                    </select>
-                </div>
             </div>
             
-            <!-- VISUAL: PARTICLES -->
-            <div class="effects-section">
+            <!-- VISUAL: PARTICLES (hidden for now) -->
+            <div class="effects-section" style="display: none;">
                 <div class="section-title">🦋 Animated Particles</div>
                 <div class="effect-row"><span class="effect-label"><span class="effect-icon">🦋</span><span>Butterflies</span></span><div class="toggle-switch" data-effect="butterflies" role="switch" aria-checked="false" tabindex="0"></div></div>
                 <div class="effect-row"><span class="effect-label"><span class="effect-icon">✨</span><span>Fireflies</span></span><div class="toggle-switch" data-effect="fireflies" role="switch" aria-checked="false" tabindex="0"></div></div>
@@ -579,6 +593,7 @@
                 <div class="volume-label"><span>🔊 Master Volume</span><span id="volume-value">80%</span></div>
                 <input type="range" class="volume-slider" id="volume-slider" min="0" max="100" value="80" aria-label="Master volume">
             </div>
+            </div><!-- end effects-content -->
         </div>
         
         <!-- Navigation Arrows for Street View Movement -->
@@ -596,11 +611,10 @@
         <!-- Time Travel Panel -->
         <div id="time-travel">
             <div class="time-travel-header">⏳ Time Travel</div>
-            <div class="time-travel-year" id="time-travel-year">2023</div>
-            <input type="range" class="effect-slider" id="time-travel-slider" min="0" max="10" value="10" aria-label="Historical year">
-            <div class="time-travel-range">
-                <span id="time-travel-min">2013</span>
-                <span id="time-travel-max">2023</span>
+            <div class="time-travel-year" id="time-travel-year">Current</div>
+            <div id="time-travel-options" class="time-travel-options">
+                <!-- Populated dynamically based on available years -->
+                <div class="time-travel-loading">Checking history...</div>
             </div>
         </div>
         
@@ -677,53 +691,53 @@
         
         const LOCATIONS = [
             // HILO REGION (5 locations)
-            { id: 1, name: "Hilo Bayfront", desc: "Liliʻuokalani Park looking toward Coconut Island (Moku Ola)", region: "Hilo", lat: 19.7235, lng: -155.0720, heading: 45, pitch: 0, audio: { ocean: 0.8, birds: 0.5, wind: 0.2 }, atmosphere: { mist: false, volcanic: false } },
-            { id: 2, name: "Banyan Drive", desc: "Historic avenue lined with banyan trees planted by celebrities", region: "Hilo", lat: 19.7235, lng: -155.0772, heading: 180, pitch: 0, audio: { ocean: 0.4, birds: 0.8, wind: 0.1 }, atmosphere: { mist: false, volcanic: false } },
-            { id: 3, name: "Rainbow Falls Viewpoint", desc: "Waiānuenue — iconic 80-foot waterfall just outside Hilo", region: "Hilo", lat: 19.7189, lng: -155.1065, heading: 270, pitch: -10, audio: { waterfall: 0.8, birds: 0.6, wind: 0.2 }, atmosphere: { mist: true, volcanic: false }, treasure: { id: 'rainbow', name: 'Rainbow Spirit', message: 'You found the spirit of Waiānuenue! 🌈' } },
-            { id: 4, name: "Hilo Farmers Market", desc: "Vibrant outdoor market in downtown Hilo", region: "Hilo", lat: 19.7244, lng: -155.0896, heading: 90, pitch: 0, audio: { birds: 0.3, wind: 0.1 }, atmosphere: { mist: false, volcanic: false } },
-            { id: 5, name: "Pepeʻekeo Scenic Drive", desc: "Lush 4-mile coastal road through tropical rainforest", region: "Hilo", lat: 19.8345, lng: -155.1012, heading: 45, pitch: 0, audio: { birds: 0.9, wind: 0.3 }, atmosphere: { mist: true, volcanic: false } },
+            { id: 1, name: "Hilo Bayfront", desc: "Liliʻuokalani Park looking toward Coconut Island (Moku Ola)", region: "Hilo", lat: 19.7235, lng: -155.0720, heading: 45, pitch: 0, audio: { ocean: 0.8, birds: 0.5, wind: 0.2 }, atmosphere: { mist: false, volcanic: false }, summary: "🏝️ Coconut Island (Moku Ola) was once a place of healing in ancient Hawaii. Queen Liliʻuokalani dedicated this park in 1917, featuring Japanese gardens that honor the 1960 tsunami victims." },
+            { id: 2, name: "Banyan Drive", desc: "Historic avenue lined with banyan trees planted by celebrities", region: "Hilo", lat: 19.7235, lng: -155.0772, heading: 180, pitch: 0, audio: { ocean: 0.4, birds: 0.8, wind: 0.1 }, atmosphere: { mist: false, volcanic: false }, summary: "🌳 Each banyan tree was planted by a celebrity in the 1930s-1970s, including Babe Ruth, Amelia Earhart, and Franklin D. Roosevelt. The trees create a natural canopy over this historic shoreline drive." },
+            { id: 3, name: "Rainbow Falls Viewpoint", desc: "Waiānuenue — iconic 80-foot waterfall just outside Hilo", region: "Hilo", lat: 19.7189, lng: -155.1065, heading: 270, pitch: -10, audio: { waterfall: 0.8, birds: 0.6, wind: 0.2 }, atmosphere: { mist: true, volcanic: false }, treasure: { id: 'rainbow', name: 'Rainbow Spirit', message: 'You found the spirit of Waiānuenue! 🌈' }, summary: "🌈 Named 'Waiānuenue' (rainbow water), morning sunlight creates rainbows in the mist. Legend says the cave behind the falls is home to Hina, goddess of the moon and mother of Maui." },
+            { id: 4, name: "Hilo Farmers Market", desc: "Vibrant outdoor market in downtown Hilo", region: "Hilo", lat: 19.7244, lng: -155.0896, heading: 90, pitch: 0, audio: { birds: 0.3, wind: 0.1 }, atmosphere: { mist: false, volcanic: false }, summary: "🥭 Operating since 1988, this market features 200+ local vendors selling tropical fruits, flowers, crafts, and fresh poke. It's the largest open-air market in Hawaii!" },
+            { id: 5, name: "Pepeʻekeo Scenic Drive", desc: "Lush 4-mile coastal road through tropical rainforest", region: "Hilo", lat: 19.8345, lng: -155.1012, heading: 45, pitch: 0, audio: { birds: 0.9, wind: 0.3 }, atmosphere: { mist: true, volcanic: false }, summary: "🌿 This old highway winds through dense tropical jungle past one-lane bridges and small waterfalls. Once the main coastal route, it's now a peaceful detour showcasing Hawaii's rainforest beauty." },
             
             // HAMAKUA COAST (4 locations)
-            { id: 6, name: "Akaka Falls State Park", desc: "Spectacular 442-foot waterfall in lush rainforest", region: "Hamakua", lat: 19.8535, lng: -155.1527, heading: 90, pitch: -5, audio: { waterfall: 0.9, birds: 0.7, wind: 0.2 }, atmosphere: { mist: true, volcanic: false }, treasure: { id: 'akaka', name: 'Akaka Spirit', message: 'You discovered the majestic Akaka Falls! 💧' } },
-            { id: 7, name: "Waipiʻo Valley Lookout", desc: "Breathtaking viewpoint of the Valley of the Kings", region: "Hamakua", lat: 20.1177, lng: -155.5868, heading: 315, pitch: -10, audio: { wind: 0.6, birds: 0.5, ocean: 0.2 }, atmosphere: { mist: false, volcanic: false } },
-            { id: 8, name: "Honokaʻa Town", desc: "Historic sugar plantation town with vintage charm", region: "Hamakua", lat: 20.0787, lng: -155.4678, heading: 0, pitch: 0, audio: { birds: 0.4, wind: 0.2 }, atmosphere: { mist: false, volcanic: false } },
-            { id: 9, name: "Laupāhoehoe Point", desc: "Dramatic coastline with powerful wave action", region: "Hamakua", lat: 19.9907, lng: -155.2384, heading: 45, pitch: 0, audio: { ocean: 0.9, wind: 0.6 }, atmosphere: { mist: true, volcanic: false } },
+            { id: 6, name: "Akaka Falls State Park", desc: "Spectacular 442-foot waterfall in lush rainforest", region: "Hamakua", lat: 19.8535, lng: -155.1527, heading: 90, pitch: -5, audio: { waterfall: 0.9, birds: 0.7, wind: 0.2 }, atmosphere: { mist: true, volcanic: false }, treasure: { id: 'akaka', name: 'Akaka Spirit', message: 'You discovered the majestic Akaka Falls! 💧' }, summary: "💧 At 442 feet, Akaka Falls plunges into a gorge surrounded by wild orchids, bamboo, and ferns. The name 'Akaka' means to crack or split, describing how the water breaks on the rocks below." },
+            { id: 7, name: "Waipiʻo Valley Lookout", desc: "Breathtaking viewpoint of the Valley of the Kings", region: "Hamakua", lat: 20.1177, lng: -155.5868, heading: 315, pitch: -10, audio: { wind: 0.6, birds: 0.5, ocean: 0.2 }, atmosphere: { mist: false, volcanic: false }, summary: "👑 This sacred 'Valley of the Kings' was home to Hawaiian royalty. Once populated by 10,000+ people, it features a black sand beach and 1,300-foot cliffs. King Kamehameha spent his childhood here." },
+            { id: 8, name: "Honokaʻa Town", desc: "Historic sugar plantation town with vintage charm", region: "Hamakua", lat: 20.0787, lng: -155.4678, heading: 0, pitch: 0, audio: { birds: 0.4, wind: 0.2 }, atmosphere: { mist: false, volcanic: false }, summary: "🏚️ This 1880s sugar town has reinvented itself with antique shops, art galleries, and local eateries. The Honoka'a People's Theatre (1930) still shows films today." },
+            { id: 9, name: "Laupāhoehoe Point", desc: "Dramatic coastline with powerful wave action", region: "Hamakua", lat: 19.9907, lng: -155.2384, heading: 45, pitch: 0, audio: { ocean: 0.9, wind: 0.6 }, atmosphere: { mist: true, volcanic: false }, summary: "🌊 This lava peninsula was tragically struck by the 1946 tsunami, taking 24 lives including students and teachers. A memorial honors them today. The name means 'leaf of smooth lava.'" },
             
             // PUNA REGION (2 locations)
-            { id: 10, name: "Keaʻau Town Center", desc: "Small town gateway to the Puna district", region: "Puna", lat: 19.6222, lng: -155.0386, heading: 0, pitch: 0, audio: { birds: 0.6, wind: 0.2 }, atmosphere: { mist: false, volcanic: false } },
-            { id: 11, name: "Pāhoa Village", desc: "Funky town with historic wooden boardwalk", region: "Puna", lat: 19.4959, lng: -154.9437, heading: 180, pitch: 0, audio: { birds: 0.5, wind: 0.2 }, atmosphere: { mist: false, volcanic: false } },
+            { id: 10, name: "Keaʻau Town Center", desc: "Small town gateway to the Puna district", region: "Puna", lat: 19.6222, lng: -155.0386, heading: 0, pitch: 0, audio: { birds: 0.6, wind: 0.2 }, atmosphere: { mist: false, volcanic: false }, summary: "🌺 Gateway to the wild Puna district, Keaʻau sits at the edge of tropical farmland and ohia forests. The area is known for papaya farms and an independent, off-grid community spirit." },
+            { id: 11, name: "Pāhoa Village", desc: "Funky town with historic wooden boardwalk", region: "Puna", lat: 19.4959, lng: -154.9437, heading: 180, pitch: 0, audio: { birds: 0.5, wind: 0.2 }, atmosphere: { mist: false, volcanic: false }, summary: "🎨 This bohemian village features an 1890s wooden boardwalk, eclectic shops, and resilient locals who survived the 2018 lava flows. The 'Wild West of Hawaii' keeps its counterculture vibe alive." },
             
             // VOLCANO REGION (5 locations)
-            { id: 12, name: "Volcano Village", desc: "Misty rainforest village near Kīlauea", region: "Volcano", lat: 19.4329, lng: -155.2339, heading: 90, pitch: 0, audio: { birds: 0.7, wind: 0.4, rain: 0.3 }, atmosphere: { mist: true, volcanic: false }, defaultRain: 20 },
-            { id: 13, name: "Kīlauea Visitor Center", desc: "Gateway to Hawaiʻi Volcanoes National Park", region: "Volcano", lat: 19.4313, lng: -155.2570, heading: 180, pitch: 0, audio: { wind: 0.6, volcanic: 0.5 }, atmosphere: { mist: true, volcanic: true }, treasure: { id: 'pele', name: 'Pele\'s Blessing', message: 'You received Pele\'s blessing at the sacred volcano! 🌋' } },
-            { id: 14, name: "Kīlauea Crater Rim", desc: "Dramatic views of the active Halemaʻumaʻu crater", region: "Volcano", lat: 19.4119, lng: -155.2833, heading: 220, pitch: 0, audio: { wind: 0.8, volcanic: 0.7 }, atmosphere: { mist: true, volcanic: true } },
-            { id: 15, name: "Chain of Craters Road", desc: "Scenic drive through lava fields to the coast", region: "Volcano", lat: 19.3053, lng: -155.1014, heading: 180, pitch: 0, audio: { wind: 0.7, ocean: 0.3, volcanic: 0.2 }, atmosphere: { mist: false, volcanic: true } },
-            { id: 16, name: "Thurston Lava Tube", desc: "Walk through a 500-year-old lava tube (Nāhuku)", region: "Volcano", lat: 19.4145, lng: -155.2391, heading: 90, pitch: 0, audio: { birds: 0.8, wind: 0.1 }, atmosphere: { mist: true, volcanic: false } },
+            { id: 12, name: "Volcano Village", desc: "Misty rainforest village near Kīlauea", region: "Volcano", lat: 19.4329, lng: -155.2339, heading: 90, pitch: 0, audio: { birds: 0.7, wind: 0.4, rain: 0.3 }, atmosphere: { mist: true, volcanic: false }, defaultRain: 20, summary: "🌧️ At 4,000 feet elevation, this misty village gets 140 inches of rain yearly. Artists and dreamers flock here for the cool climate and proximity to Kīlauea's power." },
+            { id: 13, name: "Kīlauea Visitor Center", desc: "Gateway to Hawaiʻi Volcanoes National Park", region: "Volcano", lat: 19.4313, lng: -155.2570, heading: 180, pitch: 0, audio: { wind: 0.6, volcanic: 0.5 }, atmosphere: { mist: true, volcanic: true }, treasure: { id: 'pele', name: 'Pele\'s Blessing', message: 'You received Pele\'s blessing at the sacred volcano! 🌋' }, summary: "🌋 Hawaiʻi Volcanoes National Park is home to Kīlauea, one of Earth's most active volcanoes. Pele, the fire goddess, is said to live in Halemaʻumaʻu crater. The park became a UNESCO World Heritage Site in 1987." },
+            { id: 14, name: "Kīlauea Crater Rim", desc: "Dramatic views of the active Halemaʻumaʻu crater", region: "Volcano", lat: 19.4119, lng: -155.2833, heading: 220, pitch: 0, audio: { wind: 0.8, volcanic: 0.7 }, atmosphere: { mist: true, volcanic: true }, summary: "🔥 Halemaʻumaʻu crater is the legendary home of Pele. The 2018 eruption dramatically changed this landscape, collapsing the crater floor and creating a new water lake—the first in recorded history." },
+            { id: 15, name: "Chain of Craters Road", desc: "Scenic drive through lava fields to the coast", region: "Volcano", lat: 19.3053, lng: -155.1014, heading: 180, pitch: 0, audio: { wind: 0.7, ocean: 0.3, volcanic: 0.2 }, atmosphere: { mist: false, volcanic: true }, summary: "🛣️ This 19-mile road descends 3,700 feet through multiple lava flows from 1969-1974. It ends abruptly where 2003 lava covered the old coastal highway, a powerful reminder of the land's constant transformation." },
+            { id: 16, name: "Thurston Lava Tube", desc: "Walk through a 500-year-old lava tube (Nāhuku)", region: "Volcano", lat: 19.4145, lng: -155.2391, heading: 90, pitch: 0, audio: { birds: 0.8, wind: 0.1 }, atmosphere: { mist: true, volcanic: false }, summary: "🕳️ Nāhuku ('the protuberances') formed when the outer crust of a lava flow hardened while molten rock continued flowing inside. This 500-year-old tube is surrounded by native 'ōhi'a forest full of birdsong." },
             
             // KAʻŪ DISTRICT (3 locations)
-            { id: 17, name: "Punalu'u Black Sand Beach", desc: "Famous black sand beach where sea turtles rest", region: "Kaʻū", lat: 19.1361, lng: -155.5044, heading: 180, pitch: 0, audio: { ocean: 0.9, wind: 0.4 }, atmosphere: { mist: false, volcanic: false }, treasure: { id: 'honu', name: 'Honu Blessing', message: 'You witnessed the sacred sea turtles (honu)! 🐢' } },
-            { id: 18, name: "South Point (Ka Lae)", desc: "Southernmost point in the United States", region: "Kaʻū", lat: 18.9108, lng: -155.6817, heading: 180, pitch: 0, audio: { wind: 1.0, ocean: 0.6 }, atmosphere: { mist: false, volcanic: false } },
-            { id: 19, name: "Nāʻālehu Town", desc: "Southernmost town in the USA with local charm", region: "Kaʻū", lat: 19.0625, lng: -155.5786, heading: 90, pitch: 0, audio: { birds: 0.3, wind: 0.2 }, atmosphere: { mist: false, volcanic: false } },
+            { id: 17, name: "Punalu'u Black Sand Beach", desc: "Famous black sand beach where sea turtles rest", region: "Kaʻū", lat: 19.1361, lng: -155.5044, heading: 180, pitch: 0, audio: { ocean: 0.9, wind: 0.4 }, atmosphere: { mist: false, volcanic: false }, treasure: { id: 'honu', name: 'Honu Blessing', message: 'You witnessed the sacred sea turtles (honu)! 🐢' }, summary: "🐢 This jet-black beach was created when hot lava shattered as it hit the ocean. Green sea turtles (honu) bask here daily—they're protected, so keep your distance! Ancient heiau ruins dot the shoreline." },
+            { id: 18, name: "South Point (Ka Lae)", desc: "Southernmost point in the United States", region: "Kaʻū", lat: 18.9108, lng: -155.6817, heading: 180, pitch: 0, audio: { wind: 1.0, ocean: 0.6 }, atmosphere: { mist: false, volcanic: false }, summary: "🧭 Ka Lae is where Polynesian voyagers first landed in Hawaii around 400 AD. At 18.9° latitude, it's the southernmost point in the USA. The constant 30mph winds powered the rusty windmills you see today." },
+            { id: 19, name: "Nāʻālehu Town", desc: "Southernmost town in the USA with local charm", region: "Kaʻū", lat: 19.0625, lng: -155.5786, heading: 90, pitch: 0, audio: { birds: 0.3, wind: 0.2 }, atmosphere: { mist: false, volcanic: false }, summary: "🇺🇸 America's southernmost town sits in the heart of Kaʻū ranch country. The historic Punalu'u Bake Shop here is famous for its sweetbread, and Mark Twain once planted a monkey pod tree in town (it fell in 1957)." },
             
             // KONA COAST (6 locations)
-            { id: 20, name: "Aliʻi Drive, Kailua-Kona", desc: "Historic oceanfront street in downtown Kona", region: "Kona", lat: 19.6400, lng: -155.9969, heading: 270, pitch: 0, audio: { ocean: 0.9, birds: 0.3, wind: 0.2 }, atmosphere: { mist: false, volcanic: false }, treasure: { id: 'sunset', name: 'Golden Sunset', message: 'You captured the legendary Kona sunset! 🌅' } },
-            { id: 21, name: "Kailua Pier", desc: "Heart of Kona — departure point for ocean adventures", region: "Kona", lat: 19.6392, lng: -155.9987, heading: 270, pitch: 0, audio: { ocean: 1.0, wind: 0.3 }, atmosphere: { mist: false, volcanic: false } },
-            { id: 22, name: "Keauhou Bay", desc: "Beautiful bay south of Kona, great for snorkeling", region: "Kona", lat: 19.5611, lng: -155.9647, heading: 270, pitch: 0, audio: { ocean: 0.8, birds: 0.2, wind: 0.2 }, atmosphere: { mist: false, volcanic: false } },
-            { id: 23, name: "Kealakekua Bay", desc: "Marine sanctuary and Captain Cook monument", region: "Kona", lat: 19.4766, lng: -155.9311, heading: 270, pitch: 0, audio: { ocean: 0.8, birds: 0.4, wind: 0.2 }, atmosphere: { mist: false, volcanic: false } },
-            { id: 24, name: "Puʻuhonua o Hōnaunau", desc: "Place of Refuge — sacred Hawaiian sanctuary", region: "Kona", lat: 19.4226, lng: -155.9104, heading: 270, pitch: 0, audio: { ocean: 0.7, wind: 0.3 }, atmosphere: { mist: false, volcanic: false }, treasure: { id: 'refuge', name: 'Sacred Refuge', message: 'You found peace at the Place of Refuge! 🙏' } },
-            { id: 25, name: "Hapuna Beach", desc: "Award-winning white sand beach on Kohala coast", region: "Kona", lat: 19.9881, lng: -155.8278, heading: 270, pitch: 0, audio: { ocean: 0.9, wind: 0.3 }, atmosphere: { mist: false, volcanic: false } },
+            { id: 20, name: "Aliʻi Drive, Kailua-Kona", desc: "Historic oceanfront street in downtown Kona", region: "Kona", lat: 19.6400, lng: -155.9969, heading: 270, pitch: 0, audio: { ocean: 0.9, birds: 0.3, wind: 0.2 }, atmosphere: { mist: false, volcanic: false }, treasure: { id: 'sunset', name: 'Golden Sunset', message: 'You captured the legendary Kona sunset! 🌅' }, summary: "🌅 Named after the ali'i (royalty), this waterfront strip was where Hawaiian chiefs lived. The Ironman World Championship starts and ends here. Kona's dry climate creates legendary sunsets." },
+            { id: 21, name: "Kailua Pier", desc: "Heart of Kona — departure point for ocean adventures", region: "Kona", lat: 19.6392, lng: -155.9987, heading: 270, pitch: 0, audio: { ocean: 1.0, wind: 0.3 }, atmosphere: { mist: false, volcanic: false }, summary: "⚓ This historic pier has hosted the Ironman World Championship since 1981. Fishermen once hauled in 1,000+ pound marlin here. Watch for spinner dolphins and outrigger canoe paddlers at dawn." },
+            { id: 22, name: "Keauhou Bay", desc: "Beautiful bay south of Kona, great for snorkeling", region: "Kona", lat: 19.5611, lng: -155.9647, heading: 270, pitch: 0, audio: { ocean: 0.8, birds: 0.2, wind: 0.2 }, atmosphere: { mist: false, volcanic: false }, summary: "👑 Kamehameha III was born here in 1814, seemingly stillborn but revived by a visiting kahuna. A small beach and calm waters make this a favorite for manta ray night snorkeling." },
+            { id: 23, name: "Kealakekua Bay", desc: "Marine sanctuary and Captain Cook monument", region: "Kona", lat: 19.4766, lng: -155.9311, heading: 270, pitch: 0, audio: { ocean: 0.8, birds: 0.4, wind: 0.2 }, atmosphere: { mist: false, volcanic: false }, summary: "⛵ Captain Cook landed here in 1779 and was killed in a skirmish weeks later. The white monument marks the spot. This marine sanctuary has some of Hawaii's clearest water and best snorkeling." },
+            { id: 24, name: "Puʻuhonua o Hōnaunau", desc: "Place of Refuge — sacred Hawaiian sanctuary", region: "Kona", lat: 19.4226, lng: -155.9104, heading: 270, pitch: 0, audio: { ocean: 0.7, wind: 0.3 }, atmosphere: { mist: false, volcanic: false }, treasure: { id: 'refuge', name: 'Sacred Refuge', message: 'You found peace at the Place of Refuge! 🙏' }, summary: "🙏 In ancient Hawaii, breaking kapu (sacred laws) meant death—unless you reached this sanctuary. Absolved by priests, you could start anew. The massive 1,000-foot wall still stands after 400 years." },
+            { id: 25, name: "Hapuna Beach", desc: "Award-winning white sand beach on Kohala coast", region: "Kona", lat: 19.9881, lng: -155.8278, heading: 270, pitch: 0, audio: { ocean: 0.9, wind: 0.3 }, atmosphere: { mist: false, volcanic: false }, summary: "🏖️ Consistently ranked among America's best beaches, Hapuna's half-mile of white sand and turquoise water is postcard-perfect. Strong currents make swimming adventurous—respect the ocean!" },
             
             // KOHALA COAST (5 locations)
-            { id: 26, name: "Mauna Lani Resort", desc: "Luxury resort area with ancient fishponds", region: "Kohala", lat: 19.9347, lng: -155.8589, heading: 270, pitch: 0, audio: { ocean: 0.6, birds: 0.4, wind: 0.2 }, atmosphere: { mist: false, volcanic: false } },
-            { id: 27, name: "Waikoloa Village", desc: "Resort community with petroglyph fields nearby", region: "Kohala", lat: 19.9183, lng: -155.7878, heading: 180, pitch: 0, audio: { wind: 0.3, birds: 0.2 }, atmosphere: { mist: false, volcanic: false } },
-            { id: 28, name: "Hāwī Town", desc: "Charming art galleries in North Kohala", region: "Kohala", lat: 20.2411, lng: -155.8339, heading: 180, pitch: 0, audio: { birds: 0.4, wind: 0.5 }, atmosphere: { mist: false, volcanic: false } },
-            { id: 29, name: "Pololū Valley Lookout", desc: "Dramatic views of remote valley and black sand beach", region: "Kohala", lat: 20.2048, lng: -155.7328, heading: 0, pitch: -10, audio: { wind: 0.7, ocean: 0.4, birds: 0.3 }, atmosphere: { mist: true, volcanic: false } },
-            { id: 30, name: "Kapaʻau Town", desc: "Home of the original King Kamehameha statue", region: "Kohala", lat: 20.2333, lng: -155.8000, heading: 90, pitch: 0, audio: { birds: 0.3, wind: 0.3 }, atmosphere: { mist: false, volcanic: false }, treasure: { id: 'kamehameha', name: 'Royal Legacy', message: 'You honored King Kamehameha! 👑' } },
+            { id: 26, name: "Mauna Lani Resort", desc: "Luxury resort area with ancient fishponds", region: "Kohala", lat: 19.9347, lng: -155.8589, heading: 270, pitch: 0, audio: { ocean: 0.6, birds: 0.4, wind: 0.2 }, atmosphere: { mist: false, volcanic: false }, summary: "🐟 Ancient Hawaiians built fishponds here to raise fish for royalty. The lava tubes and caves hold significant petroglyphs. Today it's a world-class resort where history meets luxury." },
+            { id: 27, name: "Waikoloa Village", desc: "Resort community with petroglyph fields nearby", region: "Kohala", lat: 19.9183, lng: -155.7878, heading: 180, pitch: 0, audio: { wind: 0.3, birds: 0.2 }, atmosphere: { mist: false, volcanic: false }, summary: "🖼️ The nearby Puakō Petroglyph Archaeological Preserve has 3,000+ ancient carvings—one of Hawaii's largest collections. Kings once traveled this trail, leaving their stories in stone." },
+            { id: 28, name: "Hāwī Town", desc: "Charming art galleries in North Kohala", region: "Kohala", lat: 20.2411, lng: -155.8339, heading: 180, pitch: 0, audio: { birds: 0.4, wind: 0.5 }, atmosphere: { mist: false, volcanic: false }, summary: "🎨 This artsy plantation town at road's end was nearly abandoned when sugar died. Artists revived it with galleries, cafes, and the famous Bamboo Restaurant. Kohala Mountain provides a stunning backdrop." },
+            { id: 29, name: "Pololū Valley Lookout", desc: "Dramatic views of remote valley and black sand beach", region: "Kohala", lat: 20.2048, lng: -155.7328, heading: 0, pitch: -10, audio: { wind: 0.7, ocean: 0.4, birds: 0.3 }, atmosphere: { mist: true, volcanic: false }, summary: "🏞️ This is where the road ends and wilderness begins. A steep 20-minute trail descends to a black sand beach and wild valley—the first of seven valleys carved by ancient streams. Bring sturdy shoes!" },
+            { id: 30, name: "Kapaʻau Town", desc: "Home of the original King Kamehameha statue", region: "Kohala", lat: 20.2333, lng: -155.8000, heading: 90, pitch: 0, audio: { birds: 0.3, wind: 0.3 }, atmosphere: { mist: false, volcanic: false }, treasure: { id: 'kamehameha', name: 'Royal Legacy', message: 'You honored King Kamehameha! 👑' }, summary: "👑 The ORIGINAL Kamehameha statue stands here near his birthplace. Lost at sea, recovered from the ocean floor, it was placed here after a replica took its spot in Honolulu. Lei offerings honor him daily." },
             
             // WAIMEA & SADDLE (3 locations)
-            { id: 31, name: "Waimea Town Center", desc: "Paniolo (Hawaiian cowboy) country in the highlands", region: "Waimea", lat: 20.0234, lng: -155.6659, heading: 0, pitch: 0, audio: { wind: 0.5, birds: 0.5 }, atmosphere: { mist: false, volcanic: false }, treasure: { id: 'paniolo', name: 'Paniolo Spirit', message: 'You discovered the spirit of the Hawaiian cowboys! 🤠' } },
-            { id: 32, name: "Mauna Kea Access Road", desc: "Start of the journey to the summit observatory", region: "Saddle", lat: 19.7594, lng: -155.4553, heading: 0, pitch: 5, audio: { wind: 0.8 }, atmosphere: { mist: false, volcanic: false } },
-            { id: 33, name: "Saddle Road Viewpoint", desc: "Between Mauna Kea and Mauna Loa at 6,500 feet", region: "Saddle", lat: 19.6833, lng: -155.4667, heading: 270, pitch: 0, audio: { wind: 0.9 }, atmosphere: { mist: false, volcanic: false }, treasure: { id: 'summit', name: 'Mountain Majesty', message: 'You witnessed the majesty of Mauna Kea! 🏔️' } }
+            { id: 31, name: "Waimea Town Center", desc: "Paniolo (Hawaiian cowboy) country in the highlands", region: "Waimea", lat: 20.0234, lng: -155.6659, heading: 0, pitch: 0, audio: { wind: 0.5, birds: 0.5 }, atmosphere: { mist: false, volcanic: false }, treasure: { id: 'paniolo', name: 'Paniolo Spirit', message: 'You discovered the spirit of the Hawaiian cowboys! 🤠' }, summary: "🤠 Hawaiian cowboy culture started here in 1793 when cattle from Vancouver ran wild. Mexican vaqueros came in 1832 to teach ranching. Parker Ranch became one of America's largest cattle ranches." },
+            { id: 32, name: "Mauna Kea Access Road", desc: "Start of the journey to the summit observatory", region: "Saddle", lat: 19.7594, lng: -155.4553, heading: 0, pitch: 5, audio: { wind: 0.8 }, atmosphere: { mist: false, volcanic: false }, summary: "🔭 This road leads to the 13,803-foot summit, home to 13 world-class observatories. Mauna Kea ('white mountain') is sacred to Hawaiians. Measured from its ocean base, it's technically taller than Everest!" },
+            { id: 33, name: "Saddle Road Viewpoint", desc: "Between Mauna Kea and Mauna Loa at 6,500 feet", region: "Saddle", lat: 19.6833, lng: -155.4667, heading: 270, pitch: 0, audio: { wind: 0.9 }, atmosphere: { mist: false, volcanic: false }, treasure: { id: 'summit', name: 'Mountain Majesty', message: 'You witnessed the majesty of Mauna Kea! 🏔️' }, summary: "⛰️ This high-altitude road passes between Earth's two largest mountains (by volume). Mauna Kea to the north, Mauna Loa to the south—both over 13,000 feet, both shield volcanoes unlike any on Earth." }
         ];
         
         const ALL_REGIONS = ['Hilo', 'Hamakua', 'Puna', 'Volcano', 'Kaʻū', 'Kona', 'Kohala', 'Waimea', 'Saddle'];
@@ -1379,51 +1393,130 @@
         // =====================================================
         class TimeTravelManager {
             constructor() {
-                this.availableDates = [];
-                this.currentDateIndex = -1;
+                this.availableYears = [];
+                this.currentYear = null;
                 this.visible = false;
+                this.container = document.getElementById('time-travel-options');
             }
             
             async checkAvailability() {
-                // Google Street View Time Machine is available through their API
-                // We'll detect if historical panos exist by checking metadata
-                // For now, we show the panel and let users try different years
-                
-                if (!streetViewPanorama) return;
+                if (!streetViewPanorama || !streetViewService) return;
                 
                 const pano = streetViewPanorama.getPano();
                 if (!pano) return;
                 
-                // Show panel - historical data may be available
+                // Show panel while checking
                 this.visible = true;
                 document.getElementById('time-travel').classList.add('visible');
+                this.container.innerHTML = '<div class="time-travel-loading">Checking history...</div>';
                 
-                // Reset to current
-                const slider = document.getElementById('time-travel-slider');
-                slider.value = slider.max;
-                this.updateYearDisplay(parseInt(slider.max));
+                // Get panorama metadata to find available dates
+                const location = LOCATIONS[currentIndex];
+                const searchLocation = new google.maps.LatLng(location.lat, location.lng);
+                
+                try {
+                    // Try to get panorama with time machine data
+                    streetViewService.getPanorama({
+                        location: searchLocation,
+                        radius: 100,
+                        source: google.maps.StreetViewSource.OUTDOOR
+                    }, (data, status) => {
+                        if (status === google.maps.StreetViewStatus.OK && data.time) {
+                            // Parse available time periods from the response
+                            const times = data.time || [];
+                            this.availableYears = [];
+                            
+                            times.forEach(t => {
+                                const date = new Date(t.pano);
+                                if (!isNaN(date)) {
+                                    this.availableYears.push({
+                                        year: date.getFullYear(),
+                                        month: date.getMonth() + 1,
+                                        pano: t.pano
+                                    });
+                                }
+                            });
+                            
+                            // Also check imageDate from current pano
+                            if (data.imageDate) {
+                                const currentYear = parseInt(data.imageDate.split('-')[0]);
+                                if (!this.availableYears.find(y => y.year === currentYear)) {
+                                    this.availableYears.push({ year: currentYear, pano: data.location.pano, current: true });
+                                }
+                            }
+                            
+                            // Sort by year descending
+                            this.availableYears.sort((a, b) => b.year - a.year);
+                            
+                            if (this.availableYears.length > 0) {
+                                this.renderOptions();
+                            } else {
+                                this.container.innerHTML = '<div class="time-travel-loading">No historical imagery available</div>';
+                            }
+                        } else {
+                            // Fallback: assume current year only
+                            const currentYear = new Date().getFullYear();
+                            this.availableYears = [{ year: currentYear, pano: pano, current: true }];
+                            this.renderOptions();
+                        }
+                    });
+                } catch (e) {
+                    this.container.innerHTML = '<div class="time-travel-loading">Unable to check history</div>';
+                }
             }
             
-            updateYearDisplay(sliderValue) {
-                const baseYear = 2013;
+            renderOptions() {
+                this.container.innerHTML = '';
                 const currentYear = new Date().getFullYear();
-                const year = baseYear + sliderValue;
-                document.getElementById('time-travel-year').textContent = Math.min(year, currentYear);
-                document.getElementById('time-travel-min').textContent = baseYear;
-                document.getElementById('time-travel-max').textContent = currentYear;
+                
+                // Group by year and show unique years
+                const uniqueYears = [...new Set(this.availableYears.map(y => y.year))].sort((a, b) => b - a);
+                
+                uniqueYears.forEach((year, index) => {
+                    const yearData = this.availableYears.find(y => y.year === year);
+                    const isRecent = year >= currentYear - 1;
+                    
+                    const option = document.createElement('div');
+                    option.className = 'time-travel-option' + (index === 0 ? ' active' : '');
+                    option.innerHTML = `
+                        <input type="radio" name="timetravel" id="tt-${year}" value="${year}" ${index === 0 ? 'checked' : ''}>
+                        <label for="tt-${year}">${year}${isRecent ? ' (Recent)' : ''}</label>
+                    `;
+                    
+                    option.addEventListener('click', () => {
+                        this.selectYear(year, yearData.pano);
+                        document.querySelectorAll('.time-travel-option').forEach(o => o.classList.remove('active'));
+                        option.classList.add('active');
+                        option.querySelector('input').checked = true;
+                    });
+                    
+                    this.container.appendChild(option);
+                });
+                
+                // Update header
+                if (uniqueYears.length > 0) {
+                    document.getElementById('time-travel-year').textContent = uniqueYears[0];
+                }
             }
             
-            async changeYear(sliderValue) {
-                // Note: Actual historical imagery requires Google's time_machine parameter
-                // which isn't fully exposed in the JS API. This is a visual placeholder.
-                // In production, you'd need to use the embed API with time_machine param
-                
-                this.updateYearDisplay(sliderValue);
+            selectYear(year, panoId) {
+                document.getElementById('time-travel-year').textContent = year;
+                this.currentYear = year;
                 
                 // Visual feedback
                 const overlay = document.getElementById('transition-overlay');
                 overlay.classList.add('active');
                 setTimeout(() => overlay.classList.remove('active'), 300);
+                
+                // If we have a pano ID, try to switch to it
+                // Note: Full time machine functionality requires the embed API
+                if (panoId && streetViewPanorama) {
+                    try {
+                        streetViewPanorama.setPano(panoId);
+                    } catch (e) {
+                        console.warn('Could not switch to historical pano:', e);
+                    }
+                }
             }
             
             hide() {
@@ -2002,21 +2095,29 @@
                             alpha += vegMaskVal * u_vegIntensity * 0.015;
                         }
                         
-                        // Create a subtle shimmer/heat-wave effect
-                        // This creates displacement illusion via color shifting
+                        // Create visible motion effect through color modulation
                         float distortMagnitude = length(totalDistortion);
                         
-                        // Create a subtle chromatic aberration / shimmer effect
-                        vec3 color = vec3(0.5 + totalDistortion.x * 30.0, 0.5 + totalDistortion.y * 30.0, 0.5);
+                        // Base gray that will be modulated
+                        vec3 baseColor = vec3(0.5);
                         
-                        // Very subtle tint based on region type
-                        vec3 tint = vec3(0.0);
-                        tint += vec3(0.9, 0.95, 1.0) * skyMaskVal * u_cloudIntensity * 0.01;    // Slight blue for sky
-                        tint += vec3(0.8, 0.95, 1.0) * waterMaskVal * u_waterIntensity * 0.02;  // Cyan for water
-                        tint += vec3(0.85, 1.0, 0.85) * vegMaskVal * u_vegIntensity * 0.01;     // Green for veg
+                        // Apply distortion as brightness variation - creates visible "motion" effect
+                        float brightness = 0.5 + (totalDistortion.x + totalDistortion.y) * 15.0;
                         
-                        // Output with very low alpha for subtle overlay effect
-                        gl_FragColor = vec4(tint, alpha * distortMagnitude * 15.0);
+                        // Region-based color tinting
+                        vec3 tint = vec3(brightness);
+                        // Sky gets slight blue shift when moving
+                        tint += vec3(-0.02, 0.0, 0.03) * skyMaskVal * u_cloudIntensity * distortMagnitude * 50.0;
+                        // Water gets cyan shimmer
+                        tint += vec3(-0.02, 0.02, 0.04) * waterMaskVal * u_waterIntensity * distortMagnitude * 50.0;
+                        // Vegetation gets subtle green
+                        tint += vec3(-0.01, 0.02, -0.01) * vegMaskVal * u_vegIntensity * distortMagnitude * 50.0;
+                        
+                        // Alpha based on distortion amount - visible where there's movement
+                        float outputAlpha = distortMagnitude * 8.0;
+                        outputAlpha = clamp(outputAlpha, 0.0, 0.4);
+                        
+                        gl_FragColor = vec4(tint, outputAlpha);
                     }
                 `;
                 
@@ -2574,10 +2675,61 @@
         
         function nextLocation() { goToLocation((currentIndex + 1) % LOCATIONS.length); }
         function prevLocation() { goToLocation((currentIndex - 1 + LOCATIONS.length) % LOCATIONS.length); }
+        
+        // Go to a custom searched location (not in predefined list)
+        function goToCustomLocation(lat, lng, name) {
+            if (isTransitioning) return;
+            isTransitioning = true;
+            perfMonitor.setLoading(true);
+            document.getElementById('loading-location-name').textContent = name;
+            
+            transitionManager.transitionTo('blur');
+            
+            setTimeout(() => {
+                const searchLocation = new google.maps.LatLng(lat, lng);
+                streetViewService.getPanorama({ location: searchLocation, radius: 500, preference: google.maps.StreetViewPreference.NEAREST, source: google.maps.StreetViewSource.OUTDOOR }, (data, status) => {
+                    if (status === google.maps.StreetViewStatus.OK) {
+                        streetViewPanorama.setPano(data.location.pano);
+                        streetViewPanorama.setPov({ heading: 0, pitch: 0 });
+                        
+                        // Update UI with custom location
+                        document.getElementById('location-name').textContent = name;
+                        document.getElementById('location-desc').textContent = `Custom destination • ${lat.toFixed(4)}°, ${lng.toFixed(4)}°`;
+                        document.getElementById('location-summary').style.display = 'none';
+                        document.getElementById('location-counter').textContent = 'Custom Location';
+                        document.getElementById('location-dropdown').value = '';
+                        
+                        // Set neutral audio
+                        audioManager.crossfadeTo({ wind: 0.3, birds: 0.3 });
+                        atmosphereManager.setMist(false);
+                        
+                        // Pan mini map
+                        miniMap.panTo({ lat, lng });
+                        
+                        transitionManager.complete().then(() => { isTransitioning = false; });
+                    } else {
+                        showError(`No Street View coverage at ${name}`);
+                        transitionManager.complete();
+                        isTransitioning = false;
+                        perfMonitor.setLoading(false);
+                        setTimeout(hideError, 3000);
+                    }
+                });
+            }, CONFIG.transitionDuration / 2);
+        }
         function updateUI(location) {
             document.getElementById('location-name').textContent = location.name;
             document.getElementById('location-desc').textContent = location.desc;
             document.getElementById('location-counter').textContent = `Location ${currentIndex + 1} of ${LOCATIONS.length}`;
+            
+            // Show summary for tour locations
+            const summaryEl = document.getElementById('location-summary');
+            if (location.summary) {
+                summaryEl.textContent = location.summary;
+                summaryEl.style.display = 'block';
+            } else {
+                summaryEl.style.display = 'none';
+            }
         }
         
         // =====================================================
@@ -2734,9 +2886,82 @@
             // Weather sync
             document.getElementById('weather-sync-btn').addEventListener('click', () => weatherManager.syncAmbientEffects());
             
-            // Time travel
-            document.getElementById('time-travel-slider').addEventListener('input', (e) => {
-                timeTravelManager.changeYear(parseInt(e.target.value));
+            // Effects panel minimize toggle
+            document.getElementById('effects-header').addEventListener('click', () => {
+                const content = document.getElementById('effects-content');
+                const toggle = document.getElementById('effects-toggle');
+                if (content.style.display === 'none') {
+                    content.style.display = 'block';
+                    toggle.textContent = '▼';
+                } else {
+                    content.style.display = 'none';
+                    toggle.textContent = '▶';
+                }
+            });
+            
+            // Destination search with autocomplete
+            const searchInput = document.getElementById('destination-search');
+            const suggestionsBox = document.getElementById('search-suggestions');
+            let autocompleteService = null;
+            let placesService = null;
+            
+            // Initialize Places Autocomplete after map loads
+            if (google.maps.places) {
+                autocompleteService = new google.maps.places.AutocompleteService();
+                placesService = new google.maps.places.PlacesService(miniMap);
+            }
+            
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.trim();
+                if (query.length < 2) {
+                    suggestionsBox.style.display = 'none';
+                    return;
+                }
+                
+                if (autocompleteService) {
+                    autocompleteService.getPlacePredictions({
+                        input: query,
+                        locationBias: { center: { lat: 19.6, lng: -155.5 }, radius: 100000 }, // Big Island area
+                        types: ['establishment', 'geocode', 'point_of_interest']
+                    }, (predictions, status) => {
+                        if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
+                            suggestionsBox.innerHTML = '';
+                            predictions.slice(0, 5).forEach(pred => {
+                                const div = document.createElement('div');
+                                div.className = 'search-suggestion';
+                                div.innerHTML = `
+                                    <div class="search-suggestion-name">${pred.structured_formatting.main_text}</div>
+                                    <div class="search-suggestion-address">${pred.structured_formatting.secondary_text || ''}</div>
+                                `;
+                                div.addEventListener('click', () => {
+                                    placesService.getDetails({ placeId: pred.place_id, fields: ['geometry', 'name'] }, (place, detailStatus) => {
+                                        if (detailStatus === google.maps.places.PlacesServiceStatus.OK && place.geometry) {
+                                            goToCustomLocation(place.geometry.location.lat(), place.geometry.location.lng(), pred.structured_formatting.main_text);
+                                        }
+                                    });
+                                    suggestionsBox.style.display = 'none';
+                                    searchInput.value = pred.structured_formatting.main_text;
+                                });
+                                suggestionsBox.appendChild(div);
+                            });
+                            suggestionsBox.style.display = 'block';
+                        } else {
+                            suggestionsBox.style.display = 'none';
+                        }
+                    });
+                }
+            });
+            
+            searchInput.addEventListener('focus', () => {
+                if (searchInput.value.length >= 2 && suggestionsBox.children.length > 0) {
+                    suggestionsBox.style.display = 'block';
+                }
+            });
+            
+            document.addEventListener('click', (e) => {
+                if (!searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
+                    suggestionsBox.style.display = 'none';
+                }
             });
             
             // Share panel
@@ -2868,7 +3093,7 @@
         
         function loadGoogleMapsAPI() {
             const script = document.createElement('script');
-            script.src = `https://maps.googleapis.com/maps/api/js?key=${API_KEY}&callback=initMap`;
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${API_KEY}&libraries=places&callback=initMap`;
             script.async = true;
             script.defer = true;
             script.onerror = () => showError('Failed to load Google Maps. Please check your internet connection.');
