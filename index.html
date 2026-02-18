@@ -3,20 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Big Island VR - Explore Hawaii</title>
+    <meta name="description" content="Explore the Big Island of Hawaii through immersive 360° panoramas">
+    <meta name="theme-color" content="#0D3B66">
+    <title>Big Island VR - Explore Hawaiʻi</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Inter:wght@400;500;600&family=Lora:ital@1&display=swap" rel="stylesheet">
+    
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            background: #000;
-            color: #fff;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            overflow: hidden;
-            touch-action: none;
+        /* =====================================================
+           CSS VARIABLES - Hawaiian Design Tokens
+           ===================================================== */
+        :root {
+            /* Ocean Blues */
+            --color-kona-blue: #0D3B66;
+            --color-pacific-teal: #1A6B7C;
+            --color-shallow-water: #3DA5D9;
+            --color-seafoam: #7FCDCD;
+            
+            /* Volcanic Earth */
+            --color-lava-black: #1A1A1A;
+            --color-pahoehoe: #2D2D2D;
+            --color-volcanic-ash: #4A4A4A;
+            --color-cinder: #6B6B6B;
+            
+            /* Tropical Flora */
+            --color-plumeria: #FAF8F5;
+            --color-hibiscus: #E63946;
+            --color-pikake: #F4A261;
+            --color-ti-leaf: #2A9D8F;
+            --color-orchid: #9B5DE5;
+            
+            /* Typography */
+            --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --font-display: 'DM Sans', var(--font-primary);
+            --font-accent: 'Lora', Georgia, serif;
+            
+            /* Spacing */
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+            --space-5: 24px;
+            --space-6: 32px;
+            
+            /* Borders */
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            
+            /* Timing */
+            --duration-fast: 200ms;
+            --duration-normal: 300ms;
+            --duration-slow: 500ms;
+            --duration-panorama: 1500ms;
+            
+            /* Easing */
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-natural: cubic-bezier(0.4, 0, 0.2, 1);
         }
         
+        /* =====================================================
+           BASE STYLES
+           ===================================================== */
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
+        
+        body {
+            background: var(--color-lava-black);
+            color: var(--color-plumeria);
+            font-family: var(--font-primary);
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        /* =====================================================
+           VIEWER CONTAINER
+           ===================================================== */
         #viewer {
             width: 100vw;
             height: 100vh;
@@ -28,17 +98,19 @@
             height: 100%;
         }
         
-        /* Loading overlay */
+        /* =====================================================
+           LOADING SCREEN - Hawaiian Welcome
+           ===================================================== */
         #loading {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%);
+            background: linear-gradient(135deg, var(--color-kona-blue) 0%, var(--color-pacific-teal) 50%, var(--color-lava-black) 100%);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             z-index: 100;
-            transition: opacity 0.5s;
+            transition: opacity var(--duration-slow) var(--ease-out-expo);
         }
         
         #loading.hidden {
@@ -46,267 +118,574 @@
             pointer-events: none;
         }
         
+        .loading-logo {
+            font-size: 4rem;
+            margin-bottom: var(--space-4);
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
         #loading h1 {
+            font-family: var(--font-display);
             font-size: 2.5rem;
-            margin-bottom: 0.5rem;
+            font-weight: 600;
+            margin-bottom: var(--space-2);
+            background: linear-gradient(135deg, var(--color-plumeria), var(--color-seafoam));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         
-        #loading p {
-            color: #a0aec0;
-            margin-bottom: 2rem;
+        .loading-subtitle {
+            font-family: var(--font-accent);
+            font-style: italic;
+            color: var(--color-seafoam);
+            font-size: 1.1rem;
+            margin-bottom: var(--space-6);
+            opacity: 0.9;
         }
         
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 3px solid rgba(255,255,255,0.2);
-            border-top-color: #48bb78;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+        .loading-progress {
+            width: 280px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: var(--space-4);
         }
         
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .loading-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--color-pacific-teal), var(--color-ti-leaf), var(--color-seafoam));
+            border-radius: 2px;
+            width: 0%;
+            animation: progress 2s ease-out forwards, shimmer 1.5s ease-in-out infinite;
+            background-size: 200% 100%;
         }
         
-        /* Controls overlay */
-        #controls {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 10px;
-            z-index: 50;
+        @keyframes progress {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
         }
         
-        .control-btn {
-            background: rgba(0,0,0,0.7);
-            border: 1px solid rgba(255,255,255,0.2);
-            color: #fff;
-            padding: 12px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
         }
         
-        .control-btn:hover {
-            background: rgba(255,255,255,0.1);
-            border-color: rgba(255,255,255,0.4);
+        .loading-location {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.875rem;
         }
         
-        .control-btn.active {
-            background: rgba(72, 187, 120, 0.3);
-            border-color: #48bb78;
-        }
-        
-        .control-btn.vr-btn {
-            background: rgba(138, 43, 226, 0.5);
-            border-color: rgba(138, 43, 226, 0.8);
-        }
-        
-        .control-btn.vr-btn:hover {
-            background: rgba(138, 43, 226, 0.7);
-        }
-        
-        /* Info panel */
+        /* =====================================================
+           INFO PANEL - Glass Morphism
+           ===================================================== */
         #info {
             position: absolute;
-            top: 20px;
-            left: 20px;
-            background: rgba(0,0,0,0.7);
-            padding: 15px 20px;
-            border-radius: 10px;
+            top: var(--space-5);
+            left: var(--space-5);
+            background: rgba(26, 26, 26, 0.75);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            padding: var(--space-4) var(--space-5);
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             z-index: 50;
-            max-width: 300px;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            max-width: 280px;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            animation: fadeUp var(--duration-slow) var(--ease-out-expo);
         }
         
-        #info h2 {
-            font-size: 1.2rem;
-            margin-bottom: 5px;
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
-        #info p {
-            font-size: 0.85rem;
-            color: #a0aec0;
+        .info-brand {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            font-family: var(--font-display);
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--color-seafoam);
+            margin-bottom: var(--space-3);
+            padding-bottom: var(--space-3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        #location-name {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: var(--space-1);
+            line-height: 1.2;
+        }
+        
+        #location-desc {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.4;
+            margin-bottom: var(--space-3);
+        }
+        
+        .location-dots {
+            display: flex;
+            gap: var(--space-1);
+            margin-bottom: var(--space-2);
+            flex-wrap: wrap;
+        }
+        
+        .location-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--color-volcanic-ash);
+            cursor: pointer;
+            transition: all var(--duration-fast) var(--ease-natural);
+        }
+        
+        .location-dot:hover {
+            transform: scale(1.3);
+            background: var(--color-seafoam);
+        }
+        
+        .location-dot.active {
+            width: 10px;
+            height: 10px;
+            background: var(--color-ti-leaf);
+            box-shadow: 0 0 10px rgba(42, 157, 143, 0.5);
+        }
+        
+        .location-dot.visited {
+            background: var(--color-seafoam);
         }
         
         #location-counter {
-            margin-top: 10px;
-            font-size: 0.8rem;
-            color: #48bb78;
+            font-size: 0.75rem;
+            color: var(--color-seafoam);
+            font-weight: 500;
+            letter-spacing: 0.02em;
         }
         
-        /* Effects panel */
+        /* =====================================================
+           EFFECTS PANEL
+           ===================================================== */
         #effects {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(0,0,0,0.7);
-            padding: 15px;
-            border-radius: 10px;
+            top: var(--space-5);
+            right: var(--space-5);
+            background: rgba(26, 26, 26, 0.75);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            padding: var(--space-4);
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             z-index: 50;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            min-width: 200px;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            animation: fadeUp var(--duration-slow) var(--ease-out-expo) 0.1s both;
         }
         
-        #effects h3 {
-            font-size: 0.9rem;
-            margin-bottom: 10px;
-            color: #a0aec0;
+        .effects-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--color-seafoam);
+            margin-bottom: var(--space-3);
+            padding-bottom: var(--space-3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
         
-        .effect-toggle {
+        .effect-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 0.85rem;
-            min-width: 140px;
+            margin-bottom: var(--space-3);
+            gap: var(--space-3);
         }
         
+        .effect-row:last-child {
+            margin-bottom: 0;
+        }
+        
+        .effect-label {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            font-size: 0.875rem;
+            color: var(--color-plumeria);
+        }
+        
+        .effect-icon {
+            font-size: 1rem;
+        }
+        
+        /* Toggle Switch - Hawaiian style */
         .toggle-switch {
-            width: 40px;
-            height: 22px;
-            background: #4a5568;
-            border-radius: 11px;
+            width: 52px;
+            height: 28px;
+            background: linear-gradient(135deg, var(--color-pahoehoe), var(--color-volcanic-ash));
+            border-radius: 14px;
             position: relative;
             cursor: pointer;
-            transition: background 0.2s;
-        }
-        
-        .toggle-switch.on {
-            background: #48bb78;
+            transition: all var(--duration-fast) var(--ease-natural);
+            flex-shrink: 0;
         }
         
         .toggle-switch::after {
             content: '';
             position: absolute;
-            width: 18px;
-            height: 18px;
-            background: #fff;
+            width: 22px;
+            height: 22px;
+            background: linear-gradient(135deg, var(--color-plumeria), #E0E0E0);
             border-radius: 50%;
-            top: 2px;
-            left: 2px;
-            transition: transform 0.2s;
+            top: 3px;
+            left: 3px;
+            transition: transform var(--duration-fast) var(--ease-out-expo);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .toggle-switch.on {
+            background: linear-gradient(135deg, var(--color-pacific-teal), var(--color-ti-leaf));
         }
         
         .toggle-switch.on::after {
-            transform: translateX(18px);
+            transform: translateX(24px);
         }
         
-        /* Sliders */
-        .effect-slider {
+        /* Volume Slider */
+        .volume-section {
+            margin-top: var(--space-3);
+            padding-top: var(--space-3);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .volume-label {
             display: flex;
             align-items: center;
-            gap: 8px;
-            margin-bottom: 8px;
-            font-size: 0.8rem;
+            justify-content: space-between;
+            margin-bottom: var(--space-2);
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
         }
         
-        .effect-slider input[type="range"] {
-            flex: 1;
-            height: 4px;
+        .volume-slider {
             -webkit-appearance: none;
-            background: #4a5568;
-            border-radius: 2px;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, var(--color-ti-leaf) 0%, var(--color-volcanic-ash) 100%);
+            border-radius: 3px;
             outline: none;
         }
         
-        .effect-slider input[type="range"]::-webkit-slider-thumb {
+        .volume-slider::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 12px;
-            height: 12px;
-            background: #48bb78;
+            width: 18px;
+            height: 18px;
+            background: linear-gradient(135deg, var(--color-plumeria), #E0E0E0);
             border-radius: 50%;
             cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            transition: transform var(--duration-fast) var(--ease-natural);
         }
         
-        /* Weather overlay canvas */
-        #weather-canvas {
+        .volume-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+        }
+        
+        /* =====================================================
+           CONTROLS - Navigation
+           ===================================================== */
+        #controls {
+            position: absolute;
+            bottom: var(--space-5);
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: var(--space-3);
+            z-index: 50;
+            animation: fadeUp var(--duration-slow) var(--ease-out-expo) 0.2s both;
+        }
+        
+        .control-btn {
+            background: rgba(26, 26, 26, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--color-plumeria);
+            padding: var(--space-3) var(--space-5);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-family: var(--font-primary);
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all var(--duration-fast) var(--ease-natural);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+        
+        .control-btn:hover {
+            background: rgba(42, 157, 143, 0.2);
+            border-color: rgba(42, 157, 143, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        .control-btn:active {
+            transform: translateY(0);
+        }
+        
+        .control-btn.active {
+            background: rgba(42, 157, 143, 0.3);
+            border-color: var(--color-ti-leaf);
+            box-shadow: 0 0 20px rgba(42, 157, 143, 0.3);
+        }
+        
+        .control-btn:focus-visible {
+            outline: 2px solid var(--color-shallow-water);
+            outline-offset: 2px;
+        }
+        
+        /* =====================================================
+           KEYBOARD HINTS
+           ===================================================== */
+        #hints {
+            position: absolute;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(26, 26, 26, 0.6);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: var(--space-2) var(--space-4);
+            border-radius: var(--radius-xl);
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+            z-index: 50;
+            white-space: nowrap;
+            animation: fadeUp var(--duration-slow) var(--ease-out-expo) 0.3s both;
+        }
+        
+        kbd {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 8px;
+            border-radius: var(--radius-sm);
+            margin: 0 2px;
+            font-family: var(--font-primary);
+            font-size: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* =====================================================
+           RAIN EFFECT CANVAS
+           ===================================================== */
+        #rain-canvas {
             position: absolute;
             top: 0; left: 0;
             width: 100%;
             height: 100%;
             pointer-events: none;
             z-index: 10;
+            opacity: 0;
+            transition: opacity var(--duration-slow) var(--ease-natural);
         }
         
-        /* Keyboard hints */
-        #hints {
+        #rain-canvas.active {
+            opacity: 1;
+        }
+        
+        /* =====================================================
+           VR MODE BUTTON
+           ===================================================== */
+        #vr-btn {
             position: absolute;
-            bottom: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.5);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            color: #a0aec0;
+            bottom: var(--space-5);
+            right: var(--space-5);
+            background: linear-gradient(135deg, var(--color-orchid), #7B4BC4);
+            border: none;
+            color: var(--color-plumeria);
+            padding: var(--space-3) var(--space-5);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-family: var(--font-primary);
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
             z-index: 50;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(155, 93, 229, 0.4);
+            transition: all var(--duration-fast) var(--ease-natural);
+            animation: fadeUp var(--duration-slow) var(--ease-out-expo) 0.3s both;
         }
         
-        kbd {
-            background: rgba(255,255,255,0.1);
-            padding: 2px 6px;
-            border-radius: 4px;
-            margin: 0 2px;
+        #vr-btn:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 6px 25px rgba(155, 93, 229, 0.5);
         }
         
-        /* Mobile optimizations */
-        @media (max-width: 768px) {
-            #info, #effects {
-                font-size: 0.75rem;
-                padding: 10px;
-            }
-            
-            #info h2 { font-size: 1rem; }
-            #effects h3 { font-size: 0.8rem; }
-            
-            .control-btn {
-                padding: 10px 15px;
-                font-size: 12px;
-            }
-            
-            #hints { display: none; }
+        #vr-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
         }
         
-        /* Gyro permission prompt */
-        #gyro-prompt {
-            display: none;
-            position: fixed;
+        /* =====================================================
+           ONBOARDING TOOLTIP
+           ===================================================== */
+        #onboarding {
+            position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.9);
-            padding: 30px;
-            border-radius: 15px;
+            background: rgba(26, 26, 26, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: var(--space-5) var(--space-6);
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             text-align: center;
-            z-index: 200;
-            backdrop-filter: blur(10px);
+            z-index: 60;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity var(--duration-normal) var(--ease-natural);
         }
         
-        #gyro-prompt.show { display: block; }
+        #onboarding.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
         
-        #gyro-prompt button {
-            margin-top: 20px;
-            padding: 15px 30px;
-            font-size: 16px;
-            border: none;
-            border-radius: 8px;
-            background: #48bb78;
-            color: #fff;
-            cursor: pointer;
+        #onboarding p {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--color-plumeria);
+        }
+        
+        #onboarding .hint-text {
+            color: var(--color-seafoam);
+            margin-top: var(--space-2);
+            font-size: 0.875rem;
+        }
+        
+        /* =====================================================
+           RESPONSIVE - TABLET
+           ===================================================== */
+        @media (max-width: 1024px) {
+            #info {
+                max-width: 240px;
+            }
+            
+            #effects {
+                min-width: 180px;
+            }
+        }
+        
+        /* =====================================================
+           RESPONSIVE - MOBILE
+           ===================================================== */
+        @media (max-width: 768px) {
+            #info {
+                top: auto;
+                bottom: 160px;
+                left: var(--space-4);
+                right: var(--space-4);
+                max-width: none;
+            }
+            
+            #effects {
+                position: fixed;
+                top: auto;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+                transform: translateY(100%);
+                transition: transform var(--duration-normal) var(--ease-out-expo);
+            }
+            
+            #effects.open {
+                transform: translateY(0);
+            }
+            
+            #controls {
+                bottom: var(--space-4);
+            }
+            
+            .control-btn {
+                padding: var(--space-3) var(--space-4);
+            }
+            
+            #hints {
+                bottom: 80px;
+                font-size: 0.7rem;
+            }
+            
+            #vr-btn {
+                bottom: auto;
+                top: var(--space-4);
+                right: var(--space-4);
+            }
+            
+            #loading h1 {
+                font-size: 1.75rem;
+            }
+            
+            .loading-subtitle {
+                font-size: 0.95rem;
+                padding: 0 var(--space-4);
+            }
+        }
+        
+        @media (max-width: 375px) {
+            #controls {
+                gap: var(--space-2);
+            }
+            
+            .control-btn {
+                padding: var(--space-2) var(--space-3);
+                font-size: 0.8rem;
+            }
+        }
+        
+        /* =====================================================
+           REDUCED MOTION
+           ===================================================== */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        
+        /* =====================================================
+           FOCUS STYLES FOR ACCESSIBILITY
+           ===================================================== */
+        *:focus-visible {
+            outline: 2px solid var(--color-shallow-water);
+            outline-offset: 2px;
         }
     </style>
 </head>
@@ -314,107 +693,134 @@
     <div id="viewer">
         <!-- Loading screen -->
         <div id="loading">
-            <h1>🌴 Big Island VR</h1>
-            <p>Loading Hawaii...</p>
-            <div class="spinner"></div>
+            <div class="loading-logo">🌴</div>
+            <h1>Big Island VR</h1>
+            <p class="loading-subtitle">"E komo mai" — Welcome</p>
+            <div class="loading-progress">
+                <div class="loading-progress-bar"></div>
+            </div>
+            <p class="loading-location">Loading <span id="loading-location-name">Hilo Bayfront</span>...</p>
         </div>
         
         <!-- Three.js canvas -->
         <div id="canvas-container"></div>
         
-        <!-- Weather effects overlay -->
-        <canvas id="weather-canvas"></canvas>
+        <!-- Rain overlay -->
+        <canvas id="rain-canvas"></canvas>
+        
+        <!-- Onboarding tooltip -->
+        <div id="onboarding">
+            <p>Drag to look around</p>
+            <p class="hint-text">← → to explore more locations</p>
+        </div>
         
         <!-- Info panel -->
         <div id="info">
+            <div class="info-brand">
+                <span>🌴</span>
+                <span>Big Island VR</span>
+            </div>
             <h2 id="location-name">Hilo Bayfront</h2>
             <p id="location-desc">Downtown Hilo along Kamehameha Avenue</p>
+            <div class="location-dots" id="location-dots"></div>
             <div id="location-counter">Location 1 of 10</div>
         </div>
         
         <!-- Effects panel -->
         <div id="effects">
-            <h3>🌧️ Ambient Effects</h3>
-            <div class="effect-toggle">
-                <span>Rain</span>
-                <div class="toggle-switch" data-effect="rain"></div>
+            <div class="effects-header">
+                <span>🎛️</span>
+                <span>Ambient Effects</span>
             </div>
-            <div class="effect-toggle">
-                <span>Wind</span>
-                <div class="toggle-switch" data-effect="wind"></div>
+            
+            <div class="effect-row">
+                <span class="effect-label">
+                    <span class="effect-icon">🌧️</span>
+                    <span>Rain</span>
+                </span>
+                <div class="toggle-switch" data-effect="rain" role="switch" aria-checked="false" tabindex="0"></div>
             </div>
-            <div class="effect-toggle">
-                <span>🐦 Birds</span>
-                <div class="toggle-switch on" data-effect="birds"></div>
+            
+            <div class="effect-row">
+                <span class="effect-label">
+                    <span class="effect-icon">💨</span>
+                    <span>Wind</span>
+                </span>
+                <div class="toggle-switch" data-effect="wind" role="switch" aria-checked="false" tabindex="0"></div>
             </div>
-            <div class="effect-toggle">
-                <span>🌊 Ocean</span>
-                <div class="toggle-switch on" data-effect="ocean"></div>
+            
+            <div class="effect-row">
+                <span class="effect-label">
+                    <span class="effect-icon">🐦</span>
+                    <span>Birds</span>
+                </span>
+                <div class="toggle-switch on" data-effect="birds" role="switch" aria-checked="true" tabindex="0"></div>
             </div>
-            <hr style="border-color: #4a5568; margin: 10px 0;">
-            <div class="effect-slider">
-                <span>Volume</span>
-                <input type="range" id="volume-slider" min="0" max="100" value="70">
+            
+            <div class="effect-row">
+                <span class="effect-label">
+                    <span class="effect-icon">🌊</span>
+                    <span>Ocean</span>
+                </span>
+                <div class="toggle-switch on" data-effect="ocean" role="switch" aria-checked="true" tabindex="0"></div>
+            </div>
+            
+            <div class="volume-section">
+                <div class="volume-label">
+                    <span>🔊 Master Volume</span>
+                    <span id="volume-value">80%</span>
+                </div>
+                <input type="range" class="volume-slider" id="volume-slider" min="0" max="100" value="80" aria-label="Master volume">
             </div>
         </div>
         
         <!-- Controls -->
         <div id="controls">
-            <button class="control-btn" id="prev-btn">⬅️ Previous</button>
-            <button class="control-btn" id="play-btn">▶️ Auto Play</button>
-            <button class="control-btn" id="next-btn">Next ➡️</button>
-            <button class="control-btn vr-btn" id="vr-btn" style="display: none;">🥽 Enter VR</button>
-            <button class="control-btn" id="gyro-btn" style="display: none;">📱 Gyro</button>
+            <button class="control-btn" id="prev-btn" aria-label="Previous location">
+                <span>⬅️</span>
+                <span>Previous</span>
+            </button>
+            <button class="control-btn" id="play-btn" aria-label="Toggle auto-play">
+                <span id="play-icon">▶️</span>
+                <span id="play-text">Auto Play</span>
+            </button>
+            <button class="control-btn" id="next-btn" aria-label="Next location">
+                <span>Next</span>
+                <span>➡️</span>
+            </button>
         </div>
+        
+        <!-- VR Mode Button -->
+        <button id="vr-btn" aria-label="Enter VR mode">
+            <span>🥽</span>
+            <span>Enter VR</span>
+        </button>
         
         <!-- Keyboard hints -->
         <div id="hints">
-            <kbd>←</kbd> <kbd>→</kbd> Navigate &nbsp;|&nbsp; 
-            <kbd>Space</kbd> Auto-play &nbsp;|&nbsp;
+            <kbd>←</kbd> <kbd>→</kbd> Navigate &nbsp;·&nbsp; 
+            <kbd>Space</kbd> Auto-play &nbsp;·&nbsp;
             Drag to look around
-        </div>
-        
-        <!-- Gyro permission prompt (iOS) -->
-        <div id="gyro-prompt">
-            <h2>📱 Enable Motion Controls</h2>
-            <p>Allow motion access to look around with your device</p>
-            <button id="gyro-enable-btn">Enable Motion</button>
         </div>
     </div>
     
     <!-- Three.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
-    <!-- Howler.js for audio -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     
     <script>
         // =====================================================
-        // BIG ISLAND VR 3.0 - IMMERSIVE PANORAMA VIEWER
-        // =====================================================
-        // Features:
-        // - Depth-based parallax transitions
-        // - Equirectangular projection
-        // - Gyroscope support for mobile
-        // - WebXR for VR headsets
-        // - Ambient weather effects
-        // - Spatial audio system
+        // BIG ISLAND VR - ENHANCED PANORAMA VIEWER
         // =====================================================
         
         const CONFIG = {
-            transitionDuration: 2000,
+            transitionDuration: 1500,
             autoPlayInterval: 8000,
-            fov: 75,
-            lookSensitivity: 0.15,
-            gyroSensitivity: 0.5,
-            depthParallaxStrength: 0.05,
-            windSwayAmount: 0.0015,
-            windSwaySpeed: 0.5
+            onboardingDelay: 3000,
+            onboardingDuration: 5000,
+            rainIntensity: 0.5
         };
         
-        // =====================================================
-        // LOCATIONS DATA
-        // =====================================================
-        
+        // Demo locations (will be replaced with real data)
         const LOCATIONS = [
             {
                 id: 1,
@@ -423,9 +829,7 @@
                 lat: 19.7241,
                 lng: -155.0868,
                 panorama: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=4096&h=2048&fit=crop",
-                depth: null,
-                audio: { ocean: 0.8, birds: 0.6, wind: 0.2, rain: 0 },
-                coastDistance: 50 // meters to ocean
+                audio: { ocean: 0.8, birds: 0.6 }
             },
             {
                 id: 2,
@@ -434,20 +838,16 @@
                 lat: 19.7220,
                 lng: -155.0790,
                 panorama: "https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?w=4096&h=2048&fit=crop",
-                depth: null,
-                audio: { ocean: 0.5, birds: 0.9, wind: 0.3, rain: 0 },
-                coastDistance: 200
+                audio: { ocean: 0.5, birds: 0.8 }
             },
             {
                 id: 3,
-                name: "Keaau Town",
-                desc: "Small town on the road to Pahoa",
+                name: "Keaʻau Town",
+                desc: "Small town on the road to Pāhoa",
                 lat: 19.6411,
                 lng: -155.0378,
                 panorama: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=4096&h=2048&fit=crop",
-                depth: null,
-                audio: { birds: 0.7, wind: 0.4, ocean: 0.1, rain: 0 },
-                coastDistance: 3000
+                audio: { birds: 0.9, wind: 0.3 }
             },
             {
                 id: 4,
@@ -456,20 +856,16 @@
                 lat: 19.7205,
                 lng: -155.0951,
                 panorama: "https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?w=4096&h=2048&fit=crop",
-                depth: null,
-                audio: { birds: 0.8, ocean: 0.0, wind: 0.2, rain: 0.3 },
-                coastDistance: 5000
+                audio: { birds: 0.7, ocean: 0.2 }
             },
             {
                 id: 5,
                 name: "Volcano Village",
-                desc: "Misty forest near Kilauea",
+                desc: "Misty forest near Kīlauea",
                 lat: 19.4400,
                 lng: -155.2364,
                 panorama: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=4096&h=2048&fit=crop",
-                depth: null,
-                audio: { birds: 0.6, rain: 0.5, wind: 0.6, ocean: 0 },
-                coastDistance: 15000
+                audio: { birds: 0.6, rain: 0.4, wind: 0.5 }
             }
         ];
         
@@ -477,288 +873,171 @@
         // STATE
         // =====================================================
         
-        let scene, camera, renderer, xrSession;
-        let currentSphere, nextSphere, depthMaterial;
+        let scene, camera, renderer;
+        let currentSphere, nextSphere;
         let currentIndex = 0;
         let isTransitioning = false;
         let isAutoPlaying = false;
         let autoPlayTimer = null;
+        let hasInteracted = false;
         
-        // Controls
-        let isPointerDown = false;
-        let pointerX = 0, pointerY = 0;
+        // Mouse controls
+        let isMouseDown = false;
+        let mouseX = 0, mouseY = 0;
         let lon = 0, lat = 0;
-        let targetLon = 0, targetLat = 0;
         let phi = 0, theta = 0;
         
-        // Gyroscope
-        let gyroEnabled = false;
-        let gyroAlpha = 0, gyroBeta = 0, gyroGamma = 0;
-        let initialGyroAlpha = null;
-        
-        // Effects state
-        const effectsState = {
-            rain: false,
-            wind: false,
-            birds: true,
-            ocean: true
-        };
-        
-        // Wind animation
-        let windTime = 0;
-        let windDirection = { x: 1, y: 0 };
-        
         // =====================================================
-        // THREE.JS INITIALIZATION
+        // THREE.JS SETUP
         // =====================================================
         
         function init() {
             const container = document.getElementById('canvas-container');
             
+            // Create location dots
+            createLocationDots();
+            
             // Scene
             scene = new THREE.Scene();
             
             // Camera
-            camera = new THREE.PerspectiveCamera(
-                CONFIG.fov,
-                window.innerWidth / window.innerHeight,
-                0.1,
-                1000
-            );
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
             camera.position.set(0, 0, 0.1);
             
-            // Renderer with WebXR support
-            renderer = new THREE.WebGLRenderer({ 
-                antialias: true,
-                alpha: false,
-                powerPreference: 'high-performance'
-            });
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            renderer.xr.enabled = true;
             container.appendChild(renderer.domElement);
-            
-            // Check WebXR support
-            checkXRSupport();
-            
-            // Check gyroscope support
-            checkGyroSupport();
             
             // Load first panorama
             loadPanorama(LOCATIONS[0], true);
             
             // Events
-            setupEventListeners();
-            
-            // Initialize effects
-            initWeatherSystem();
-            initAudioSystem();
-            
-            // Start render loop
-            renderer.setAnimationLoop(animate);
-        }
-        
-        function setupEventListeners() {
             window.addEventListener('resize', onResize);
-            
-            // Pointer events (unified mouse/touch)
-            renderer.domElement.addEventListener('pointerdown', onPointerDown);
-            renderer.domElement.addEventListener('pointermove', onPointerMove);
-            renderer.domElement.addEventListener('pointerup', onPointerUp);
-            renderer.domElement.addEventListener('pointercancel', onPointerUp);
-            
-            // Prevent context menu
-            renderer.domElement.addEventListener('contextmenu', e => e.preventDefault());
-            
-            // Keyboard
+            renderer.domElement.addEventListener('mousedown', onMouseDown);
+            renderer.domElement.addEventListener('mousemove', onMouseMove);
+            renderer.domElement.addEventListener('mouseup', onMouseUp);
+            renderer.domElement.addEventListener('touchstart', onTouchStart, { passive: true });
+            renderer.domElement.addEventListener('touchmove', onTouchMove, { passive: true });
+            renderer.domElement.addEventListener('touchend', onMouseUp);
             document.addEventListener('keydown', onKeyDown);
             
-            // Touch gestures for zoom
-            renderer.domElement.addEventListener('wheel', onWheel, { passive: false });
+            // Check VR support
+            checkVRSupport();
             
-            // UI buttons
-            document.getElementById('prev-btn').addEventListener('click', prevLocation);
-            document.getElementById('next-btn').addEventListener('click', nextLocation);
-            document.getElementById('play-btn').addEventListener('click', toggleAutoPlay);
-            document.getElementById('vr-btn').addEventListener('click', enterVR);
-            document.getElementById('gyro-btn').addEventListener('click', toggleGyro);
-            document.getElementById('gyro-enable-btn').addEventListener('click', requestGyroPermission);
+            // Start render loop
+            animate();
             
-            // Effect toggles
-            document.querySelectorAll('.toggle-switch').forEach(toggle => {
-                toggle.addEventListener('click', () => {
-                    toggle.classList.toggle('on');
-                    const effect = toggle.dataset.effect;
-                    effectsState[effect] = toggle.classList.contains('on');
-                    onEffectToggle(effect, effectsState[effect]);
+            // Show onboarding after delay
+            setTimeout(showOnboarding, CONFIG.onboardingDelay);
+        }
+        
+        function createLocationDots() {
+            const container = document.getElementById('location-dots');
+            container.innerHTML = '';
+            
+            LOCATIONS.forEach((loc, index) => {
+                const dot = document.createElement('div');
+                dot.className = 'location-dot' + (index === 0 ? ' active' : '');
+                dot.title = loc.name;
+                dot.setAttribute('role', 'button');
+                dot.setAttribute('aria-label', `Go to ${loc.name}`);
+                dot.setAttribute('tabindex', '0');
+                dot.addEventListener('click', () => goToLocation(index));
+                dot.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        goToLocation(index);
+                    }
                 });
-            });
-            
-            // Volume slider
-            document.getElementById('volume-slider').addEventListener('input', (e) => {
-                Howler.volume(e.target.value / 100);
+                container.appendChild(dot);
             });
         }
         
-        // =====================================================
-        // PANORAMA LOADING & TRANSITIONS
-        // =====================================================
+        function updateLocationDots() {
+            const dots = document.querySelectorAll('.location-dot');
+            dots.forEach((dot, index) => {
+                dot.classList.remove('active');
+                if (index === currentIndex) {
+                    dot.classList.add('active');
+                } else if (index < currentIndex) {
+                    dot.classList.add('visited');
+                }
+            });
+        }
         
         function loadPanorama(location, isFirst = false) {
             const textureLoader = new THREE.TextureLoader();
             
-            textureLoader.load(location.panorama, (texture) => {
-                // Proper equirectangular mapping
-                texture.mapping = THREE.EquirectangularReflectionMapping;
-                texture.minFilter = THREE.LinearFilter;
-                texture.magFilter = THREE.LinearFilter;
-                
-                // Create sphere with inverted normals for inside viewing
-                const geometry = new THREE.SphereGeometry(500, 64, 32);
-                geometry.scale(-1, 1, 1);
-                
-                // Create material - use depth material if available
-                let material;
-                if (location.depth) {
-                    material = createDepthParallaxMaterial(texture, location.depth);
-                } else {
-                    material = new THREE.MeshBasicMaterial({
+            // Update loading location name
+            const loadingName = document.getElementById('loading-location-name');
+            if (loadingName) loadingName.textContent = location.name;
+            
+            textureLoader.load(
+                location.panorama,
+                (texture) => {
+                    texture.mapping = THREE.EquirectangularReflectionMapping;
+                    
+                    const geometry = new THREE.SphereGeometry(500, 60, 40);
+                    geometry.scale(-1, 1, 1);
+                    
+                    const material = new THREE.MeshBasicMaterial({
                         map: texture,
                         transparent: true,
-                        opacity: isFirst ? 1 : 0,
-                        side: THREE.BackSide
+                        opacity: isFirst ? 1 : 0
                     });
-                }
-                
-                const sphere = new THREE.Mesh(geometry, material);
-                scene.add(sphere);
-                
-                if (isFirst) {
-                    currentSphere = sphere;
-                    document.getElementById('loading').classList.add('hidden');
-                    updateAudioMix(location);
-                } else {
-                    nextSphere = sphere;
-                    transitionTo(sphere, location);
-                }
-                
-                updateUI(location);
-            }, undefined, (err) => {
-                console.error('Failed to load panorama:', err);
-            });
-        }
-        
-        function createDepthParallaxMaterial(colorTexture, depthTexture) {
-            // Custom shader for depth-based parallax
-            const vertexShader = `
-                varying vec2 vUv;
-                varying vec3 vWorldPosition;
-                
-                void main() {
-                    vUv = uv;
-                    vec4 worldPos = modelMatrix * vec4(position, 1.0);
-                    vWorldPosition = worldPos.xyz;
-                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-                }
-            `;
-            
-            const fragmentShader = `
-                uniform sampler2D colorMap;
-                uniform sampler2D depthMap;
-                uniform float parallaxStrength;
-                uniform float transitionProgress;
-                uniform vec2 viewDirection;
-                
-                varying vec2 vUv;
-                varying vec3 vWorldPosition;
-                
-                void main() {
-                    // Sample depth
-                    float depth = texture2D(depthMap, vUv).r;
                     
-                    // Calculate parallax offset based on depth and view direction
-                    vec2 offset = viewDirection * depth * parallaxStrength * transitionProgress;
+                    const sphere = new THREE.Mesh(geometry, material);
+                    scene.add(sphere);
                     
-                    // Sample color with offset
-                    vec2 parallaxUv = vUv + offset;
-                    vec4 color = texture2D(colorMap, parallaxUv);
+                    if (isFirst) {
+                        currentSphere = sphere;
+                        document.getElementById('loading').classList.add('hidden');
+                    } else {
+                        nextSphere = sphere;
+                        transitionTo(sphere);
+                    }
                     
-                    gl_FragColor = color;
-                }
-            `;
-            
-            return new THREE.ShaderMaterial({
-                uniforms: {
-                    colorMap: { value: colorTexture },
-                    depthMap: { value: depthTexture },
-                    parallaxStrength: { value: CONFIG.depthParallaxStrength },
-                    transitionProgress: { value: 0.0 },
-                    viewDirection: { value: new THREE.Vector2(0, 0) }
+                    updateUI(location);
                 },
-                vertexShader,
-                fragmentShader,
-                side: THREE.BackSide,
-                transparent: true
-            });
+                undefined,
+                (error) => {
+                    console.error('Error loading panorama:', error);
+                }
+            );
         }
         
-        function transitionTo(newSphere, location) {
+        function transitionTo(newSphere) {
             if (isTransitioning) return;
             isTransitioning = true;
             
             const duration = CONFIG.transitionDuration;
             const startTime = performance.now();
             
-            // Start audio crossfade
-            crossfadeAudio(location, duration);
-            
             function animateTransition(time) {
                 const elapsed = time - startTime;
                 const progress = Math.min(elapsed / duration, 1);
                 
-                // Ease in-out cubic for smooth feel
-                const eased = progress < 0.5
-                    ? 4 * progress * progress * progress
-                    : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+                // Smooth easing (ease-out-expo)
+                const eased = 1 - Math.pow(1 - progress, 3);
                 
-                // Fade transition
-                if (currentSphere && currentSphere.material.opacity !== undefined) {
+                if (currentSphere) {
                     currentSphere.material.opacity = 1 - eased;
                 }
-                if (newSphere.material.opacity !== undefined) {
-                    newSphere.material.opacity = eased;
-                }
-                
-                // Depth parallax effect during transition
-                if (currentSphere && currentSphere.material.uniforms) {
-                    currentSphere.material.uniforms.transitionProgress.value = eased;
-                    currentSphere.material.uniforms.viewDirection.value.set(
-                        Math.sin(theta) * 0.1,
-                        Math.cos(phi) * 0.1
-                    );
-                }
-                
-                // Subtle zoom effect
-                camera.fov = CONFIG.fov + (eased * (1 - eased) * 10);
-                camera.updateProjectionMatrix();
+                newSphere.material.opacity = eased;
                 
                 if (progress < 1) {
                     requestAnimationFrame(animateTransition);
                 } else {
-                    // Cleanup
                     if (currentSphere) {
                         scene.remove(currentSphere);
-                        if (currentSphere.material.map) currentSphere.material.map.dispose();
                         currentSphere.material.dispose();
                         currentSphere.geometry.dispose();
                     }
                     currentSphere = newSphere;
                     nextSphere = null;
                     isTransitioning = false;
-                    
-                    // Reset FOV
-                    camera.fov = CONFIG.fov;
-                    camera.updateProjectionMatrix();
                 }
             }
             
@@ -766,79 +1045,103 @@
         }
         
         function goToLocation(index) {
-            if (index < 0 || index >= LOCATIONS.length || isTransitioning) return;
+            if (index < 0 || index >= LOCATIONS.length || isTransitioning || index === currentIndex) return;
             currentIndex = index;
             loadPanorama(LOCATIONS[index]);
+            updateLocationDots();
         }
         
         function nextLocation() {
-            goToLocation((currentIndex + 1) % LOCATIONS.length);
+            const next = (currentIndex + 1) % LOCATIONS.length;
+            goToLocation(next);
         }
         
         function prevLocation() {
-            goToLocation((currentIndex - 1 + LOCATIONS.length) % LOCATIONS.length);
-        }
-        
-        function toggleAutoPlay() {
-            isAutoPlaying = !isAutoPlaying;
-            const btn = document.getElementById('play-btn');
-            
-            if (isAutoPlaying) {
-                btn.textContent = '⏸️ Pause';
-                btn.classList.add('active');
-                autoPlayTimer = setInterval(nextLocation, CONFIG.autoPlayInterval);
-            } else {
-                btn.textContent = '▶️ Auto Play';
-                btn.classList.remove('active');
-                clearInterval(autoPlayTimer);
-            }
+            const prev = (currentIndex - 1 + LOCATIONS.length) % LOCATIONS.length;
+            goToLocation(prev);
         }
         
         function updateUI(location) {
             document.getElementById('location-name').textContent = location.name;
             document.getElementById('location-desc').textContent = location.desc;
             document.getElementById('location-counter').textContent = 
-                `Location ${location.id} of ${LOCATIONS.length}`;
+                `Location ${currentIndex + 1} of ${LOCATIONS.length}`;
+        }
+        
+        // =====================================================
+        // ONBOARDING
+        // =====================================================
+        
+        function showOnboarding() {
+            if (hasInteracted) return;
+            
+            const onboarding = document.getElementById('onboarding');
+            onboarding.classList.add('visible');
+            
+            setTimeout(() => {
+                onboarding.classList.remove('visible');
+            }, CONFIG.onboardingDuration);
+        }
+        
+        function hideOnboarding() {
+            hasInteracted = true;
+            document.getElementById('onboarding').classList.remove('visible');
         }
         
         // =====================================================
         // CONTROLS
         // =====================================================
         
-        function onPointerDown(e) {
-            isPointerDown = true;
-            pointerX = e.clientX;
-            pointerY = e.clientY;
-            renderer.domElement.style.cursor = 'grabbing';
+        function onMouseDown(e) {
+            isMouseDown = true;
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            hideOnboarding();
         }
         
-        function onPointerMove(e) {
-            if (!isPointerDown || gyroEnabled) return;
+        function onMouseMove(e) {
+            if (!isMouseDown) return;
             
-            const deltaX = e.clientX - pointerX;
-            const deltaY = e.clientY - pointerY;
+            const deltaX = e.clientX - mouseX;
+            const deltaY = e.clientY - mouseY;
             
-            targetLon -= deltaX * CONFIG.lookSensitivity;
-            targetLat += deltaY * CONFIG.lookSensitivity;
-            targetLat = Math.max(-85, Math.min(85, targetLat));
+            lon -= deltaX * 0.1;
+            lat += deltaY * 0.1;
+            lat = Math.max(-85, Math.min(85, lat));
             
-            pointerX = e.clientX;
-            pointerY = e.clientY;
+            mouseX = e.clientX;
+            mouseY = e.clientY;
         }
         
-        function onPointerUp() {
-            isPointerDown = false;
-            renderer.domElement.style.cursor = 'grab';
+        function onMouseUp() {
+            isMouseDown = false;
         }
         
-        function onWheel(e) {
-            e.preventDefault();
-            const delta = e.deltaY * 0.05;
-            camera.fov = Math.max(30, Math.min(100, camera.fov + delta));
-            camera.updateProjectionMatrix();
+        function onTouchStart(e) {
+            if (e.touches.length === 1) {
+                mouseX = e.touches[0].clientX;
+                mouseY = e.touches[0].clientY;
+                hideOnboarding();
+            }
+        }
+        
+        function onTouchMove(e) {
+            if (e.touches.length === 1) {
+                const deltaX = e.touches[0].clientX - mouseX;
+                const deltaY = e.touches[0].clientY - mouseY;
+                
+                lon -= deltaX * 0.1;
+                lat += deltaY * 0.1;
+                lat = Math.max(-85, Math.min(85, lat));
+                
+                mouseX = e.touches[0].clientX;
+                mouseY = e.touches[0].clientY;
+            }
         }
         
         function onKeyDown(e) {
+            hideOnboarding();
+            
             switch(e.key) {
                 case 'ArrowRight':
                     nextLocation();
@@ -850,10 +1153,25 @@
                     e.preventDefault();
                     toggleAutoPlay();
                     break;
-                case 'f':
-                case 'F':
-                    toggleFullscreen();
-                    break;
+            }
+        }
+        
+        function toggleAutoPlay() {
+            isAutoPlaying = !isAutoPlaying;
+            const btn = document.getElementById('play-btn');
+            const icon = document.getElementById('play-icon');
+            const text = document.getElementById('play-text');
+            
+            if (isAutoPlaying) {
+                icon.textContent = '⏸️';
+                text.textContent = 'Pause';
+                btn.classList.add('active');
+                autoPlayTimer = setInterval(nextLocation, CONFIG.autoPlayInterval);
+            } else {
+                icon.textContent = '▶️';
+                text.textContent = 'Auto Play';
+                btn.classList.remove('active');
+                clearInterval(autoPlayTimer);
             }
         }
         
@@ -861,457 +1179,171 @@
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
-            resizeWeatherCanvas();
-        }
-        
-        function toggleFullscreen() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen();
-            } else {
-                document.exitFullscreen();
-            }
+            
+            // Update rain canvas
+            rainCanvas.width = window.innerWidth;
+            rainCanvas.height = window.innerHeight;
         }
         
         // =====================================================
-        // GYROSCOPE SUPPORT
+        // VR SUPPORT
         // =====================================================
         
-        function checkGyroSupport() {
-            if (window.DeviceOrientationEvent) {
-                document.getElementById('gyro-btn').style.display = 'flex';
-            }
-        }
-        
-        function toggleGyro() {
-            if (gyroEnabled) {
-                disableGyro();
-            } else {
-                // Check if permission is needed (iOS 13+)
-                if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-                    document.getElementById('gyro-prompt').classList.add('show');
-                } else {
-                    enableGyro();
-                }
-            }
-        }
-        
-        function requestGyroPermission() {
-            DeviceOrientationEvent.requestPermission()
-                .then(response => {
-                    document.getElementById('gyro-prompt').classList.remove('show');
-                    if (response === 'granted') {
-                        enableGyro();
-                    }
-                })
-                .catch(console.error);
-        }
-        
-        function enableGyro() {
-            gyroEnabled = true;
-            initialGyroAlpha = null;
-            window.addEventListener('deviceorientation', onDeviceOrientation);
-            document.getElementById('gyro-btn').classList.add('active');
-            document.getElementById('gyro-btn').textContent = '📱 Gyro ON';
-        }
-        
-        function disableGyro() {
-            gyroEnabled = false;
-            window.removeEventListener('deviceorientation', onDeviceOrientation);
-            document.getElementById('gyro-btn').classList.remove('active');
-            document.getElementById('gyro-btn').textContent = '📱 Gyro';
-        }
-        
-        function onDeviceOrientation(e) {
-            if (e.alpha === null) return;
+        function checkVRSupport() {
+            const vrBtn = document.getElementById('vr-btn');
             
-            // Store initial orientation for calibration
-            if (initialGyroAlpha === null) {
-                initialGyroAlpha = e.alpha;
-            }
-            
-            gyroAlpha = e.alpha - initialGyroAlpha;
-            gyroBeta = e.beta;
-            gyroGamma = e.gamma;
-        }
-        
-        function updateGyroCamera() {
-            if (!gyroEnabled) return;
-            
-            // Convert gyro data to camera look direction
-            // Alpha = compass heading (rotation around Z)
-            // Beta = front-back tilt (rotation around X)
-            // Gamma = left-right tilt (rotation around Y)
-            
-            targetLon = -gyroAlpha * CONFIG.gyroSensitivity;
-            targetLat = (gyroBeta - 90) * CONFIG.gyroSensitivity;
-            targetLat = Math.max(-85, Math.min(85, targetLat));
-        }
-        
-        // =====================================================
-        // WEBXR VR SUPPORT
-        // =====================================================
-        
-        async function checkXRSupport() {
             if ('xr' in navigator) {
-                const isSupported = await navigator.xr.isSessionSupported('immersive-vr');
-                if (isSupported) {
-                    document.getElementById('vr-btn').style.display = 'flex';
-                }
+                navigator.xr.isSessionSupported('immersive-vr').then((supported) => {
+                    if (!supported) {
+                        vrBtn.disabled = true;
+                        vrBtn.title = 'VR not supported on this device';
+                    }
+                });
+            } else {
+                vrBtn.disabled = true;
+                vrBtn.title = 'WebXR not available';
             }
-        }
-        
-        async function enterVR() {
-            if (!('xr' in navigator)) return;
             
-            try {
-                xrSession = await navigator.xr.requestSession('immersive-vr', {
-                    optionalFeatures: ['local-floor', 'bounded-floor']
-                });
-                
-                renderer.xr.setReferenceSpaceType('local');
-                await renderer.xr.setSession(xrSession);
-                
-                // Hide UI in VR
-                document.querySelectorAll('#info, #effects, #controls, #hints').forEach(el => {
-                    el.style.display = 'none';
-                });
-                
-                xrSession.addEventListener('end', () => {
-                    xrSession = null;
-                    // Show UI again
-                    document.querySelectorAll('#info, #effects, #controls, #hints').forEach(el => {
-                        el.style.display = '';
-                    });
-                });
-                
-            } catch (err) {
-                console.error('Failed to enter VR:', err);
-            }
+            vrBtn.addEventListener('click', enterVR);
+        }
+        
+        function enterVR() {
+            // VR implementation would go here
+            alert('VR mode coming soon! 🥽\n\nFor now, drag to look around in 360°.');
         }
         
         // =====================================================
-        // WEATHER EFFECTS SYSTEM
+        // RAIN EFFECT
         // =====================================================
         
-        const weatherCanvas = document.getElementById('weather-canvas');
-        const weatherCtx = weatherCanvas.getContext('2d');
+        const rainCanvas = document.getElementById('rain-canvas');
+        const rainCtx = rainCanvas.getContext('2d');
         let raindrops = [];
-        let windParticles = [];
+        let rainActive = false;
         
-        function initWeatherSystem() {
-            resizeWeatherCanvas();
+        function initRain() {
+            rainCanvas.width = window.innerWidth;
+            rainCanvas.height = window.innerHeight;
             
-            // Initialize raindrops
-            for (let i = 0; i < 300; i++) {
-                raindrops.push(createRaindrop());
-            }
-            
-            // Initialize wind particles
-            for (let i = 0; i < 100; i++) {
-                windParticles.push(createWindParticle());
-            }
-        }
-        
-        function resizeWeatherCanvas() {
-            weatherCanvas.width = window.innerWidth;
-            weatherCanvas.height = window.innerHeight;
-        }
-        
-        function createRaindrop() {
-            return {
-                x: Math.random() * weatherCanvas.width,
-                y: Math.random() * weatherCanvas.height,
-                length: Math.random() * 25 + 10,
-                speed: Math.random() * 15 + 20,
-                opacity: Math.random() * 0.3 + 0.1,
-                angle: Math.PI / 6 * (effectsState.wind ? 1.5 : 0.5)
-            };
-        }
-        
-        function createWindParticle() {
-            return {
-                x: Math.random() * weatherCanvas.width,
-                y: Math.random() * weatherCanvas.height,
-                size: Math.random() * 3 + 1,
-                speed: Math.random() * 3 + 2,
-                opacity: Math.random() * 0.15 + 0.05,
-                wobble: Math.random() * Math.PI * 2
-            };
-        }
-        
-        function updateWeather(deltaTime) {
-            weatherCtx.clearRect(0, 0, weatherCanvas.width, weatherCanvas.height);
-            
-            // Update rain
-            if (effectsState.rain) {
-                updateRain(deltaTime);
-            }
-            
-            // Update wind particles
-            if (effectsState.wind) {
-                updateWindParticles(deltaTime);
+            raindrops = [];
+            for (let i = 0; i < 200; i++) {
+                raindrops.push({
+                    x: Math.random() * rainCanvas.width,
+                    y: Math.random() * rainCanvas.height,
+                    length: Math.random() * 20 + 10,
+                    speed: Math.random() * 10 + 15,
+                    opacity: Math.random() * 0.3 + 0.1
+                });
             }
         }
         
-        function updateRain(deltaTime) {
-            const windOffset = effectsState.wind ? Math.sin(windTime) * 3 : 0;
+        function updateRain() {
+            if (!rainActive) return;
+            
+            rainCtx.clearRect(0, 0, rainCanvas.width, rainCanvas.height);
             
             raindrops.forEach(drop => {
-                // Draw raindrop
-                weatherCtx.beginPath();
-                weatherCtx.moveTo(drop.x, drop.y);
+                rainCtx.beginPath();
+                rainCtx.moveTo(drop.x, drop.y);
+                rainCtx.lineTo(drop.x + 1, drop.y + drop.length);
+                rainCtx.strokeStyle = `rgba(174, 194, 224, ${drop.opacity})`;
+                rainCtx.lineWidth = 1;
+                rainCtx.stroke();
                 
-                const endX = drop.x + Math.sin(drop.angle) * drop.length + windOffset;
-                const endY = drop.y + Math.cos(drop.angle) * drop.length;
-                
-                weatherCtx.lineTo(endX, endY);
-                weatherCtx.strokeStyle = `rgba(174, 194, 224, ${drop.opacity})`;
-                weatherCtx.lineWidth = 1.5;
-                weatherCtx.stroke();
-                
-                // Update position
                 drop.y += drop.speed;
-                drop.x += windOffset * 0.5;
                 
-                // Reset when off screen
-                if (drop.y > weatherCanvas.height || drop.x < -50 || drop.x > weatherCanvas.width + 50) {
+                if (drop.y > rainCanvas.height) {
                     drop.y = -drop.length;
-                    drop.x = Math.random() * (weatherCanvas.width + 100) - 50;
+                    drop.x = Math.random() * rainCanvas.width;
                 }
             });
-        }
-        
-        function updateWindParticles(deltaTime) {
-            windParticles.forEach(particle => {
-                particle.wobble += 0.05;
-                const wobbleY = Math.sin(particle.wobble) * 2;
-                
-                // Draw particle (leaf/debris)
-                weatherCtx.beginPath();
-                weatherCtx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-                weatherCtx.fillStyle = `rgba(139, 90, 43, ${particle.opacity})`;
-                weatherCtx.fill();
-                
-                // Update position
-                particle.x += particle.speed * windDirection.x;
-                particle.y += wobbleY;
-                
-                // Wrap around
-                if (particle.x > weatherCanvas.width + 10) {
-                    particle.x = -10;
-                    particle.y = Math.random() * weatherCanvas.height;
-                }
-                if (particle.x < -10) {
-                    particle.x = weatherCanvas.width + 10;
-                    particle.y = Math.random() * weatherCanvas.height;
-                }
-            });
-        }
-        
-        function onEffectToggle(effect, enabled) {
-            console.log(`${effect}: ${enabled ? 'on' : 'off'}`);
             
-            switch(effect) {
-                case 'rain':
-                    if (enabled && audioSources.rain) {
-                        audioSources.rain.play();
-                        audioSources.rain.fade(0, LOCATIONS[currentIndex].audio.rain || 0.5, 1000);
-                    } else if (audioSources.rain) {
-                        audioSources.rain.fade(audioSources.rain.volume(), 0, 1000);
-                    }
-                    break;
-                    
-                case 'wind':
-                    if (enabled && audioSources.wind) {
-                        audioSources.wind.play();
-                        audioSources.wind.fade(0, 0.4, 1000);
-                    } else if (audioSources.wind) {
-                        audioSources.wind.fade(audioSources.wind.volume(), 0, 1000);
-                    }
-                    break;
-                    
-                case 'birds':
-                    if (enabled && audioSources.birds) {
-                        audioSources.birds.play();
-                    } else if (audioSources.birds) {
-                        audioSources.birds.pause();
-                    }
-                    break;
-                    
-                case 'ocean':
-                    if (enabled && audioSources.ocean) {
-                        audioSources.ocean.play();
-                    } else if (audioSources.ocean) {
-                        audioSources.ocean.pause();
-                    }
-                    break;
-            }
+            requestAnimationFrame(updateRain);
+        }
+        
+        function toggleRain(on) {
+            rainActive = on;
+            rainCanvas.classList.toggle('active', on);
+            if (on) updateRain();
         }
         
         // =====================================================
-        // AUDIO SYSTEM (Howler.js)
+        // EFFECT TOGGLES
         // =====================================================
         
-        const audioSources = {};
-        
-        // Ambient audio URLs (using free samples - replace with your own)
-        const AUDIO_URLS = {
-            ocean: 'https://cdn.freesound.org/previews/467/467116_9497060-lq.mp3',
-            birds: 'https://cdn.freesound.org/previews/531/531015_10204945-lq.mp3',
-            wind: 'https://cdn.freesound.org/previews/244/244640_4477379-lq.mp3',
-            rain: 'https://cdn.freesound.org/previews/401/401275_7865284-lq.mp3'
-        };
-        
-        function initAudioSystem() {
-            // Set global volume
-            Howler.volume(0.7);
+        document.querySelectorAll('.toggle-switch').forEach(toggle => {
+            const handleToggle = () => {
+                toggle.classList.toggle('on');
+                const effect = toggle.dataset.effect;
+                const isOn = toggle.classList.contains('on');
+                toggle.setAttribute('aria-checked', isOn);
+                
+                if (effect === 'rain') {
+                    toggleRain(isOn);
+                }
+                
+                console.log(`${effect}: ${isOn ? 'on' : 'off'}`);
+            };
             
-            // Create audio sources
-            audioSources.ocean = new Howl({
-                src: [AUDIO_URLS.ocean],
-                loop: true,
-                volume: 0,
-                html5: true
-            });
-            
-            audioSources.birds = new Howl({
-                src: [AUDIO_URLS.birds],
-                loop: true,
-                volume: 0,
-                html5: true,
-                // Spatial audio for birds
-                pannerAttr: {
-                    panningModel: 'HRTF',
-                    distanceModel: 'inverse',
-                    refDistance: 1,
-                    maxDistance: 100
+            toggle.addEventListener('click', handleToggle);
+            toggle.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleToggle();
                 }
             });
-            
-            audioSources.wind = new Howl({
-                src: [AUDIO_URLS.wind],
-                loop: true,
-                volume: 0,
-                html5: true
-            });
-            
-            audioSources.rain = new Howl({
-                src: [AUDIO_URLS.rain],
-                loop: true,
-                volume: 0,
-                html5: true
-            });
-            
-            // Start ambient audio based on initial effect states
-            if (effectsState.ocean) audioSources.ocean.play();
-            if (effectsState.birds) audioSources.birds.play();
-        }
+        });
         
-        function updateAudioMix(location) {
-            const audio = location.audio;
-            const duration = 2000;
-            
-            // Ocean volume based on distance to coast
-            if (effectsState.ocean && audioSources.ocean) {
-                const oceanVol = Math.max(0, 1 - (location.coastDistance / 5000)) * audio.ocean;
-                audioSources.ocean.fade(audioSources.ocean.volume(), oceanVol, duration);
-            }
-            
-            // Birds
-            if (effectsState.birds && audioSources.birds) {
-                audioSources.birds.fade(audioSources.birds.volume(), audio.birds, duration);
-            }
-            
-            // Wind
-            if (effectsState.wind && audioSources.wind) {
-                audioSources.wind.fade(audioSources.wind.volume(), audio.wind, duration);
-            }
-            
-            // Rain
-            if (effectsState.rain && audioSources.rain) {
-                audioSources.rain.fade(audioSources.rain.volume(), audio.rain, duration);
-            }
-        }
+        // Volume slider
+        const volumeSlider = document.getElementById('volume-slider');
+        const volumeValue = document.getElementById('volume-value');
         
-        function crossfadeAudio(newLocation, duration) {
-            // Audio crossfade is handled in updateAudioMix
-            updateAudioMix(newLocation);
-        }
+        volumeSlider.addEventListener('input', (e) => {
+            volumeValue.textContent = `${e.target.value}%`;
+        });
         
-        // Bird sound spatial positioning
-        let birdSoundTimer = null;
+        // =====================================================
+        // BUTTON CONTROLS
+        // =====================================================
         
-        function startBirdSounds() {
-            if (!audioSources.birds) return;
-            
-            // Periodically change bird sound position for spatial effect
-            birdSoundTimer = setInterval(() => {
-                if (effectsState.birds && audioSources.birds.playing()) {
-                    const x = (Math.random() - 0.5) * 2; // -1 to 1
-                    const z = (Math.random() - 0.5) * 2;
-                    audioSources.birds.pos(x * 10, 5, z * 10);
-                }
-            }, 3000);
-        }
+        document.getElementById('prev-btn').addEventListener('click', prevLocation);
+        document.getElementById('next-btn').addEventListener('click', nextLocation);
+        document.getElementById('play-btn').addEventListener('click', toggleAutoPlay);
         
         // =====================================================
         // RENDER LOOP
         // =====================================================
         
-        let lastTime = performance.now();
-        
-        function animate(time) {
-            const deltaTime = (time - lastTime) / 1000;
-            lastTime = time;
+        function animate() {
+            requestAnimationFrame(animate);
             
-            // Update gyro if enabled
-            updateGyroCamera();
-            
-            // Smooth camera movement
-            lon += (targetLon - lon) * 0.1;
-            lat += (targetLat - lat) * 0.1;
-            
-            // Apply wind sway to camera
-            if (effectsState.wind) {
-                windTime += CONFIG.windSwaySpeed * deltaTime;
-                const swayX = Math.sin(windTime * 0.7) * CONFIG.windSwayAmount;
-                const swayY = Math.sin(windTime * 0.5) * CONFIG.windSwayAmount * 0.5;
-                lon += swayX;
-                lat += swayY;
-            }
-            
-            // Calculate look direction
             phi = THREE.MathUtils.degToRad(90 - lat);
             theta = THREE.MathUtils.degToRad(lon);
             
-            // Update camera look target
-            if (!renderer.xr.isPresenting) {
-                camera.lookAt(
-                    500 * Math.sin(phi) * Math.cos(theta),
-                    500 * Math.cos(phi),
-                    500 * Math.sin(phi) * Math.sin(theta)
-                );
-            }
+            camera.lookAt(
+                500 * Math.sin(phi) * Math.cos(theta),
+                500 * Math.cos(phi),
+                500 * Math.sin(phi) * Math.sin(theta)
+            );
             
-            // Update weather effects
-            updateWeather(deltaTime);
-            
-            // Render
             renderer.render(scene, camera);
         }
         
         // =====================================================
-        // INITIALIZE
+        // INIT
         // =====================================================
         
+        initRain();
         init();
-        startBirdSounds();
         
-        // Set initial cursor
-        renderer.domElement.style.cursor = 'grab';
-        
-        console.log('🌴 Big Island VR 3.0 initialized');
-        console.log('Features: Depth parallax, Gyroscope, WebXR, Spatial Audio');
+        // Handle visibility change (pause autoplay when tab is hidden)
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden && isAutoPlaying) {
+                clearInterval(autoPlayTimer);
+            } else if (!document.hidden && isAutoPlaying) {
+                autoPlayTimer = setInterval(nextLocation, CONFIG.autoPlayInterval);
+            }
+        });
     </script>
 </body>
 </html>
