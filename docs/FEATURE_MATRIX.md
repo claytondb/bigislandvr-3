@@ -232,7 +232,7 @@
 
 | Component | Size | Notes |
 |-----------|------|-------|
-| index.html (total) | ~150 KB | Single file, no build step |
+| index.html (total) | 152 KB | Single file, no build step |
 | CSS | ~22 KB | Embedded |
 | JavaScript | ~50 KB | Embedded |
 | HTML Structure | ~8 KB | |
