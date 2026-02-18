@@ -13,6 +13,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Inter:wght@400;500;600&family=Lora:ital@1&display=swap" rel="stylesheet">
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js" defer></script>
     
     <style>
         :root {
@@ -460,7 +461,7 @@
             </div>
             <div class="achievement-text" id="regions-progress">Regions: 0/7 explored</div>
             <div class="discovery-counter">
-                <span>💎 Treasures Found: </span><span id="treasures-found">0</span><span>/5</span>
+                <span>💎 Treasures Found: </span><span id="treasures-found">0</span><span>/8</span>
             </div>
         </div>
         
@@ -625,6 +626,7 @@
     </div>
     
     <script>
+        const VERSION = '3.1.0';
         const API_KEY = 'AIzaSyBmSDHrsQunVjxhZ4UHQ0asdUY6vZVFszY';
         const CONFIG = { transitionDuration: 800, autoPlayInterval: 12000, searchRadius: 500, audioCrossfadeDuration: 2000 };
         
@@ -689,7 +691,7 @@
             { id: 33, name: "Saddle Road Viewpoint", desc: "Between Mauna Kea and Mauna Loa at 6,500 feet", region: "Saddle", lat: 19.6833, lng: -155.4667, heading: 270, pitch: 0, audio: { wind: 0.9 }, atmosphere: { mist: false, volcanic: false }, treasure: { id: 'summit', name: 'Mountain Majesty', message: 'You witnessed the majesty of Mauna Kea! 🏔️' } }
         ];
         
-        const ALL_REGIONS = ['Hilo', 'Puna', 'Volcano', 'Kona', 'Waimea', 'Kohala', 'Saddle'];
+        const ALL_REGIONS = ['Hilo', 'Hamakua', 'Puna', 'Volcano', 'Kaʻū', 'Kona', 'Kohala', 'Waimea', 'Saddle'];
         
         // =====================================================
         // AUDIO MANAGER - Web Audio API
@@ -1085,13 +1087,13 @@
             
             updateUI() {
                 const locPct = (this.visitedLocations.size / LOCATIONS.length) * 100;
-                const regPct = (this.visitedRegions.size / ALL_REGIONS.length) * 100;
+                const regPct = (this.visitedRegions.size / 9) * 100; // 9 regions total
                 
                 document.getElementById('locations-fill').style.width = `${locPct}%`;
                 document.getElementById('locations-progress').textContent = `Visited: ${this.visitedLocations.size}/${LOCATIONS.length} locations`;
                 
                 document.getElementById('regions-fill').style.width = `${regPct}%`;
-                document.getElementById('regions-progress').textContent = `Regions: ${this.visitedRegions.size}/${ALL_REGIONS.length} explored`;
+                document.getElementById('regions-progress').textContent = `Regions: ${this.visitedRegions.size}/9 explored`;
                 
                 document.getElementById('treasures-found').textContent = this.foundTreasures.size;
             }

@@ -21,7 +21,7 @@
 | Feature | Status | Notes |
 |---------|--------|-------|
 | 360° Street View Panoramas | ✅ Working | Google Street View API integration |
-| Location Navigation (32 sites) | ✅ Working | All locations load successfully |
+| Location Navigation (33 sites) | ✅ Working | All locations load successfully |
 | Previous/Next Buttons | ✅ Working | |
 | Location Dropdown Selector | ✅ Working | Grouped by region |
 | Location Dots Indicator | ✅ Working | Click to navigate, shows visited |
@@ -138,8 +138,8 @@
 | Feature | Status | Notes |
 |---------|--------|-------|
 | Visited Locations Tracker | ✅ Working | Progress bar |
-| Regions Explored Tracker | ✅ Working | 7 regions total |
-| Treasure Hunt System | ✅ Working | 5 hidden treasures |
+| Regions Explored Tracker | ✅ Working | 9 regions total |
+| Treasure Hunt System | ✅ Working | 8 hidden treasures |
 | Random Treasure Discovery | ✅ Working | 30% chance on first visit |
 | Achievement Persistence | ✅ Working | localStorage |
 | Treasure Popup Animation | ✅ Working | |
@@ -236,7 +236,7 @@
 | CSS | ~22 KB | Embedded |
 | JavaScript | ~50 KB | Embedded |
 | HTML Structure | ~8 KB | |
-| Data (locations) | ~10 KB | 32 locations |
+| Data (locations) | ~12 KB | 33 locations across 9 regions |
 
 ---
 
@@ -263,7 +263,7 @@
 
 ## ✅ Testing Checklist Completed
 
-- [x] All 32 locations load without errors
+- [x] All 33 locations load without errors
 - [x] All audio tracks play correctly
 - [x] All visual effects toggle properly
 - [x] All particle systems animate

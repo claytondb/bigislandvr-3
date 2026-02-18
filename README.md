@@ -12,51 +12,35 @@ Experience the Big Island through authentic Google Street View panoramas with im
 
 ## ✨ Features
 
-### 🗺️ 60 Authentic Locations
+### 🗺️ 33 Authentic Locations
 
-Explore the entire Big Island through real Street View panoramas:
+Explore the entire Big Island through real Street View panoramas across 9 regions:
 
-| Region | Highlights |
-|--------|------------|
-| **Hilo** | Bayfront, Banyan Drive, Rainbow Falls, Liliʻuokalani Gardens, Downtown |
-| **Hamakua Coast** | Akaka Falls, Umauma Falls, Waipiʻo Valley, Honokaʻa Town, Pepeʻekeo Scenic Drive, Botanical Gardens |
-| **Volcano** | National Park, Kīlauea Crater Rim, Chain of Craters, Thurston Lava Tube, Steam Vents |
-| **Mauna Kea** | Visitor Station, Summit Observatories, Silversword Habitat |
-| **Saddle Road** | Puʻu Huluhulu, Kipuka Ki, Saddle Summit |
-| **Kaʻū District** | Punaluʻu Black Sand Beach, South Point, Green Sand Beach, Nāʻālehu |
-| **Kona Coast** | Aliʻi Drive, Kailua Pier, Kahaluʻu Beach, Keauhou Bay, Kealakekua Bay |
-| **Coffee Country** | Holualoa Village, Greenwell Farms, Mountain Thunder, Kona Coffee Living History Farm |
-| **Kohala Coast** | Hapuna Beach, Mauna Kea Beach, Spencer Beach, Puʻukoholā Heiau, Mauna Lani |
-| **North Kohala** | Waimea, Hāwī, Kapaʻau (Original Kamehameha Statue), Pololū Valley |
+| Region | Locations |
+|--------|-----------|
+| **Hilo** (5) | Bayfront, Banyan Drive, Rainbow Falls, Farmers Market, Pepeʻekeo Scenic Drive |
+| **Hamakua** (4) | Akaka Falls, Waipiʻo Valley Lookout, Honokaʻa Town, Laupāhoehoe Point |
+| **Puna** (2) | Keaʻau Town Center, Pāhoa Village |
+| **Volcano** (5) | Village, Kīlauea Visitor Center, Crater Rim, Chain of Craters, Thurston Lava Tube |
+| **Kaʻū** (3) | Punalu'u Black Sand Beach, South Point (Ka Lae), Nāʻālehu Town |
+| **Kona** (6) | Aliʻi Drive, Kailua Pier, Keauhou Bay, Kealakekua Bay, Place of Refuge, Hapuna Beach |
+| **Kohala** (5) | Mauna Lani Resort, Waikoloa Village, Hāwī Town, Pololū Valley, Kapaʻau Town |
+| **Waimea** (1) | Town Center (Paniolo Country) |
+| **Saddle** (2) | Mauna Kea Access Road, Saddle Road Viewpoint |
 
-### 🎯 14 Curated Tours
+### 🎯 Auto-Tour Mode
 
-Guided tour routes with auto-play:
+- **Space bar** to start/stop automatic tour
+- 12-second intervals between locations
+- Visit all 33 locations sequentially
+- Pauses when browser tab is hidden
 
-| Tour | Description | Stops |
-|------|-------------|-------|
-| 🌊 **Hilo Bayfront** | Historic Hilo from Banyan Drive to Rainbow Falls | 6 |
-| 🌋 **Hawaii Volcanoes** | Complete Kīlauea experience from crater to coast | 8 |
-| 🏔️ **Saddle Road** | Cross the island between two massive volcanoes | 6 |
-| 🔭 **Mauna Kea Summit** | Ascend Hawaii's tallest peak | 4 |
-| 🏖️ **Kona Coast** | Sunny Kona from historic pier to marine sanctuaries | 6 |
-| ☕ **Coffee Country** | Tour the world-famous Kona Coffee belt | 5 |
-| 🌿 **Hamakua Coast** | Waterfalls, botanical gardens, and valleys | 7 |
-| 💧 **Waterfalls Tour** | Chase the most spectacular waterfalls | 5 |
-| 🐢 **South Point** | Journey to America's southernmost point | 5 |
-| ⛳ **Kohala Coast** | Resort coast with ancient Hawaiian sites | 6 |
-| 🤠 **North Kohala** | Historic towns and dramatic valleys | 5 |
-| 🏛️ **Historical Hawaii** | Ancient temples and sacred sites | 6 |
-| 🏄 **Beach Hopper** | Best beaches from black sand to white sand | 7 |
-| 🌅 **Sunrise to Sunset** | Best spots for watching sunrise and sunset | 6 |
+### 🏆 Achievements & Gamification
 
-### 📚 Educational Content
-
-#### 🗣️ Hawaiian Language
-- **20 essential Hawaiian words** with meanings and pronunciations
-- Word of the day feature at each location
-- Pronunciation guide for place names
-- Common phrases and their cultural context
+- **Location Tracker** — Progress bar for visited locations (33 total)
+- **Region Explorer** — Track exploration across 9 regions
+- **Treasure Hunt** — Discover 8 hidden treasures at special locations
+- **Persistence** — Progress saved to localStorage
 
 #### 🌺 Flora & Fauna Guide
 - **8 native plants**: ʻŌhiʻa Lehua, Koa, Hapuʻu Fern, Ti Plant, Silversword, and more
