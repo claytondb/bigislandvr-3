@@ -6,87 +6,123 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Made with Aloha](https://img.shields.io/badge/Made%20with-Aloha%20🌺-ff69b4.svg)](#)
 
-Experience the Big Island through authentic Google Street View panoramas with immersive ambient audio, dynamic weather effects, and beautiful time-of-day atmospherics.
+Experience the Big Island through authentic Google Street View panoramas with immersive ambient audio, dynamic weather effects, educational Hawaiian language content, and beautiful time-of-day atmospherics.
 
 ---
 
 ## ✨ Features
 
-### 🗺️ 32 Authentic Locations
+### 🗺️ 60 Authentic Locations
 
 Explore the entire Big Island through real Street View panoramas:
 
-| Region | Locations |
-|--------|-----------|
-| **Hilo** | Bayfront, Banyan Drive, Rainbow Falls, Farmers Market, Pepeʻekeo Scenic Drive |
-| **Hamakua Coast** | Akaka Falls, Waipiʻo Valley Lookout, Honokaʻa Town, Laupāhoehoe Point |
-| **Volcano** | Village, National Park Entrance, Kīlauea Crater Rim, Chain of Craters, Thurston Lava Tube |
-| **Kaʻū District** | Punalu'u Black Sand Beach, South Point (Ka Lae), Nāʻālehu Town |
-| **Kona Coast** | Aliʻi Drive, Kailua Pier, Keauhou Bay, Kealakekua Bay, Place of Refuge, Hapuna Beach |
-| **Kohala** | Mauna Lani Resort, Waikoloa Village, Hāwī Town, Pololū Valley, Kapaʻau Town |
-| **Waimea & Saddle** | Waimea Town, Mauna Kea Access Road, Saddle Road Viewpoint |
-| **Puna** | Pāhoa Village |
+| Region | Highlights |
+|--------|------------|
+| **Hilo** | Bayfront, Banyan Drive, Rainbow Falls, Liliʻuokalani Gardens, Downtown |
+| **Hamakua Coast** | Akaka Falls, Umauma Falls, Waipiʻo Valley, Honokaʻa Town, Pepeʻekeo Scenic Drive, Botanical Gardens |
+| **Volcano** | National Park, Kīlauea Crater Rim, Chain of Craters, Thurston Lava Tube, Steam Vents |
+| **Mauna Kea** | Visitor Station, Summit Observatories, Silversword Habitat |
+| **Saddle Road** | Puʻu Huluhulu, Kipuka Ki, Saddle Summit |
+| **Kaʻū District** | Punaluʻu Black Sand Beach, South Point, Green Sand Beach, Nāʻālehu |
+| **Kona Coast** | Aliʻi Drive, Kailua Pier, Kahaluʻu Beach, Keauhou Bay, Kealakekua Bay |
+| **Coffee Country** | Holualoa Village, Greenwell Farms, Mountain Thunder, Kona Coffee Living History Farm |
+| **Kohala Coast** | Hapuna Beach, Mauna Kea Beach, Spencer Beach, Puʻukoholā Heiau, Mauna Lani |
+| **North Kohala** | Waimea, Hāwī, Kapaʻau (Original Kamehameha Statue), Pololū Valley |
 
-### 🎯 Guided Tours
+### 🎯 14 Curated Tours
 
-Six curated tour routes with auto-play:
+Guided tour routes with auto-play:
 
-- 🌋 **Volcano Day Trip** — Explore Hawaiʻi Volcanoes National Park (6 stops)
-- 🏖️ **Kona Coast Explorer** — Historic Kona and beautiful beaches (6 stops)
-- 🌿 **Hamakua Heritage** — Waterfalls and valleys (4 stops)
-- 🤠 **North Kohala Adventure** — Cowboy country and hidden valleys (3 stops)
-- 🐢 **Southern Route** — Kaʻū beaches and South Point (3 stops)
-- ❤️ **My Favorites** — Your personally saved locations
+| Tour | Description | Stops |
+|------|-------------|-------|
+| 🌊 **Hilo Bayfront** | Historic Hilo from Banyan Drive to Rainbow Falls | 6 |
+| 🌋 **Hawaii Volcanoes** | Complete Kīlauea experience from crater to coast | 8 |
+| 🏔️ **Saddle Road** | Cross the island between two massive volcanoes | 6 |
+| 🔭 **Mauna Kea Summit** | Ascend Hawaii's tallest peak | 4 |
+| 🏖️ **Kona Coast** | Sunny Kona from historic pier to marine sanctuaries | 6 |
+| ☕ **Coffee Country** | Tour the world-famous Kona Coffee belt | 5 |
+| 🌿 **Hamakua Coast** | Waterfalls, botanical gardens, and valleys | 7 |
+| 💧 **Waterfalls Tour** | Chase the most spectacular waterfalls | 5 |
+| 🐢 **South Point** | Journey to America's southernmost point | 5 |
+| ⛳ **Kohala Coast** | Resort coast with ancient Hawaiian sites | 6 |
+| 🤠 **North Kohala** | Historic towns and dramatic valleys | 5 |
+| 🏛️ **Historical Hawaii** | Ancient temples and sacred sites | 6 |
+| 🏄 **Beach Hopper** | Best beaches from black sand to white sand | 7 |
+| 🌅 **Sunrise to Sunset** | Best spots for watching sunrise and sunset | 6 |
+
+### 📚 Educational Content
+
+#### 🗣️ Hawaiian Language
+- **20 essential Hawaiian words** with meanings and pronunciations
+- Word of the day feature at each location
+- Pronunciation guide for place names
+- Common phrases and their cultural context
+
+#### 🌺 Flora & Fauna Guide
+- **8 native plants**: ʻŌhiʻa Lehua, Koa, Hapuʻu Fern, Ti Plant, Silversword, and more
+- **8 notable animals**: Honu (sea turtles), Humpback whales, Spinner dolphins, Manta rays, Nēnē, and more
+- Where to see each species
+- Best times for wildlife viewing
+- Conservation information
+
+#### 🙏 Cultural Tips
+- **10 essential etiquette guidelines**
+- How to respect sacred sites
+- The legend of Pele's curse (lava rocks)
+- Proper behavior around sea turtles
+- Supporting local communities
+- The meaning of aloha spirit
+
+### 🎭 Seasonal & Event Themes
+
+#### 🎉 Merrie Monarch Festival (April)
+- Information about the world's premier hula competition
+- Tips for attending
+- Hilo-specific celebrations
+
+#### 🐋 Whale Watching Season (November-May)
+- Best viewing locations
+- Peak times and behaviors
+- Fun facts about humpback whales
+
+#### 🌋 Volcanic Activity Status
+- Current conditions info
+- Safety guidelines
+- Viewing tips during eruptions
+
+#### 🌸 Seasonal Flower Blooms
+- What's blooming each season
+- Jacaranda season in Hilo
+- Peak plumeria viewing times
+- Orchid farm visits
+
+### 🔍 Location Deep-Dives
+
+Each location now features:
+- **Extended descriptions** with historical and cultural context
+- **Visitor tips**: parking, hours, fees, best times
+- **Accessibility information**
+- **Official website links**
+- **Related Hawaiian vocabulary**
+- **Nearby locations** for easy navigation
 
 ### 🎧 Immersive Audio
 
 Location-aware ambient soundscapes that crossfade smoothly:
 - 🌊 Ocean waves (louder at beaches)
-- 🐦 Tropical birds (quieter in rain)
+- 🐦 Tropical birds (varies by ecosystem)
 - 💨 Wind (stronger at high elevation)
 - 🌧️ Rain (adjustable intensity)
 - 🌋 Volcanic ambience (at Kīlauea)
-- 💧 Waterfall sounds (at Rainbow Falls & Akaka Falls)
+- 💧 Waterfall sounds (at Rainbow Falls, Akaka Falls, etc.)
+- ☕ Coffee farm ambience (in Kona coffee country)
 
 ### 🌦️ Dynamic Weather & Atmosphere
 
 - **Rain Effect** — Canvas-rendered raindrops with wind influence
 - **Mist/Fog** — Animated atmospheric overlay for misty locations
-- **Time of Day** — Dawn, Day, Golden Hour, Dusk, and Night filters
+- **Time of Day** — Dawn, Day, Dusk, and Night filters
 - **Volcanic Haze** — Special atmosphere for volcano areas
-
-### ✨ Visual Effects Suite (NEW in 3.1)
-
-**Cinematic Effects:**
-- 🔆 **Vignette** — Immersive edge darkening for focus
-- ☀️ **Lens Flare** — Dynamic sun flare that follows camera
-- 💫 **Bloom** — Subtle glow effect for daylight scenes
-
-**Color Grading Presets:**
-- **Vivid** — Enhanced saturation for tropical vibrancy
-- **Cinematic** — Film-style contrast and color
-- **Vintage** — Warm sepia-toned aesthetic
-- **Tropical** — Optimized for island colors
-
-**Particle Systems:**
-- 🦋 **Butterflies** — Animated butterflies for garden areas
-- ✨ **Fireflies** — Glowing particles for dusk/night scenes
-- 🍂 **Falling Leaves** — Drifting leaves for forested areas
-- 🌋 **Volcanic Ash** — Realistic ash particles near Kīlauea
-- 🌊 **Ocean Spray** — Mist particles for coastal cliffs
-
-### 🎬 Cinematic Transitions
-
-- **Fade** — Smooth fade for nearby locations
-- **Blur** — Motion blur effect for medium distances
-- **Flyover** — Aerial transition for distant locations
-
-### 📸 Enhanced Screenshot Mode
-
-- **Watermark** — Optional "Big Island VR" branding
-- **Location Stamp** — Automatic location & date overlay
-- **Color Filters** — Apply grading before capture
-- **Flash Effect** — Visual feedback on capture
 
 ### ❤️ Favorites System
 
@@ -111,13 +147,6 @@ Location-aware ambient soundscapes that crossfade smoothly:
 - **Favorites Management** — View and remove favorites
 - **Data Management** — Clear all saved preferences
 
-### 🎉 Welcome Experience
-
-- First-time visitor welcome modal
-- Feature highlights
-- Quick-start options (Explore or Take Tour)
-- "Don't show again" option
-
 ---
 
 ## ⌨️ Keyboard Shortcuts
@@ -129,7 +158,28 @@ Location-aware ambient soundscapes that crossfade smoothly:
 | `P` | Toggle photo mode |
 | `F` | Toggle fullscreen |
 | `M` | Mute / Unmute audio |
+| `L` | Open location list |
+| `V` | Enter VR mode |
 | `Esc` | Exit photo mode / Close panels |
+
+---
+
+## 🗣️ Hawaiian Language Quick Reference
+
+| Word | Meaning | Pronunciation |
+|------|---------|---------------|
+| Aloha | Hello, goodbye, love | ah-LOH-hah |
+| Mahalo | Thank you | mah-HAH-loh |
+| ʻĀina | Land | EYE-nah |
+| Mauka | Toward the mountain | MOW-kah |
+| Makai | Toward the ocean | mah-KAI |
+| Pele | Goddess of volcanoes | PEH-leh |
+| ʻOhana | Family | oh-HAH-nah |
+| Honu | Sea turtle | HOH-noo |
+| Heiau | Temple | HEY-ee-ow |
+| Mana | Spiritual power | MAH-nah |
+
+*See the full glossary of 20 Hawaiian words in the app!*
 
 ---
 
@@ -195,24 +245,27 @@ Typography:
 
 ---
 
-## 📸 Screenshots
-
-*Coming soon! Take your own with Photo Mode (P key)*
-
----
-
 ## 🔧 Technical Details
 
-- **Single-file architecture** — Everything in one HTML file (~100KB)
+- **Data-driven architecture** — Location data in JSON, UI renders dynamically
 - **Zero dependencies** — Just Google Maps/Street View APIs
 - **Web Audio API** — Spatial audio mixing and crossfades
 - **Canvas API** — Efficient rain animation
 - **CSS Custom Properties** — Themeable design tokens
 - **localStorage** — Persistent preferences and favorites
 - **URL sharing** — `?loc=ID` parameter for direct location links
+- **WebXR** — VR headset support where available
 
 ### API Usage
 This project uses the Google Maps JavaScript API and Street View API. The included API key is for demo purposes.
+
+### Data Structure
+Location data is stored in `panoramas/locations.json` with the following structure:
+- 60 locations with full metadata
+- 14 curated tour routes
+- Educational content (Hawaiian words, cultural tips, flora/fauna)
+- Seasonal theme information
+- Audio and atmosphere settings per location
 
 ---
 
@@ -227,30 +280,41 @@ This project uses the Google Maps JavaScript API and Street View API. The includ
 ## 📝 Changelog
 
 ### Version 3.1.0 (Current)
-- ✨ **Visual Effects Suite** — Vignette, lens flare, and bloom effects
-- 🎨 **Color Grading** — Four cinematic presets (Vivid, Cinematic, Vintage, Tropical)
-- 🦋 **Particle Systems** — Butterflies, fireflies, leaves, volcanic ash, ocean spray
-- 🌇 **Golden Hour** — New time-of-day option with warm lighting
-- 🎬 **Cinematic Transitions** — Blur and flyover effects based on distance
-- 📸 **Screenshot Enhancements** — Watermarks, location stamps, flash effect
-- 🌴 **Enhanced Loading Screen** — Island silhouette, rotating tips, smooth animations
-- ☀️ **Dynamic Lens Flare** — Sun position follows camera heading
-- 🌙 **Night Atmosphere** — Moon and enhanced night lighting
-- 📱 **Improved Mobile Support** — Better responsive effects panel
+- ✨ **Expanded to 60 locations** across all regions
+- 🎯 **14 guided tour routes** including new Coffee Country, Waterfalls, and Historical tours
+- 📚 **Educational content system**:
+  - 20 Hawaiian vocabulary words with pronunciations
+  - 10 cultural etiquette tips
+  - Flora guide (8 native plants)
+  - Fauna guide (8 animals with best viewing info)
+- 🎭 **Seasonal themes**:
+  - Merrie Monarch Festival info
+  - Whale watching season guide
+  - Volcanic activity status
+  - Seasonal flower bloom guide
+- 📍 **Enhanced location details**:
+  - Extended descriptions with cultural context
+  - Visitor tips (parking, hours, fees)
+  - Accessibility information
+  - Official website links
+- 🗺️ **New regions**: Mauna Kea, Coffee Country
+- ☕ **Coffee Country tour** with major Kona farms
+- 💧 **Waterfalls tour** featuring 5 spectacular falls
+- 🏛️ **Historical Hawaii tour** with ancient temple sites
 
 ### Version 3.0.0
-- ✨ Expanded to 32 locations across all regions
-- 🎯 6 guided tour routes
-- ❤️ Favorites system with localStorage persistence
-- 📷 Photo mode with screenshot & share
-- ⚙️ Comprehensive settings panel
-- 🎉 Welcome/onboarding modal
-- 🎨 Quality presets (Low/Medium/High/Ultra)
-- 🔊 Improved audio with crossfading
-- 🌦️ Dynamic weather effects
-- ☀️ Time of day atmospherics
-- 🗺️ Interactive mini-map
-- 📱 Improved mobile responsiveness
+- Initial 32 locations across all regions
+- 6 guided tour routes
+- Favorites system with localStorage persistence
+- Photo mode with screenshot & share
+- Comprehensive settings panel
+- Welcome/onboarding modal
+- Quality presets (Low/Medium/High/Ultra)
+- Improved audio with crossfading
+- Dynamic weather effects
+- Time of day atmospherics
+- Interactive mini-map
+- Improved mobile responsiveness
 
 ---
 
@@ -269,17 +333,19 @@ All ambient sounds are CC0/Public Domain from [Freesound.org](https://freesound.
 - Rain sounds
 - Waterfall
 - Volcanic rumble
+- Coffee farm ambience
 
 ---
 
 ## 🤝 Contributing
 
 Contributions welcome! Ideas for improvement:
-- Additional locations
+- Additional locations with Street View coverage
 - New tour routes
+- More Hawaiian vocabulary
 - Accessibility improvements
 - Performance optimizations
-- Localization
+- Localization (Japanese, Korean, Chinese)
 
 ---
 

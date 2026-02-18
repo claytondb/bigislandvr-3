@@ -1,7 +1,8 @@
 {
-  "version": "2.0",
+  "version": "3.0",
   "last_updated": "2026-02-17",
-  "description": "Big Island VR location database - panoramas, depth maps, audio settings, and atmosphere",
+  "description": "Big Island VR location database - panoramas, depth maps, audio settings, atmosphere, educational content, and tours",
+  
   "audio_system": {
     "description": "Web Audio API-based ambient sound system with location-specific mixes",
     "tracks": {
@@ -40,9 +41,16 @@
         "source": "freesound.org/198879",
         "license": "CC0",
         "use_cases": ["kilauea", "volcano_area", "lava_fields"]
+      },
+      "coffee_farm": {
+        "description": "Coffee farm ambience with machinery and nature",
+        "source": "freesound.org/412895",
+        "license": "CC0",
+        "use_cases": ["coffee_farms", "agriculture"]
       }
     }
   },
+
   "atmosphere_system": {
     "description": "Visual atmosphere overlays for immersion",
     "effects": {
@@ -56,58 +64,571 @@
       }
     }
   },
-  "routes": {
-    "hilo_bayfront": [
-      "Banyan Drive Start",
-      "Liliuokalani Gardens",
-      "Coconut Island Viewpoint",
-      "Hilo Bay Pier",
-      "Downtown Hilo"
+
+  "educational_content": {
+    "hawaiian_words": {
+      "aloha": {
+        "meaning": "Love, affection, peace, compassion, mercy; hello, goodbye",
+        "pronunciation": "ah-LOH-hah",
+        "usage": "Universal greeting expressing warmth and spirit"
+      },
+      "mahalo": {
+        "meaning": "Thank you, gratitude, admiration, praise",
+        "pronunciation": "mah-HAH-loh",
+        "usage": "Express appreciation"
+      },
+      "aina": {
+        "meaning": "Land, earth, that which feeds",
+        "pronunciation": "EYE-nah",
+        "usage": "Refers to the sacred relationship between Hawaiians and the land"
+      },
+      "mauka": {
+        "meaning": "Toward the mountain, inland",
+        "pronunciation": "MOW-kah",
+        "usage": "Directional term used instead of north/south"
+      },
+      "makai": {
+        "meaning": "Toward the sea, oceanside",
+        "pronunciation": "mah-KAI",
+        "usage": "Directional term used instead of north/south"
+      },
+      "pele": {
+        "meaning": "Goddess of volcanoes, fire, lightning, wind",
+        "pronunciation": "PEH-leh",
+        "usage": "Central deity in Hawaiian mythology, lives in Kīlauea"
+      },
+      "ohana": {
+        "meaning": "Family, extended family, close friends",
+        "pronunciation": "oh-HAH-nah",
+        "usage": "Emphasizes the importance of family bonds"
+      },
+      "kapu": {
+        "meaning": "Sacred, forbidden, taboo",
+        "pronunciation": "kah-POO",
+        "usage": "Refers to ancient Hawaiian system of laws and prohibitions"
+      },
+      "heiau": {
+        "meaning": "Temple, place of worship",
+        "pronunciation": "HEY-ee-ow",
+        "usage": "Ancient Hawaiian religious sites"
+      },
+      "mana": {
+        "meaning": "Spiritual power, divine power, authority",
+        "pronunciation": "MAH-nah",
+        "usage": "Describes supernatural or spiritual energy"
+      },
+      "kipuka": {
+        "meaning": "Oasis of older growth surrounded by younger lava",
+        "pronunciation": "kee-POO-kah",
+        "usage": "Island of vegetation spared by lava flows"
+      },
+      "puuhonua": {
+        "meaning": "Place of refuge, sanctuary",
+        "pronunciation": "poo-oo-hoh-NOO-ah",
+        "usage": "Sacred place where lawbreakers could seek forgiveness"
+      },
+      "waipio": {
+        "meaning": "Curved water",
+        "pronunciation": "why-PEE-oh",
+        "usage": "Name of the famous Valley of the Kings"
+      },
+      "kilauea": {
+        "meaning": "Spewing, much spreading (referring to lava)",
+        "pronunciation": "kee-lah-WAY-ah",
+        "usage": "Name of the world's most active volcano"
+      },
+      "mauna": {
+        "meaning": "Mountain",
+        "pronunciation": "MOW-nah",
+        "usage": "Used in Mauna Kea (White Mountain) and Mauna Loa (Long Mountain)"
+      },
+      "honu": {
+        "meaning": "Green sea turtle",
+        "pronunciation": "HOH-noo",
+        "usage": "Sacred animal in Hawaiian culture, symbol of good luck"
+      },
+      "lau": {
+        "meaning": "Leaf",
+        "pronunciation": "LAH-oo",
+        "usage": "Used in many plant names like laupahoehoe (smooth lava leaf)"
+      },
+      "kai": {
+        "meaning": "Sea, seawater",
+        "pronunciation": "KAI",
+        "usage": "Common element in place names near the ocean"
+      },
+      "nalu": {
+        "meaning": "Wave, surf",
+        "pronunciation": "NAH-loo",
+        "usage": "Heʻe nalu means 'wave sliding' or surfing"
+      },
+      "kona": {
+        "meaning": "Leeward side, south wind",
+        "pronunciation": "KOH-nah",
+        "usage": "Refers to the dry, sunny western coast"
+      }
+    },
+    "cultural_tips": [
+      {
+        "title": "Remove Shoes Indoors",
+        "description": "Always remove your shoes before entering someone's home or certain establishments. This keeps the home clean and is a sign of respect."
+      },
+      {
+        "title": "Respect Sacred Sites",
+        "description": "Many places are considered sacred (kapu). Follow posted signs, stay on marked trails, and never move or take rocks from heiau (temples)."
+      },
+      {
+        "title": "Don't Take Lava Rocks",
+        "description": "Legend says taking lava rocks brings bad luck from Pele. The Park Service receives thousands of returned rocks yearly from people who experienced misfortune."
+      },
+      {
+        "title": "Give the Shaka",
+        "description": "The shaka (thumb and pinky extended) is the universal Hawaiian greeting. It means 'hang loose' and spreads aloha spirit."
+      },
+      {
+        "title": "Drive with Aloha",
+        "description": "Let others merge, don't honk unnecessarily, and wave thank you. Island time is real - slow down and enjoy the journey."
+      },
+      {
+        "title": "Respect Sea Turtles",
+        "description": "Honu (sea turtles) are protected. Keep at least 10 feet away, never touch them, and don't disturb them while resting on beaches."
+      },
+      {
+        "title": "Learn Basic Hawaiian Words",
+        "description": "Locals appreciate when visitors try to pronounce place names correctly. Every vowel is pronounced, and the ʻokina (ʻ) is a glottal stop."
+      },
+      {
+        "title": "Support Local",
+        "description": "Buy from local farmers markets, eat at local restaurants, and purchase from local artisans. This directly supports the community."
+      },
+      {
+        "title": "Mālama ʻĀina (Care for the Land)",
+        "description": "Pack out what you pack in, use reef-safe sunscreen, and don't disturb wildlife or plants. Leave places better than you found them."
+      },
+      {
+        "title": "Ask Before Taking Photos",
+        "description": "It's respectful to ask permission before photographing people, especially at cultural events or ceremonies."
+      }
     ],
-    "hawaii_volcanoes": [
-      "Park Entrance",
-      "Kilauea Visitor Center",
-      "Steam Vents",
-      "Jaggar Museum Overlook",
-      "Halema'uma'u Crater",
-      "Chain of Craters Road",
-      "Holei Sea Arch"
-    ],
-    "saddle_road": [
-      "Saddle Road Start (Hilo Side)",
-      "Mauna Kea Access Road",
-      "Pu'u Huluhulu",
-      "Kipuka Ki",
-      "Saddle Summit"
-    ],
-    "kona_coast": [
-      "Kailua-Kona Pier",
-      "Ali'i Drive",
-      "Magic Sands Beach",
-      "Keauhou Bay",
-      "Kealakekua Bay"
-    ],
-    "hamakua_coast": [
-      "Akaka Falls",
-      "Waipio Valley Lookout",
-      "Honoka'a Town",
-      "Laupahoehoe Point"
-    ],
-    "south_point": [
-      "South Point Road",
-      "Ka Lae (South Point)",
-      "Green Sand Beach Trailhead",
-      "Punalu'u Black Sand Beach"
-    ]
+    "flora_fauna": {
+      "plants": [
+        {
+          "name": "ʻŌhiʻa Lehua",
+          "hawaiian_name": "ʻŌhiʻa Lehua",
+          "scientific_name": "Metrosideros polymorpha",
+          "description": "Endemic tree with beautiful red flowers. First plant to colonize new lava flows. Sacred to Pele - legend says picking the flower brings rain.",
+          "where_to_see": ["Volcano", "Rainforest", "Saddle Road"],
+          "image_hint": "🌺"
+        },
+        {
+          "name": "Koa",
+          "hawaiian_name": "Koa",
+          "scientific_name": "Acacia koa",
+          "description": "Hawaii's largest native tree, prized for its beautiful wood used in furniture and canoes. Can grow to 100 feet tall.",
+          "where_to_see": ["Hamakua", "Volcano", "Kohala Mountains"],
+          "image_hint": "🌳"
+        },
+        {
+          "name": "Hapu'u Fern",
+          "hawaiian_name": "Hapuʻu",
+          "scientific_name": "Cibotium glaucum",
+          "description": "Giant tree fern that creates the distinctive rainforest canopy. Can grow 20 feet tall. Pulu (soft fiber) was historically used for stuffing.",
+          "where_to_see": ["Volcano", "Hamakua", "Hilo"],
+          "image_hint": "🌿"
+        },
+        {
+          "name": "Ti Plant",
+          "hawaiian_name": "Kī",
+          "scientific_name": "Cordyline fruticosa",
+          "description": "Sacred plant used for spiritual protection, lei making, and wrapping food. Green ti is most traditional; red varieties are also common.",
+          "where_to_see": ["Gardens", "Residential areas", "Forest edges"],
+          "image_hint": "🌿"
+        },
+        {
+          "name": "Plumeria",
+          "hawaiian_name": "Melia",
+          "scientific_name": "Plumeria rubra",
+          "description": "Fragrant flowers used in lei making. Not native but deeply associated with Hawaii. Blooms year-round.",
+          "where_to_see": ["Gardens", "Resorts", "Residential areas"],
+          "image_hint": "🌸"
+        },
+        {
+          "name": "Bird of Paradise",
+          "hawaiian_name": "Bird of Paradise",
+          "scientific_name": "Strelitzia reginae",
+          "description": "Striking orange and blue flowers resembling tropical birds. Popular in landscaping and flower arrangements.",
+          "where_to_see": ["Gardens", "Resorts", "Hilo"],
+          "image_hint": "🦜"
+        },
+        {
+          "name": "Naupaka",
+          "hawaiian_name": "Naupaka",
+          "scientific_name": "Scaevola spp.",
+          "description": "Half-flower shaped plant found both on beaches and mountains. Legend tells of separated lovers whose flowers are reunited when placed together.",
+          "where_to_see": ["Beaches", "Mountains"],
+          "image_hint": "🌼"
+        },
+        {
+          "name": "Silversword",
+          "hawaiian_name": "ʻĀhinahina",
+          "scientific_name": "Argyroxiphium sandwicense",
+          "description": "Extremely rare plant found only on Mauna Kea. Silver leaves reflect sunlight. Blooms once after 50 years, then dies.",
+          "where_to_see": ["Mauna Kea (above 9,000 ft)"],
+          "image_hint": "🌵"
+        }
+      ],
+      "animals": [
+        {
+          "name": "Honu (Green Sea Turtle)",
+          "hawaiian_name": "Honu",
+          "scientific_name": "Chelonia mydas",
+          "description": "Sacred in Hawaiian culture. Protected species. Often seen basking on beaches or feeding on algae near shore.",
+          "where_to_see": ["Punalu'u Beach", "Kahalu'u Beach", "Kona Coast"],
+          "best_time": "Year-round, especially morning",
+          "image_hint": "🐢"
+        },
+        {
+          "name": "Humpback Whale",
+          "hawaiian_name": "Koholā",
+          "scientific_name": "Megaptera novaeangliae",
+          "description": "Migrate from Alaska to Hawaii each winter to breed. Males sing complex songs. Can grow to 60 feet long.",
+          "where_to_see": ["Kona Coast", "Kohala Coast", "Any coastal area"],
+          "best_time": "November to May, peak in February-March",
+          "image_hint": "🐋"
+        },
+        {
+          "name": "Spinner Dolphin",
+          "hawaiian_name": "Nai'a",
+          "scientific_name": "Stenella longirostris",
+          "description": "Known for acrobatic spinning leaps. Rest in shallow bays during the day. Protected - maintain distance.",
+          "where_to_see": ["Kealakekua Bay", "Honaunau Bay", "Kona Coast"],
+          "best_time": "Morning (they rest midday)",
+          "image_hint": "🐬"
+        },
+        {
+          "name": "Manta Ray",
+          "hawaiian_name": "Hahalua",
+          "scientific_name": "Mobula alfredi",
+          "description": "Graceful filter feeders with wingspans up to 12 feet. Feed on plankton at night near coast.",
+          "where_to_see": ["Keauhou Bay", "Kona Coast"],
+          "best_time": "Night (sunset tours)",
+          "image_hint": "🦋"
+        },
+        {
+          "name": "Hawaiian Monk Seal",
+          "hawaiian_name": "ʻĪlioholoikauaua",
+          "scientific_name": "Neomonachus schauinslandi",
+          "description": "Critically endangered. One of only two remaining monk seal species. Name means 'dog running in rough seas.'",
+          "where_to_see": ["Remote beaches (rare)"],
+          "best_time": "Random sightings",
+          "image_hint": "🦭"
+        },
+        {
+          "name": "Nēnē (Hawaiian Goose)",
+          "hawaiian_name": "Nēnē",
+          "scientific_name": "Branta sandvicensis",
+          "description": "State bird of Hawaii. Nearly went extinct (down to 30 birds). Now recovering through conservation efforts.",
+          "where_to_see": ["Volcano", "Mauna Kea", "Golf courses"],
+          "best_time": "Year-round",
+          "image_hint": "🦆"
+        },
+        {
+          "name": "ʻIʻiwi (Scarlet Honeycreeper)",
+          "hawaiian_name": "ʻIʻiwi",
+          "scientific_name": "Drepanis coccinea",
+          "description": "Brilliant red bird with curved bill for extracting nectar from ʻōhiʻa flowers. Declining due to avian malaria.",
+          "where_to_see": ["High elevation forests", "Volcano", "Mauna Kea slopes"],
+          "best_time": "Dawn",
+          "image_hint": "🐦"
+        },
+        {
+          "name": "Hawaiian Hawk",
+          "hawaiian_name": "ʻIo",
+          "scientific_name": "Buteo solitarius",
+          "description": "Endemic hawk found only on Big Island. Considered ʻaumakua (family guardian spirit) by some families.",
+          "where_to_see": ["Forests island-wide", "Hamakua", "Volcano"],
+          "best_time": "Daytime",
+          "image_hint": "🦅"
+        }
+      ]
+    }
   },
+
+  "seasonal_themes": {
+    "merrie_monarch": {
+      "name": "Merrie Monarch Festival",
+      "dates": "Usually one week after Easter (April)",
+      "description": "The world's premier hula competition and celebration of Hawaiian culture. Held in Hilo for one week.",
+      "significance": "Named after King David Kalākaua who revived Hawaiian culture. Features solo and group hula kahiko (ancient) and hula ʻauana (modern).",
+      "tips": [
+        "Book accommodations months in advance",
+        "Competition tickets sell out instantly",
+        "Free events include craft fair and parade",
+        "Hilo transforms with decorations and festivities"
+      ],
+      "affected_locations": ["Downtown Hilo", "Banyan Drive", "Hilo Bay"]
+    },
+    "whale_season": {
+      "name": "Whale Watching Season",
+      "dates": "November to May (peak: January-March)",
+      "description": "Humpback whales migrate from Alaska to Hawaii to breed and give birth in warm waters.",
+      "viewing_tips": [
+        "Look for 'blows' (spouts) on the horizon",
+        "Best viewing from elevated coastal areas",
+        "Morning usually offers calmer seas",
+        "Binoculars enhance the experience",
+        "Whale watching tours available from Kona and Kawaihae"
+      ],
+      "best_locations": ["Kona Coast", "Kohala Coast", "Kealakekua Bay"],
+      "fun_facts": [
+        "Calves gain 100 pounds per day drinking mother's milk",
+        "Only male whales sing",
+        "They don't eat while in Hawaii (fast for months)",
+        "Same whales return to Hawaii year after year"
+      ]
+    },
+    "volcanic_activity": {
+      "name": "Volcanic Activity Status",
+      "current_status": "Check nps.gov/havo for real-time updates",
+      "kīlauea_info": "Kīlauea is one of the world's most active volcanoes. Activity level varies from quiet to spectacular eruptions.",
+      "safety_notes": [
+        "Always check current conditions before visiting",
+        "Volcanic gases (vog) can affect air quality",
+        "Stay on marked trails",
+        "Never enter closed areas",
+        "Volcanic activity can change rapidly"
+      ],
+      "viewing_tips": [
+        "Eruptions visible from Jaggar Museum overlook area",
+        "Best glow viewing at night during active periods",
+        "Halemaʻumaʻu crater is most active area"
+      ]
+    },
+    "seasonal_flowers": {
+      "name": "Seasonal Blooms",
+      "seasons": {
+        "winter_spring": {
+          "months": "December - April",
+          "blooms": ["Jacaranda (purple)", "Rainbow Shower Tree", "African Tulip"],
+          "notes": "Jacaranda blooms paint Hilo purple; best along Saddle Road"
+        },
+        "spring_summer": {
+          "months": "April - August",
+          "blooms": ["Royal Poinciana (red)", "Plumeria (peak)", "Ginger varieties"],
+          "notes": "Peak plumeria season; gardens are most fragrant"
+        },
+        "summer_fall": {
+          "months": "July - October",
+          "blooms": ["Hibiscus (year-round but peak)", "Bird of Paradise"],
+          "notes": "State flower (yellow hibiscus) blooms abundantly"
+        },
+        "fall_winter": {
+          "months": "October - January",
+          "blooms": ["Poinsettia", "Anthuriums", "Orchids"],
+          "notes": "Holiday season brings poinsettias; Hilo orchid farms bloom"
+        }
+      }
+    }
+  },
+
+  "routes": {
+    "hilo_bayfront": {
+      "name": "Hilo Bayfront",
+      "emoji": "🌊",
+      "description": "Explore historic Hilo's bayfront from Banyan Drive to downtown",
+      "stops": [
+        "Banyan Drive Start",
+        "Liliuokalani Gardens",
+        "Coconut Island Viewpoint",
+        "Hilo Bay Pier",
+        "Downtown Hilo",
+        "Rainbow Falls"
+      ]
+    },
+    "hawaii_volcanoes": {
+      "name": "Hawaii Volcanoes",
+      "emoji": "🌋",
+      "description": "Journey through Hawaii Volcanoes National Park from crater rim to coast",
+      "stops": [
+        "Park Entrance",
+        "Kilauea Visitor Center",
+        "Steam Vents",
+        "Jaggar Museum Overlook",
+        "Halema'uma'u Crater",
+        "Thurston Lava Tube",
+        "Chain of Craters Road",
+        "Holei Sea Arch"
+      ]
+    },
+    "saddle_road": {
+      "name": "Saddle Road",
+      "emoji": "🏔️",
+      "description": "Cross the island between Mauna Kea and Mauna Loa",
+      "stops": [
+        "Saddle Road Start (Hilo Side)",
+        "Mauna Kea Access Road",
+        "Mauna Kea Visitor Information Station",
+        "Pu'u Huluhulu",
+        "Kipuka Ki",
+        "Saddle Summit"
+      ]
+    },
+    "mauna_kea": {
+      "name": "Mauna Kea Summit",
+      "emoji": "🔭",
+      "description": "Ascend to the summit of Hawaii's tallest peak",
+      "stops": [
+        "Mauna Kea Visitor Information Station",
+        "Silversword Habitat",
+        "Mauna Kea Summit Road",
+        "Mauna Kea Summit Observatories"
+      ]
+    },
+    "kona_coast": {
+      "name": "Kona Coast",
+      "emoji": "🏖️",
+      "description": "Sunny Kona from historic pier to marine sanctuaries",
+      "stops": [
+        "Kailua-Kona Pier",
+        "Ali'i Drive",
+        "Magic Sands Beach",
+        "Kahalu'u Beach Park",
+        "Keauhou Bay",
+        "Kealakekua Bay"
+      ]
+    },
+    "coffee_country": {
+      "name": "Coffee Country",
+      "emoji": "☕",
+      "description": "Tour the world-famous Kona Coffee belt",
+      "stops": [
+        "Holualoa Village",
+        "Mountain Thunder Coffee",
+        "Greenwell Farms",
+        "Kona Coffee Living History Farm",
+        "Captain Cook Town"
+      ]
+    },
+    "hamakua_coast": {
+      "name": "Hamakua Coast",
+      "emoji": "🌿",
+      "description": "Scenic waterfalls and valleys along the northeast coast",
+      "stops": [
+        "Akaka Falls",
+        "Hawaii Tropical Bioreserve",
+        "Onomea Bay",
+        "Pepeekeo Scenic Drive",
+        "Laupahoehoe Point",
+        "Honoka'a Town",
+        "Waipio Valley Lookout"
+      ]
+    },
+    "waterfalls": {
+      "name": "Waterfalls Tour",
+      "emoji": "💧",
+      "description": "Chase the most spectacular waterfalls on the Big Island",
+      "stops": [
+        "Rainbow Falls",
+        "Pepeekeo Falls",
+        "Akaka Falls",
+        "Kahuna Falls",
+        "Umauma Falls"
+      ]
+    },
+    "south_point": {
+      "name": "South Point",
+      "emoji": "🐢",
+      "description": "Journey to the southernmost point in the United States",
+      "stops": [
+        "South Point Road",
+        "Ka Lae (South Point)",
+        "Green Sand Beach Trailhead",
+        "Punalu'u Black Sand Beach",
+        "Na'alehu Town"
+      ]
+    },
+    "kohala_coast": {
+      "name": "Kohala Coast",
+      "emoji": "⛳",
+      "description": "Resort coast with ancient Hawaiian sites",
+      "stops": [
+        "Mauna Lani Resort",
+        "Puako Petroglyph Fields",
+        "Hapuna Beach",
+        "Spencer Beach Park",
+        "Puukohola Heiau",
+        "Kawaihae Harbor"
+      ]
+    },
+    "north_kohala": {
+      "name": "North Kohala",
+      "emoji": "🤠",
+      "description": "Historic towns and dramatic valleys in North Kohala",
+      "stops": [
+        "Waimea Town",
+        "Kohala Mountain Road Lookout",
+        "Hawi Town",
+        "Kapaau (Original King Kamehameha Statue)",
+        "Pololu Valley Lookout"
+      ]
+    },
+    "historical_hawaii": {
+      "name": "Historical Hawaii",
+      "emoji": "🏛️",
+      "description": "Ancient Hawaiian sites and places of historical significance",
+      "stops": [
+        "Puuhonua o Honaunau (Place of Refuge)",
+        "Kealakekua Bay (Captain Cook Monument)",
+        "Puukohola Heiau",
+        "Lapakahi State Historical Park",
+        "King Kamehameha Statue (Kapaau)",
+        "Mookini Heiau"
+      ]
+    },
+    "beach_hopper": {
+      "name": "Beach Hopper",
+      "emoji": "🏄",
+      "description": "Hit the best beaches from black sand to white sand",
+      "stops": [
+        "Punalu'u Black Sand Beach",
+        "Green Sand Beach Trailhead",
+        "Magic Sands Beach",
+        "Kahalu'u Beach Park",
+        "Hapuna Beach",
+        "Mauna Kea Beach",
+        "Spencer Beach Park"
+      ]
+    },
+    "sunrise_sunset": {
+      "name": "Sunrise to Sunset",
+      "emoji": "🌅",
+      "description": "Best spots for watching sunrise and sunset on the Big Island",
+      "stops": [
+        "Mauna Kea Summit (Sunrise)",
+        "Waipio Valley Lookout",
+        "Pololu Valley Lookout",
+        "Kona Pier (Sunset)",
+        "Kealakekua Bay",
+        "Puuhonua o Honaunau (Sunset)"
+      ]
+    }
+  },
+
   "locations": [
     {
+      "id": 1,
       "name": "Banyan Drive Start",
-      "description": "Historic drive lined with banyan trees planted by celebrities",
+      "description": "Historic drive lined with banyan trees planted by celebrities including Amelia Earhart, Babe Ruth, and Franklin D. Roosevelt since the 1930s. Each tree has a plaque identifying who planted it.",
+      "extended_description": "Banyan Drive is a scenic half-mile stretch in Hilo where celebrities and dignitaries have planted banyan trees since 1933. The tradition began when the area was developed as a resort district. The massive banyans create a dramatic canopy over the road, with aerial roots descending from branches. Walking the drive, you can find trees planted by Cecil B. DeMille, Louis Armstrong, King George V, and many more. The drive connects major hotels with Liliʻuokalani Gardens.",
       "lat": 19.726,
       "lng": -155.082,
       "region": "Hilo",
       "route": "hilo_bayfront",
+      "hawaiian_word": {
+        "word": "hala",
+        "meaning": "Pandanus tree (also found along the drive)",
+        "pronunciation": "HAH-lah"
+      },
       "audio": {
         "ocean": 0.3,
         "birds": 0.6,
@@ -118,15 +639,30 @@
         "volcanic": false,
         "defaultTime": "day"
       },
-      "nearby": ["Liliuokalani Gardens", "Hilo Bay Pier"]
+      "visitor_tips": {
+        "parking": "Free street parking along Banyan Drive",
+        "hours": "Always accessible",
+        "fees": "Free",
+        "best_time": "Morning for photos",
+        "accessibility": "Paved sidewalks, wheelchair accessible"
+      },
+      "nearby": ["Liliuokalani Gardens", "Hilo Bay Pier"],
+      "official_links": ["https://www.gohawaii.com/islands/hawaii-big-island/regions/hilo/banyan-drive"]
     },
     {
+      "id": 2,
       "name": "Liliuokalani Gardens",
-      "description": "Beautiful Japanese garden on Hilo Bay with pagodas and koi ponds",
+      "description": "Largest authentic ornamental Japanese garden outside of Japan, honoring Japanese immigrants to Hawaii. Features pagodas, koi ponds, bridges, and serene pathways.",
+      "extended_description": "This 24-acre park is named after Hawaii's last reigning monarch, Queen Liliʻuokalani. Created in the early 1900s to honor Japanese immigrants who worked the sugar plantations, it features traditional Japanese landscaping including stone lanterns, arched bridges, a tea house, pagodas, and a ceremonial tea garden. The gardens offer stunning views of Hilo Bay and are especially beautiful during sunrise when mist often rises from the ponds.",
       "lat": 19.7245,
       "lng": -155.0792,
       "region": "Hilo",
       "route": "hilo_bayfront",
+      "hawaiian_word": {
+        "word": "liliʻu",
+        "meaning": "Smarting, referring to Queen Liliʻuokalani",
+        "pronunciation": "lee-lee-OO"
+      },
       "audio": {
         "ocean": 0.2,
         "birds": 0.5,
@@ -136,15 +672,30 @@
         "mist": false,
         "volcanic": false
       },
-      "nearby": ["Banyan Drive Start", "Coconut Island Viewpoint"]
+      "visitor_tips": {
+        "parking": "Free parking at multiple entrances",
+        "hours": "Sunrise to sunset daily",
+        "fees": "Free",
+        "best_time": "Early morning for photos and fewer crowds",
+        "accessibility": "Mostly paved paths, some uneven stones"
+      },
+      "nearby": ["Banyan Drive Start", "Coconut Island Viewpoint"],
+      "official_links": ["https://www.hawaiicounty.gov/departments/parks-and-recreation/parks"]
     },
     {
+      "id": 3,
       "name": "Coconut Island Viewpoint",
-      "description": "View of Moku Ola (Coconut Island) from Liliuokalani Gardens bridge",
+      "description": "View of Moku Ola (Coconut Island) from Liliuokalani Gardens bridge. This small island was once a puʻuhonua (place of refuge) and healing center.",
+      "extended_description": "Moku Ola means 'Island of Life' in Hawaiian. In ancient times, it served as a puʻuhonua where kapu breakers could find sanctuary and healers would treat the sick. The island was believed to have special healing powers. Today it's connected to Liliʻuokalani Gardens by a footbridge and features a swimming area, picnic tables, and jumping tower popular with local families.",
       "lat": 19.7235,
       "lng": -155.078,
       "region": "Hilo",
       "route": "hilo_bayfront",
+      "hawaiian_word": {
+        "word": "moku",
+        "meaning": "Island, district",
+        "pronunciation": "MOH-koo"
+      },
       "audio": {
         "ocean": 0.5,
         "birds": 0.4,
@@ -160,12 +711,19 @@
       "processed": true
     },
     {
+      "id": 4,
       "name": "Hilo Bay Pier",
-      "description": "Historic pier with views of Hilo Bay and Mauna Kea",
+      "description": "Historic pier with panoramic views of Hilo Bay, Mauna Kea, and cruise ships when in port. A hub of local fishing activity.",
+      "extended_description": "This working pier is the heart of Hilo's maritime activity. On clear days, the view extends from Mauna Kea to Mauna Loa. The pier hosts the weekly Wednesday and Saturday Hilo Farmers Market nearby. Fishermen cast lines from the pier while locals stroll the waterfront. During cruise ship season, massive vessels dock here, transforming the quiet town into a bustling port.",
       "lat": 19.729,
       "lng": -155.087,
       "region": "Hilo",
       "route": "hilo_bayfront",
+      "hawaiian_word": {
+        "word": "uapo",
+        "meaning": "Pier, wharf",
+        "pronunciation": "oo-AH-poh"
+      },
       "audio": {
         "ocean": 0.7,
         "birds": 0.2,
@@ -181,12 +739,19 @@
       "processed": true
     },
     {
+      "id": 5,
       "name": "Downtown Hilo",
-      "description": "Historic downtown with classic Hawaiian storefronts",
+      "description": "Historic downtown with classic Hawaiian storefronts, art galleries, and the famous Hilo Farmers Market.",
+      "extended_description": "Downtown Hilo retains its old Hawaii charm with buildings dating to the early 1900s. Many storefronts have been preserved or restored after devastating tsunamis in 1946 and 1960. The area features local boutiques, galleries, cafes, and the incredible Hilo Farmers Market (Wed & Sat). The Pacific Tsunami Museum tells the story of the waves that shaped this resilient community. Walking downtown reveals why Hilo is often called the 'City of Rainbows.'",
       "lat": 19.7241,
       "lng": -155.0868,
       "region": "Hilo",
       "route": "hilo_bayfront",
+      "hawaiian_word": {
+        "word": "hilo",
+        "meaning": "To twist, braid (also the name for new moon)",
+        "pronunciation": "HEE-loh"
+      },
       "audio": {
         "birds": 0.3,
         "wind": 0.1
@@ -195,18 +760,32 @@
         "mist": false,
         "volcanic": false
       },
+      "visitor_tips": {
+        "parking": "Metered street parking; free lots nearby",
+        "hours": "Shops typically 9am-5pm",
+        "fees": "Free to explore",
+        "best_time": "Wednesday or Saturday morning for Farmers Market",
+        "accessibility": "Flat, paved sidewalks"
+      },
       "nearby": ["Hilo Bay Pier", "Banyan Drive Start"],
       "pano_id": "-Xv9-rbq2rw4KSyZoNCyag",
       "panorama_path": "/mnt/c/Users/clayt/OneDrive/Documents/dc-bigislandvr-3/panoramas/processed/14db86d34551_panorama.jpg",
       "processed": true
     },
     {
+      "id": 6,
       "name": "Rainbow Falls",
-      "description": "Waiānuenue - iconic 80-foot waterfall just outside Hilo",
+      "description": "Waiānuenue - iconic 80-foot waterfall just outside Hilo. Named for the rainbows that form in its mist on sunny mornings.",
+      "extended_description": "Waiānuenue means 'rainbow water' in Hawaiian. This 80-foot waterfall plunges into a large pool surrounded by wild ginger and tropical vegetation. The cave behind the falls is said to be the home of Hina, goddess of the moon and mother of the demigod Maui. For the best chance to see rainbows, visit between 9-11am when the sun angle is right. A short paved path leads to an overlook, and another trail goes above the falls to a massive banyan tree.",
       "lat": 19.7189,
       "lng": -155.1065,
       "region": "Hilo",
       "route": "hilo_bayfront",
+      "hawaiian_word": {
+        "word": "waiānuenue",
+        "meaning": "Rainbow water",
+        "pronunciation": "why-AH-noo-eh-NOO-eh"
+      },
       "audio": {
         "waterfall": 0.8,
         "birds": 0.5,
@@ -216,15 +795,30 @@
         "mist": true,
         "volcanic": false
       },
-      "nearby": ["Downtown Hilo"]
+      "visitor_tips": {
+        "parking": "Free parking lot",
+        "hours": "Always open",
+        "fees": "Free",
+        "best_time": "9-11am for rainbows",
+        "accessibility": "Paved path to main overlook"
+      },
+      "nearby": ["Downtown Hilo"],
+      "official_links": ["https://dlnr.hawaii.gov/dsp/parks/hawaii/wailuku-river-state-park/"]
     },
     {
+      "id": 7,
       "name": "Park Entrance",
-      "description": "Hawaii Volcanoes National Park entrance gate",
+      "description": "Hawaii Volcanoes National Park entrance gate - gateway to one of the world's most active volcanic landscapes.",
+      "extended_description": "This entrance marks the beginning of your journey into Hawaii Volcanoes National Park, home to two of the world's most active volcanoes: Kīlauea and Mauna Loa. The park encompasses 333,308 acres ranging from sea level to 13,681 feet. As you enter, you're crossing into a landscape constantly being created and destroyed by volcanic forces. The park has been designated a UNESCO World Heritage Site and International Biosphere Reserve.",
       "lat": 19.43,
       "lng": -155.25,
       "region": "Volcano",
       "route": "hawaii_volcanoes",
+      "hawaiian_word": {
+        "word": "pele",
+        "meaning": "Goddess of volcanoes and fire",
+        "pronunciation": "PEH-leh"
+      },
       "audio": {
         "birds": 0.5,
         "wind": 0.3
@@ -233,15 +827,30 @@
         "mist": true,
         "volcanic": false
       },
-      "nearby": ["Kilauea Visitor Center"]
+      "visitor_tips": {
+        "parking": "N/A - entrance gate",
+        "hours": "Park open 24 hours",
+        "fees": "$30 per vehicle (valid 7 days)",
+        "best_time": "Arrive early to avoid crowds",
+        "accessibility": "Drive-through entrance"
+      },
+      "nearby": ["Kilauea Visitor Center"],
+      "official_links": ["https://www.nps.gov/havo/index.htm"]
     },
     {
+      "id": 8,
       "name": "Kilauea Visitor Center",
-      "description": "Main visitor center with exhibits on volcanism",
+      "description": "Main visitor center with exhibits on volcanism, Hawaiian culture, and park orientation. Starting point for many hikes.",
+      "extended_description": "The Kīlauea Visitor Center is your first stop for understanding the park. Interactive exhibits explain volcanic processes, Hawaiian legends about Pele, and the unique ecosystems that thrive here. Rangers provide current eruption updates, trail conditions, and safety information. The center shows a 20-minute film about the park and sells maps, books, and volcano-themed gifts. Outside, you can begin the Volcano Art Center trail.",
       "lat": 19.4318,
       "lng": -155.2579,
       "region": "Volcano",
       "route": "hawaii_volcanoes",
+      "hawaiian_word": {
+        "word": "kīlauea",
+        "meaning": "Spewing, much spreading",
+        "pronunciation": "kee-lah-WAY-ah"
+      },
       "audio": {
         "birds": 0.4,
         "wind": 0.3
@@ -250,15 +859,30 @@
         "mist": true,
         "volcanic": false
       },
-      "nearby": ["Park Entrance", "Steam Vents"]
+      "visitor_tips": {
+        "parking": "Large free lot",
+        "hours": "9am-5pm daily",
+        "fees": "Free (park entrance fee required)",
+        "best_time": "Morning for ranger talks",
+        "accessibility": "Fully accessible"
+      },
+      "nearby": ["Park Entrance", "Steam Vents"],
+      "official_links": ["https://www.nps.gov/havo/planyourvisit/kvc.htm"]
     },
     {
+      "id": 9,
       "name": "Steam Vents",
-      "description": "Geothermal steam rising from volcanic fissures",
+      "description": "Geothermal steam rising from volcanic fissures along Crater Rim Drive. Feel the heat of the volcano beneath your feet.",
+      "extended_description": "At Steam Vents, groundwater seeps down through the earth, is heated by magma, and rises back as steam through cracks in the ground. The steam can reach temperatures of 200°F or higher. On cool, humid mornings, the vents are particularly dramatic. The nearby Steaming Bluff offers views where steam billows from the cliff face. This is a visceral reminder that you're standing on an active volcano.",
       "lat": 19.429,
       "lng": -155.261,
       "region": "Volcano",
       "route": "hawaii_volcanoes",
+      "hawaiian_word": {
+        "word": "māhu",
+        "meaning": "Steam, vapor",
+        "pronunciation": "MAH-hoo"
+      },
       "audio": {
         "volcanic": 0.6,
         "wind": 0.5
@@ -273,12 +897,19 @@
       "processed": true
     },
     {
+      "id": 10,
       "name": "Jaggar Museum Overlook",
-      "description": "Overlook of Kilauea caldera (museum closed but viewpoint accessible)",
+      "description": "Overlook of Kilauea caldera (museum closed but viewpoint accessible). One of the best vantage points to view Halemaʻumaʻu crater.",
+      "extended_description": "Though the Thomas A. Jaggar Museum was damaged in the 2018 eruption and remains closed, the overlook area provides some of the best views of Kīlauea caldera and Halemaʻumaʻu crater. On active days, you might see volcanic glow after dark. The overlook honors Thomas Jaggar, founder of the Hawaiian Volcano Observatory who dedicated his life to volcano monitoring. This spot offers spectacular sunset viewing.",
       "lat": 19.4207,
       "lng": -155.2879,
       "region": "Volcano",
       "route": "hawaii_volcanoes",
+      "hawaiian_word": {
+        "word": "lua",
+        "meaning": "Crater, pit",
+        "pronunciation": "LOO-ah"
+      },
       "audio": {
         "wind": 0.6,
         "volcanic": 0.5
@@ -287,18 +918,32 @@
         "mist": true,
         "volcanic": true
       },
+      "visitor_tips": {
+        "parking": "Roadside parking",
+        "hours": "Check park website - may close due to volcanic activity",
+        "fees": "Park entrance fee",
+        "best_time": "Sunset or after dark during active eruptions",
+        "accessibility": "Paved overlook area"
+      },
       "nearby": ["Steam Vents", "Halema'uma'u Crater"],
       "pano_id": "t3o3vDEgI14Jqq16F0n0wg",
       "panorama_path": "/mnt/c/Users/clayt/OneDrive/Documents/dc-bigislandvr-3/panoramas/processed/3993a37ba38e_panorama.jpg",
       "processed": true
     },
     {
+      "id": 11,
       "name": "Halema'uma'u Crater",
-      "description": "Active volcanic crater within Kilauea caldera",
+      "description": "Active volcanic crater within Kilauea caldera - legendary home of Pele, goddess of fire and volcanoes.",
+      "extended_description": "Halemaʻumaʻu means 'house of the ʻamaʻu fern' and is the mythological home of Pele. This crater within a crater has been the site of dramatic volcanic activity for centuries. The 2018 eruption dramatically changed the landscape, causing the crater floor to collapse 1,600 feet. During active periods, a lava lake may be visible, creating an otherworldly glow. Hawaiians consider this one of the most sacred places in the islands.",
       "lat": 19.405,
       "lng": -155.281,
       "region": "Volcano",
       "route": "hawaii_volcanoes",
+      "hawaiian_word": {
+        "word": "halemaʻumaʻu",
+        "meaning": "House of the ʻamaʻu fern",
+        "pronunciation": "hah-leh-MAH-oo-MAH-oo"
+      },
       "audio": {
         "volcanic": 0.8,
         "wind": 0.6
@@ -310,12 +955,51 @@
       "nearby": ["Jaggar Museum Overlook", "Chain of Craters Road"]
     },
     {
+      "id": 12,
+      "name": "Thurston Lava Tube",
+      "description": "Walk through a 500-year-old lava tube surrounded by lush rainforest. A natural tunnel formed by flowing lava.",
+      "extended_description": "Nāhuku (Thurston Lava Tube) offers a walk through a 500-year-old lava tube formed when the surface of a lava flow cooled while molten lava continued flowing beneath, eventually draining to leave a hollow tube. The tube is approximately 450 feet long and tall enough to walk through upright. The surrounding rainforest is home to native birds and giant tree ferns. Named for Lorrin A. Thurston, a newspaper publisher who helped establish the park.",
+      "lat": 19.414,
+      "lng": -155.239,
+      "region": "Volcano",
+      "route": "hawaii_volcanoes",
+      "hawaiian_word": {
+        "word": "nāhuku",
+        "meaning": "Protuberances, humps",
+        "pronunciation": "nah-HOO-koo"
+      },
+      "audio": {
+        "birds": 0.6,
+        "wind": 0.1
+      },
+      "atmosphere": {
+        "mist": true,
+        "volcanic": false
+      },
+      "visitor_tips": {
+        "parking": "Free lot (often full by 10am)",
+        "hours": "7am-8pm",
+        "fees": "Park entrance fee",
+        "best_time": "Early morning or late afternoon",
+        "accessibility": "Paved with stairs and low clearance in spots"
+      },
+      "nearby": ["Kilauea Iki Trail"],
+      "official_links": ["https://www.nps.gov/havo/planyourvisit/nahuku.htm"]
+    },
+    {
+      "id": 13,
       "name": "Chain of Craters Road",
-      "description": "Scenic road descending through lava fields to the coast",
+      "description": "Scenic 18-mile road descending through lava fields to the coast. Passes numerous craters and petroglyphs.",
+      "extended_description": "Chain of Craters Road descends 3,700 feet over 18 miles through some of the most dramatic volcanic landscapes on Earth. The road passes pit craters including Lua Manu, Puʻu Huluhulu, and Makaopuhi. Along the way, you'll see lava flows from different eruptions, each with distinct textures and colors. The road ends abruptly where 2003 lava flows covered it. Look for petroglyphs at Puʻu Loa, one of Hawaii's largest collections.",
       "lat": 19.365,
       "lng": -155.145,
       "region": "Volcano",
       "route": "hawaii_volcanoes",
+      "hawaiian_word": {
+        "word": "pāhoehoe",
+        "meaning": "Smooth, ropy lava",
+        "pronunciation": "pah-HOH-ee-HOH-ee"
+      },
       "audio": {
         "wind": 0.6,
         "volcanic": 0.3,
@@ -325,15 +1009,29 @@
         "mist": false,
         "volcanic": true
       },
+      "visitor_tips": {
+        "parking": "Various pullouts",
+        "hours": "Dawn to dusk",
+        "fees": "Park entrance fee",
+        "best_time": "Allow 3-4 hours roundtrip",
+        "accessibility": "Scenic drive; some overlooks accessible"
+      },
       "nearby": ["Halema'uma'u Crater", "Holei Sea Arch"]
     },
     {
+      "id": 14,
       "name": "Holei Sea Arch",
-      "description": "Natural lava rock arch at the end of Chain of Craters Road",
+      "description": "Natural lava rock arch at the end of Chain of Craters Road where ancient flows meet the Pacific Ocean.",
+      "extended_description": "At the end of Chain of Craters Road, violent waves have carved this dramatic 90-foot-high sea arch from volcanic rock. The coastline here shows the ongoing battle between Pele (volcano) and her sister Namakaokahai (sea). The area features a short trail along the cliffs with views of the arch and the dramatic intersection of lava and ocean. Bring water and sun protection - there is no shade.",
       "lat": 19.29,
       "lng": -155.097,
       "region": "Volcano",
       "route": "hawaii_volcanoes",
+      "hawaiian_word": {
+        "word": "aʻa",
+        "meaning": "Rough, clinker lava",
+        "pronunciation": "AH-ah"
+      },
       "audio": {
         "ocean": 0.7,
         "wind": 0.5
@@ -345,12 +1043,19 @@
       "nearby": ["Chain of Craters Road"]
     },
     {
+      "id": 15,
       "name": "Saddle Road Start (Hilo Side)",
-      "description": "Beginning of Saddle Road from Hilo side",
+      "description": "Beginning of Saddle Road from Hilo side - the scenic route crossing between Mauna Kea and Mauna Loa.",
+      "extended_description": "Daniel K. Inouye Highway (Saddle Road) offers one of the most dramatic drives in Hawaii. From Hilo, the road climbs through rainforest, transitions to semi-arid shrubland, and opens to vast views of both massive volcanoes. The journey showcases multiple climate zones in just 50 miles. Once notorious for its narrow curves, the road has been modernized while retaining its scenic grandeur.",
       "lat": 19.695,
       "lng": -155.14,
       "region": "Saddle",
       "route": "saddle_road",
+      "hawaiian_word": {
+        "word": "ala",
+        "meaning": "Path, road, way",
+        "pronunciation": "AH-lah"
+      },
       "audio": {
         "birds": 0.5,
         "wind": 0.3
@@ -362,12 +1067,19 @@
       "nearby": ["Mauna Kea Access Road"]
     },
     {
+      "id": 16,
       "name": "Mauna Kea Access Road",
-      "description": "Junction of Saddle Road and Mauna Kea summit access",
+      "description": "Junction of Saddle Road and Mauna Kea summit access. The turnoff to Hawaii's tallest peak.",
+      "extended_description": "This junction marks the beginning of the climb to Mauna Kea's summit, which rises 13,796 feet above sea level (and over 32,000 feet from the seafloor, making it Earth's tallest mountain base-to-peak). From here, the access road climbs through rare ecosystems including the silversword habitat. The Visitor Information Station at 9,200 feet is the mandatory acclimatization stop before the summit.",
       "lat": 19.756,
       "lng": -155.456,
       "region": "Saddle",
       "route": "saddle_road",
+      "hawaiian_word": {
+        "word": "mauna kea",
+        "meaning": "White mountain (for its snowy summit)",
+        "pronunciation": "MOW-nah KAY-ah"
+      },
       "audio": {
         "wind": 0.7,
         "birds": 0.2
@@ -376,15 +1088,84 @@
         "mist": false,
         "volcanic": false
       },
-      "nearby": ["Saddle Road Start (Hilo Side)", "Pu'u Huluhulu"]
+      "nearby": ["Saddle Road Start (Hilo Side)", "Pu'u Huluhulu", "Mauna Kea Visitor Information Station"]
     },
     {
+      "id": 17,
+      "name": "Mauna Kea Visitor Information Station",
+      "description": "Visitor center at 9,200 feet - the gateway to Mauna Kea summit. Offers stargazing programs and acclimatization stop.",
+      "extended_description": "The Visitor Information Station (VIS) sits at 9,200 feet, roughly halfway to the summit. Visitors must stop here to acclimatize before continuing to the summit at 13,796 feet. The VIS offers educational exhibits about Mauna Kea's cultural and scientific significance, restrooms, and warm drinks. Free nightly stargazing programs (weather permitting) use powerful telescopes to view planets, nebulae, and galaxies.",
+      "lat": 19.7603,
+      "lng": -155.4556,
+      "region": "Mauna Kea",
+      "route": "mauna_kea",
+      "hawaiian_word": {
+        "word": "ao",
+        "meaning": "Cloud, light, day (referring to the summit above clouds)",
+        "pronunciation": "AH-oh"
+      },
+      "audio": {
+        "wind": 0.8
+      },
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "visitor_tips": {
+        "parking": "Free lot (limited)",
+        "hours": "9am-10pm daily",
+        "fees": "Free",
+        "best_time": "Arrive by sunset for stargazing programs",
+        "accessibility": "Building accessible; trails are rough"
+      },
+      "nearby": ["Mauna Kea Summit Observatories"],
+      "official_links": ["https://www.ifa.hawaii.edu/info/vis/"]
+    },
+    {
+      "id": 18,
+      "name": "Mauna Kea Summit Observatories",
+      "description": "World's premier astronomical observatory site at 13,796 feet. Home to 13 telescopes operated by eleven countries.",
+      "extended_description": "The summit of Mauna Kea hosts the world's largest observatory for optical, infrared, and submillimeter astronomy. The site was chosen for its dark skies, dry atmosphere, stable airflow, and position above 40% of Earth's atmosphere. Telescopes include the Keck Observatories (world's largest optical telescopes), Subaru, and Gemini North. While sacred to Hawaiians, the summit represents the cutting edge of human cosmic exploration.",
+      "lat": 19.8207,
+      "lng": -155.4681,
+      "region": "Mauna Kea",
+      "route": "mauna_kea",
+      "hawaiian_word": {
+        "word": "wēkiu",
+        "meaning": "Topmost, summit",
+        "pronunciation": "WAY-kee-oo"
+      },
+      "audio": {
+        "wind": 1.0
+      },
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "visitor_tips": {
+        "parking": "Limited at summit",
+        "hours": "30 minutes before sunset to 30 minutes after sunrise",
+        "fees": "Free but 4WD required",
+        "best_time": "Sunset for views, predawn for astronomy",
+        "accessibility": "4WD vehicle required; altitude can cause illness"
+      },
+      "nearby": ["Mauna Kea Visitor Information Station"],
+      "official_links": ["https://www.ifa.hawaii.edu/mko/"]
+    },
+    {
+      "id": 19,
       "name": "Pu'u Huluhulu",
-      "description": "Forested cinder cone between Mauna Kea and Mauna Loa",
+      "description": "Forested cinder cone between Mauna Kea and Mauna Loa offering panoramic views of both volcanoes.",
+      "extended_description": "This kipuka (vegetated island surrounded by younger lava) rises between Hawaii's two largest volcanoes. A 20-minute hike through native dryland forest leads to the summit with 360-degree views of Mauna Kea, Mauna Loa, and Hualālai. The name means 'very hairy hill' referring to its dense vegetation. The area is home to native birds including the endangered palila.",
       "lat": 19.698,
       "lng": -155.432,
       "region": "Saddle",
       "route": "saddle_road",
+      "hawaiian_word": {
+        "word": "puʻu",
+        "meaning": "Hill, cone, peak",
+        "pronunciation": "POO-oo"
+      },
       "audio": {
         "birds": 0.5,
         "wind": 0.4
@@ -396,12 +1177,19 @@
       "nearby": ["Mauna Kea Access Road", "Kipuka Ki"]
     },
     {
+      "id": 20,
       "name": "Kipuka Ki",
-      "description": "Island of old forest surrounded by younger lava flows",
+      "description": "Island of old forest surrounded by younger lava flows - a living laboratory of island ecology.",
+      "extended_description": "Kipuka Ki is a perfect example of how lava flows can isolate pockets of older vegetation. When surrounding areas were covered by lava, this 'island' of native forest was spared, preserving species that died out elsewhere. Today it serves as an important seed source for native plants and habitat for endangered birds. The contrast between the verdant kipuka and surrounding barren lava demonstrates the regenerative power of Hawaii's ecosystems.",
       "lat": 19.69,
       "lng": -155.41,
       "region": "Saddle",
       "route": "saddle_road",
+      "hawaiian_word": {
+        "word": "kipuka",
+        "meaning": "Oasis of older vegetation spared by lava",
+        "pronunciation": "kee-POO-kah"
+      },
       "audio": {
         "birds": 0.6,
         "wind": 0.3
@@ -413,12 +1201,19 @@
       "nearby": ["Pu'u Huluhulu", "Saddle Summit"]
     },
     {
+      "id": 21,
       "name": "Saddle Summit",
-      "description": "Highest point of Saddle Road between the two mountains",
+      "description": "Highest point of Saddle Road at 6,632 feet - the crossing point between east and west Hawaii.",
+      "extended_description": "At 6,632 feet, this is the highest point on Saddle Road and marks the divide between windward (rainy) and leeward (dry) Hawaii. On clear days, you can see both Mauna Kea and Mauna Loa towering above. The landscape here is stark and beautiful - alpine shrubland transitioning to māmane-naio forest. Military training areas flank the road, remnants of World War II installations.",
       "lat": 19.69,
       "lng": -155.52,
       "region": "Saddle",
       "route": "saddle_road",
+      "hawaiian_word": {
+        "word": "kuahiwi",
+        "meaning": "Mountain, high hill",
+        "pronunciation": "koo-ah-HEE-vee"
+      },
       "audio": {
         "wind": 0.9
       },
@@ -429,12 +1224,19 @@
       "nearby": ["Kipuka Ki"]
     },
     {
+      "id": 22,
       "name": "Kailua-Kona Pier",
-      "description": "Historic pier in downtown Kona",
+      "description": "Historic pier in downtown Kona - starting point for fishing charters and the Iron Man triathlon finish line.",
+      "extended_description": "Kailua Pier is the heart of historic Kona town. Built in the 1900s for inter-island shipping, today it's the departure point for fishing charters, snorkel cruises, and whale watching tours. Each October, triathletes swim past the pier to start the Ironman World Championship. Nearby are Huliheʻe Palace (former vacation home of Hawaiian royalty) and Mokuaikaua Church (oldest Christian church in Hawaii).",
       "lat": 19.64,
       "lng": -155.996,
       "region": "Kona",
       "route": "kona_coast",
+      "hawaiian_word": {
+        "word": "kailua",
+        "meaning": "Two seas (referring to currents)",
+        "pronunciation": "kai-LOO-ah"
+      },
       "audio": {
         "ocean": 0.8,
         "birds": 0.2,
@@ -444,15 +1246,30 @@
         "mist": false,
         "volcanic": false
       },
-      "nearby": ["Ali'i Drive"]
+      "visitor_tips": {
+        "parking": "Paid lots nearby; street parking limited",
+        "hours": "Always accessible",
+        "fees": "Free",
+        "best_time": "Sunset for photos",
+        "accessibility": "Paved, wheelchair accessible"
+      },
+      "nearby": ["Ali'i Drive"],
+      "official_links": ["https://www.konaweb.com/"]
     },
     {
+      "id": 23,
       "name": "Ali'i Drive",
-      "description": "Scenic oceanfront drive through Kona",
+      "description": "Scenic oceanfront drive through Kona lined with shops, restaurants, and historic sites.",
+      "extended_description": "Ali'i (meaning 'chief' or 'royalty') Drive stretches from Kailua-Kona south to Keauhou. This beautiful waterfront road passes beaches, tide pools, and resort properties. Walking or biking reveals hidden gems: the Huliheʻe Palace, Mokuaikaua Church, and numerous excellent restaurants. The drive offers consistent ocean views and is particularly beautiful at sunset when the water glows gold.",
       "lat": 19.63,
       "lng": -155.99,
       "region": "Kona",
       "route": "kona_coast",
+      "hawaiian_word": {
+        "word": "aliʻi",
+        "meaning": "Chief, royalty, king",
+        "pronunciation": "ah-LEE-ee"
+      },
       "audio": {
         "ocean": 0.6,
         "birds": 0.3,
@@ -465,12 +1282,19 @@
       "nearby": ["Kailua-Kona Pier", "Magic Sands Beach"]
     },
     {
+      "id": 24,
       "name": "Magic Sands Beach",
-      "description": "Popular beach with dramatic wave action",
+      "description": "Popular beach known for disappearing sand - waves sometimes remove all sand overnight, revealing lava rocks.",
+      "extended_description": "Also called Lāʻaloa Beach or White Sands, this beach earned the nickname 'Magic Sands' because powerful winter swells can sweep away the entire sandy beach overnight, leaving only rocks. Days later, the sand magically reappears as currents deposit it back. When sand is present, it's one of Kona's best bodyboarding spots with consistent shore break. Strong currents require caution.",
       "lat": 19.583,
       "lng": -155.969,
       "region": "Kona",
       "route": "kona_coast",
+      "hawaiian_word": {
+        "word": "one",
+        "meaning": "Sand",
+        "pronunciation": "OH-neh"
+      },
       "audio": {
         "ocean": 0.9,
         "wind": 0.3
@@ -479,15 +1303,62 @@
         "mist": false,
         "volcanic": false
       },
-      "nearby": ["Ali'i Drive", "Keauhou Bay"]
+      "visitor_tips": {
+        "parking": "Small lot fills quickly",
+        "hours": "6am-11pm",
+        "fees": "Free",
+        "best_time": "Morning for calmer conditions",
+        "accessibility": "Restrooms; beach access via steps"
+      },
+      "nearby": ["Ali'i Drive", "Keauhou Bay", "Kahalu'u Beach Park"]
     },
     {
+      "id": 25,
+      "name": "Kahalu'u Beach Park",
+      "description": "Premier snorkeling beach with abundant sea turtles and tropical fish in a protected bay.",
+      "extended_description": "Kahaluʻu is arguably the best easy-access snorkeling spot on the Big Island. A natural breakwater protects the shallow bay, creating calm conditions perfect for beginners. Sea turtles (honu) graze on algae-covered rocks while colorful reef fish dart through the water. The beach park has facilities, lifeguards, and equipment rentals. Ancient Hawaiians used this area for aquaculture.",
+      "lat": 19.578,
+      "lng": -155.967,
+      "region": "Kona",
+      "route": "kona_coast",
+      "hawaiian_word": {
+        "word": "honu",
+        "meaning": "Green sea turtle",
+        "pronunciation": "HOH-noo"
+      },
+      "audio": {
+        "ocean": 0.7,
+        "birds": 0.3,
+        "wind": 0.2
+      },
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "visitor_tips": {
+        "parking": "Small lot; $5 parking fee",
+        "hours": "6am-11pm",
+        "fees": "Free beach access",
+        "best_time": "Early morning for clearest water",
+        "accessibility": "Paved to water's edge; sandy entry"
+      },
+      "nearby": ["Magic Sands Beach", "Keauhou Bay"],
+      "official_links": ["https://www.kahaluubay.org/"]
+    },
+    {
+      "id": 26,
       "name": "Keauhou Bay",
-      "description": "Historic bay with calm waters, great for snorkeling",
+      "description": "Historic bay known for manta ray night dives and as the birthplace of King Kamehameha III.",
+      "extended_description": "Keauhou Bay holds deep historical significance as the birthplace of Kauikeaouli (King Kamehameha III), who was born prematurely and revived by a kahuna at a nearby heiau. Today, the bay is famous for manta ray night dives - boats anchor here as mantas come to feed on plankton attracted by lights. The calm waters also offer excellent kayaking and stand-up paddleboarding.",
       "lat": 19.562,
       "lng": -155.964,
       "region": "Kona",
       "route": "kona_coast",
+      "hawaiian_word": {
+        "word": "keauhou",
+        "meaning": "The new era (or new current)",
+        "pronunciation": "keh-OW-hoh"
+      },
       "audio": {
         "ocean": 0.6,
         "birds": 0.3,
@@ -497,15 +1368,29 @@
         "mist": false,
         "volcanic": false
       },
+      "visitor_tips": {
+        "parking": "Small boat ramp lot",
+        "hours": "Always accessible",
+        "fees": "Free; tours for manta viewing",
+        "best_time": "Night for manta rays",
+        "accessibility": "Boat ramp access"
+      },
       "nearby": ["Magic Sands Beach", "Kealakekua Bay"]
     },
     {
+      "id": 27,
       "name": "Kealakekua Bay",
-      "description": "Marine sanctuary and Captain Cook monument",
+      "description": "Marine sanctuary and site of Captain Cook's death. Premier snorkeling in crystal-clear waters.",
+      "extended_description": "Kealakekua means 'pathway of the god' - ancient Hawaiians believed their gods descended to this bay. Captain James Cook was killed here in 1779 after being mistaken for the god Lono, then later worshipped and finally confronted. A white monument across the bay marks the site. Today, the bay is a Marine Life Conservation District with some of Hawaii's best snorkeling. Spinner dolphins often rest here in mornings.",
       "lat": 19.48,
       "lng": -155.931,
       "region": "Kona",
       "route": "kona_coast",
+      "hawaiian_word": {
+        "word": "kealakekua",
+        "meaning": "Pathway of the god",
+        "pronunciation": "keh-ah-lah-keh-KOO-ah"
+      },
       "audio": {
         "ocean": 0.7,
         "birds": 0.3
@@ -514,15 +1399,216 @@
         "mist": false,
         "volcanic": false
       },
-      "nearby": ["Keauhou Bay"]
+      "visitor_tips": {
+        "parking": "Limited at Nāpōʻopoʻo; kayak tours available",
+        "hours": "Daylight hours",
+        "fees": "Free (kayak permits required)",
+        "best_time": "Morning for dolphins and calm water",
+        "accessibility": "Steep hike to monument; boat/kayak recommended"
+      },
+      "nearby": ["Keauhou Bay", "Pu'uhonua o Honaunau"],
+      "official_links": ["https://dlnr.hawaii.gov/dar/marine-managed-areas/hawaii-marine-life-conservation-districts/hawaii-kealakekua-bay/"]
     },
     {
+      "id": 28,
+      "name": "Pu'uhonua o Honaunau",
+      "description": "Place of Refuge - ancient sanctuary where kapu breakers could be absolved. Sacred ground with temple reconstructions.",
+      "extended_description": "This National Historical Park preserves one of Hawaii's most sacred sites. In ancient Hawaii, breaking kapu (sacred laws) was punishable by death. The only escape was to reach a puʻuhonua, where a kahuna would perform ceremonies to absolve the transgressor. The site includes reconstructed tiki, a temple, royal fishponds, and the famous Ki'i (carved wooden images). The waters offshore are excellent for snorkeling among sea turtles.",
+      "lat": 19.4219,
+      "lng": -155.9114,
+      "region": "Kona",
+      "route": "historical_hawaii",
+      "hawaiian_word": {
+        "word": "puʻuhonua",
+        "meaning": "Place of refuge, sanctuary",
+        "pronunciation": "poo-oo-hoh-NOO-ah"
+      },
+      "audio": {
+        "ocean": 0.5,
+        "birds": 0.3,
+        "wind": 0.2
+      },
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "visitor_tips": {
+        "parking": "Free lot",
+        "hours": "7am-sunset",
+        "fees": "$20 per vehicle (valid 7 days)",
+        "best_time": "Early morning for solitude",
+        "accessibility": "Paved paths through main area"
+      },
+      "nearby": ["Kealakekua Bay"],
+      "official_links": ["https://www.nps.gov/puho/index.htm"]
+    },
+    {
+      "id": 29,
+      "name": "Holualoa Village",
+      "description": "Charming artist village in the heart of Kona coffee country. Galleries, studios, and coffee farms.",
+      "extended_description": "Perched on the slopes of Hualālai at 1,400 feet, Holualoa is a peaceful artist community surrounded by coffee farms. The main street features galleries, studios, and the Kona Coffee & Tea Company. The cooler temperatures and afternoon mists create perfect coffee-growing conditions. Walking through town feels like stepping back in time, with plantation-era buildings now housing artists and craftspeople.",
+      "lat": 19.6177,
+      "lng": -155.9366,
+      "region": "Kona",
+      "route": "coffee_country",
+      "hawaiian_word": {
+        "word": "holualoa",
+        "meaning": "Long sled course",
+        "pronunciation": "hoh-loo-ah-LOH-ah"
+      },
+      "audio": {
+        "birds": 0.6,
+        "wind": 0.3
+      },
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "visitor_tips": {
+        "parking": "Free street parking",
+        "hours": "Most galleries 10am-4pm, closed Sun-Mon",
+        "fees": "Free",
+        "best_time": "Weekday mornings",
+        "accessibility": "Hilly village; main street walkable"
+      },
+      "nearby": ["Mountain Thunder Coffee", "Greenwell Farms"],
+      "official_links": ["https://holualoa-hawaii.com/"]
+    },
+    {
+      "id": 30,
+      "name": "Mountain Thunder Coffee",
+      "description": "Working Kona coffee farm offering tours through the entire coffee process from tree to cup.",
+      "extended_description": "Mountain Thunder is one of Kona's largest organic coffee producers, farming 36 acres of premium coffee. Their comprehensive tours explain every step of coffee production: growing, hand-picking, wet and dry processing, roasting, and cupping. Located at 3,200 feet elevation, the farm enjoys ideal coffee-growing conditions. Visitors can taste different roasts and learn why Kona coffee commands premium prices worldwide.",
+      "lat": 19.5935,
+      "lng": -155.9221,
+      "region": "Kona",
+      "route": "coffee_country",
+      "hawaiian_word": {
+        "word": "kope",
+        "meaning": "Coffee (Hawaiian adaptation)",
+        "pronunciation": "KOH-peh"
+      },
+      "audio": {
+        "birds": 0.5,
+        "wind": 0.3,
+        "coffee_farm": 0.4
+      },
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "visitor_tips": {
+        "parking": "Free lot",
+        "hours": "9am-4pm daily",
+        "fees": "Free tours, premium tours available",
+        "best_time": "Morning tours (cooler)",
+        "accessibility": "Mostly paved; some uneven terrain"
+      },
+      "nearby": ["Holualoa Village", "Greenwell Farms"],
+      "official_links": ["https://mountainthunder.com/"]
+    },
+    {
+      "id": 31,
+      "name": "Greenwell Farms",
+      "description": "Historic 100+ acre Kona coffee farm operating since 1850. Free tours through working coffee plantation.",
+      "extended_description": "Greenwell Farms represents five generations of Kona coffee farming since 1850. The farm covers over 100 acres and produces some of the most sought-after Kona coffee. Free walking tours explain the heritage of coffee in Kona, from its introduction in the 1800s through today's artisan roasting. The gift shop offers fresh-roasted coffee and local products. The farm also grows macadamia nuts, avocados, and tropical fruits.",
+      "lat": 19.5001,
+      "lng": -155.9243,
+      "region": "Kona",
+      "route": "coffee_country",
+      "hawaiian_word": {
+        "word": "mahiʻai",
+        "meaning": "Farmer, to cultivate",
+        "pronunciation": "mah-hee-AH-ee"
+      },
+      "audio": {
+        "birds": 0.5,
+        "wind": 0.2
+      },
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "visitor_tips": {
+        "parking": "Free lot",
+        "hours": "8am-4pm Mon-Sat",
+        "fees": "Free tours",
+        "best_time": "Any time, tours run frequently",
+        "accessibility": "Paved paths on main tour route"
+      },
+      "nearby": ["Mountain Thunder Coffee", "Kona Coffee Living History Farm"],
+      "official_links": ["https://www.greenwellfarms.com/"]
+    },
+    {
+      "id": 32,
+      "name": "Kona Coffee Living History Farm",
+      "description": "Working farm museum recreating a 1920s-era Japanese coffee farm. Experience heritage farming methods.",
+      "extended_description": "This unique living history farm recreates the life of a Japanese immigrant coffee farming family in the 1920s-30s. Costumed interpreters demonstrate traditional farming techniques, from hand-picking cherry to pulping and drying. The farm includes a restored farmhouse, traditional Japanese bath house (furō), and processing facilities. Learn how Japanese immigrants shaped Kona's coffee industry and culture.",
+      "lat": 19.4961,
+      "lng": -155.9199,
+      "region": "Kona",
+      "route": "coffee_country",
+      "hawaiian_word": {
+        "word": "hana",
+        "meaning": "Work, labor",
+        "pronunciation": "HAH-nah"
+      },
+      "audio": {
+        "birds": 0.4,
+        "wind": 0.2
+      },
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "visitor_tips": {
+        "parking": "Free lot",
+        "hours": "10am-2pm Mon-Fri",
+        "fees": "$25 adults, $15 children",
+        "best_time": "Morning for cooler temperatures",
+        "accessibility": "Mostly accessible; some uneven terrain"
+      },
+      "nearby": ["Greenwell Farms", "Captain Cook Town"],
+      "official_links": ["https://konahistorical.org/"]
+    },
+    {
+      "id": 33,
+      "name": "Captain Cook Town",
+      "description": "Small upcountry town in the heart of coffee country. Named for the famous explorer.",
+      "extended_description": "Captain Cook is a small community at 1,500 feet elevation on the slopes above Kealakekua Bay where Captain James Cook met his death in 1779. The town serves as the commercial center for the surrounding coffee farms. Along the main road you'll find local restaurants, coffee shops, and the headquarters of several well-known coffee brands. The elevated location offers cooler temperatures and occasional misty afternoons.",
+      "lat": 19.4931,
+      "lng": -155.9214,
+      "region": "Kona",
+      "route": "coffee_country",
+      "hawaiian_word": {
+        "word": "kāpena",
+        "meaning": "Captain (Hawaiian adaptation)",
+        "pronunciation": "KAH-peh-nah"
+      },
+      "audio": {
+        "birds": 0.4,
+        "wind": 0.2
+      },
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "nearby": ["Kona Coffee Living History Farm", "Kealakekua Bay"]
+    },
+    {
+      "id": 34,
       "name": "Akaka Falls",
-      "description": "Stunning 442-foot waterfall in lush rainforest",
+      "description": "Stunning 442-foot waterfall in lush rainforest, accessed via a beautiful loop trail through tropical vegetation.",
+      "extended_description": "ʻAkaka Falls plunges 442 feet into a gorge surrounded by dense tropical vegetation including bamboo, ferns, orchids, and azaleas. The 0.4-mile loop trail passes through this magnificent rainforest garden before reaching the overlook. Along the way, you'll also see Kahūnā Falls (100 feet). The area receives 90 inches of rain annually, creating this incredibly lush environment. Legend says Akaka was a chief who fell to his death while being pursued by jealous wives.",
       "lat": 19.853,
       "lng": -155.152,
       "region": "Hamakua",
       "route": "hamakua_coast",
+      "hawaiian_word": {
+        "word": "akaka",
+        "meaning": "Split, cracked (descriptive)",
+        "pronunciation": "ah-KAH-kah"
+      },
       "audio": {
         "waterfall": 0.9,
         "birds": 0.4,
@@ -532,15 +1618,120 @@
         "mist": true,
         "volcanic": false
       },
-      "nearby": ["Honoka'a Town"]
+      "visitor_tips": {
+        "parking": "$5 non-resident fee",
+        "hours": "8:30am-5pm",
+        "fees": "$5 per person (Hawaii residents free with ID)",
+        "best_time": "Morning for fewer crowds",
+        "accessibility": "Paved trail with some stairs (over 500 steps)"
+      },
+      "nearby": ["Honoka'a Town", "Hawaii Tropical Bioreserve"],
+      "official_links": ["https://dlnr.hawaii.gov/dsp/parks/hawaii/akaka-falls-state-park/"]
     },
     {
+      "id": 35,
+      "name": "Hawaii Tropical Bioreserve & Garden",
+      "description": "Spectacular 40-acre botanical garden along Onomea Bay featuring over 2,000 species of tropical plants.",
+      "extended_description": "This world-class botanical garden occupies a valley along the scenic Pepe'ekeo coast. Trails wind through diverse collections including palms, heliconias, bromeliads, orchids, and rare native Hawaiian plants. The garden features stunning ocean views, waterfalls, lily ponds, and a Japanese garden. Founded in 1984 by Dan Lutkenhouse, it's dedicated to preserving tropical ecosystems. The lush setting has been featured in numerous films.",
+      "lat": 19.8362,
+      "lng": -155.0979,
+      "region": "Hamakua",
+      "route": "hamakua_coast",
+      "hawaiian_word": {
+        "word": "kīhāpai",
+        "meaning": "Garden, small cultivated plot",
+        "pronunciation": "kee-HAH-pai"
+      },
+      "audio": {
+        "birds": 0.7,
+        "waterfall": 0.3,
+        "wind": 0.2
+      },
+      "atmosphere": {
+        "mist": true,
+        "volcanic": false
+      },
+      "visitor_tips": {
+        "parking": "Free lot",
+        "hours": "9am-5pm (last entry 4pm)",
+        "fees": "$25 adults, $10 children 6-16",
+        "best_time": "Morning for photos",
+        "accessibility": "Steep grades on some trails; golf cart tours available"
+      },
+      "nearby": ["Akaka Falls", "Onomea Bay", "Pepeekeo Scenic Drive"],
+      "official_links": ["https://htbg.com/"]
+    },
+    {
+      "id": 36,
+      "name": "Onomea Bay",
+      "description": "Beautiful bay along the Pepe'ekeo Scenic Drive, part of the Tropical Bioreserve's coastal area.",
+      "extended_description": "Onomea Bay is a dramatic section of coastline where jungle meets sea. The bay is viewed from the Tropical Bioreserve and from the scenic drive above. Steep cliffs drop to the turquoise water below. The area was once home to a sugar plantation; remnants of the old railway are still visible. The bay's name means 'pleasant sands' though access to the water is limited.",
+      "lat": 19.8252,
+      "lng": -155.1001,
+      "region": "Hamakua",
+      "route": "hamakua_coast",
+      "hawaiian_word": {
+        "word": "onomea",
+        "meaning": "Pleasant sands",
+        "pronunciation": "oh-noh-MEH-ah"
+      },
+      "audio": {
+        "ocean": 0.6,
+        "birds": 0.5,
+        "wind": 0.3
+      },
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "nearby": ["Hawaii Tropical Bioreserve", "Pepeekeo Scenic Drive"]
+    },
+    {
+      "id": 37,
+      "name": "Pepeekeo Scenic Drive",
+      "description": "4-mile scenic detour through lush rainforest with old bridges, waterfalls, and ocean views.",
+      "extended_description": "This short but spectacular route was once the main coastal highway. Today it's a scenic detour through some of the Big Island's most beautiful terrain. The narrow road winds past vintage wooden bridges, cascading streams, and thick jungle vegetation. The area receives over 100 inches of rain annually, creating an incredibly lush environment. Pull off at small viewpoints to appreciate waterfalls and coastal vistas.",
+      "lat": 19.8312,
+      "lng": -155.1123,
+      "region": "Hamakua",
+      "route": "hamakua_coast",
+      "hawaiian_word": {
+        "word": "pepeekeo",
+        "meaning": "Crushed (referring to breadfruit preparation)",
+        "pronunciation": "peh-peh-eh-KEH-oh"
+      },
+      "audio": {
+        "birds": 0.6,
+        "waterfall": 0.4,
+        "wind": 0.2
+      },
+      "atmosphere": {
+        "mist": true,
+        "volcanic": false
+      },
+      "nearby": ["Onomea Bay", "Hawaii Tropical Bioreserve", "Rainbow Falls"],
+      "visitor_tips": {
+        "parking": "Pullouts along road",
+        "hours": "Always open",
+        "fees": "Free",
+        "best_time": "Morning light",
+        "accessibility": "Drive-through; some pullouts"
+      }
+    },
+    {
+      "id": 38,
       "name": "Waipio Valley Lookout",
-      "description": "Breathtaking overlook of the Valley of the Kings",
+      "description": "Breathtaking overlook of the Valley of the Kings - sacred home to Hawaiian royalty with black sand beach and waterfalls.",
+      "extended_description": "Waipiʻo means 'curved water' referring to the stream that winds through this mile-wide, six-mile-deep valley. This was the political and spiritual center of ancient Hawaii, home to high chiefs and the site of important temples. The valley floor is accessible via an incredibly steep road (25% grade, 4WD only) or guided tour. From above, you see black sand beach, twin waterfalls (Hi'ilawe at 1,200 feet), and taro fields that once fed thousands.",
       "lat": 20.12,
       "lng": -155.587,
       "region": "Hamakua",
       "route": "hamakua_coast",
+      "hawaiian_word": {
+        "word": "waipiʻo",
+        "meaning": "Curved water",
+        "pronunciation": "why-PEE-oh"
+      },
       "audio": {
         "wind": 0.5,
         "ocean": 0.3,
@@ -550,15 +1741,30 @@
         "mist": false,
         "volcanic": false
       },
-      "nearby": ["Honoka'a Town"]
+      "visitor_tips": {
+        "parking": "Free lot at lookout",
+        "hours": "Always open",
+        "fees": "Free (tours to valley floor vary)",
+        "best_time": "Morning for clearest views",
+        "accessibility": "Paved lookout area; valley access extremely steep"
+      },
+      "nearby": ["Honoka'a Town"],
+      "official_links": ["https://www.lovebigisland.com/big-island-sights/waipio-valley/"]
     },
     {
+      "id": 39,
       "name": "Honoka'a Town",
-      "description": "Charming historic plantation town",
+      "description": "Charming historic plantation town featuring antique shops, local restaurants, and the historic People's Theatre.",
+      "extended_description": "Honoka'a was once a thriving sugar plantation town. When sugar declined, the town reinvented itself as an arts and antiques destination. The historic main street features preserved buildings from the plantation era now housing galleries, vintage shops, and local eateries. The Honoka'a People's Theatre, built in 1930, still shows movies. The town hosts the annual Honoka'a Western Week, a celebration of its paniolo (cowboy) heritage.",
       "lat": 20.079,
       "lng": -155.468,
       "region": "Hamakua",
       "route": "hamakua_coast",
+      "hawaiian_word": {
+        "word": "honokaʻa",
+        "meaning": "Rolling bay (or 'crawling bay')",
+        "pronunciation": "hoh-noh-KAH-ah"
+      },
       "audio": {
         "birds": 0.4,
         "wind": 0.3
@@ -567,15 +1773,29 @@
         "mist": false,
         "volcanic": false
       },
+      "visitor_tips": {
+        "parking": "Free street parking",
+        "hours": "Most shops 10am-5pm",
+        "fees": "Free",
+        "best_time": "Weekdays for quiet browsing",
+        "accessibility": "Mostly flat main street"
+      },
       "nearby": ["Akaka Falls", "Waipio Valley Lookout"]
     },
     {
+      "id": 40,
       "name": "Laupahoehoe Point",
-      "description": "Scenic lava peninsula with powerful surf",
+      "description": "Scenic lava peninsula with powerful surf and memorial to those lost in the 1946 tsunami.",
+      "extended_description": "This flat lava peninsula juts into the Pacific, creating dramatic surf views. The point is most known for the tragic 1946 tsunami that destroyed the school located here, killing 21 students and 4 teachers. A memorial stands in their honor. The area has been converted to a beautiful county park with pavilions, restrooms, and excellent views of the rugged Hamakua coastline. The name means 'leaf of pahoehoe lava.'",
       "lat": 19.988,
       "lng": -155.237,
       "region": "Hamakua",
       "route": "hamakua_coast",
+      "hawaiian_word": {
+        "word": "laupāhoehoe",
+        "meaning": "Leaf of smooth lava",
+        "pronunciation": "lau-pah-HOH-ee-HOH-ee"
+      },
       "audio": {
         "ocean": 0.8,
         "wind": 0.4
@@ -584,15 +1804,29 @@
         "mist": false,
         "volcanic": false
       },
+      "visitor_tips": {
+        "parking": "Free lot",
+        "hours": "6am-6pm (may vary)",
+        "fees": "Free",
+        "best_time": "Anytime; dramatic in rough weather",
+        "accessibility": "Paved paths and pavilions"
+      },
       "nearby": ["Akaka Falls", "Honoka'a Town"]
     },
     {
+      "id": 41,
       "name": "South Point Road",
-      "description": "Scenic drive to the southernmost point in the USA",
+      "description": "Scenic drive to the southernmost point in the USA, passing wind farms and pastoral ranchland.",
+      "extended_description": "This 12-mile road leads from Highway 11 to Ka Lae (South Point). The drive passes massive wind turbines, macadamia nut orchards, and open grazing land. The landscape becomes increasingly dramatic as you approach the point. Side roads lead to Green Sand Beach and other coastal sites. The road is paved but narrow with no services - fill up on gas before heading down.",
       "lat": 19.06,
       "lng": -155.67,
       "region": "Ka'u",
       "route": "south_point",
+      "hawaiian_word": {
+        "word": "hema",
+        "meaning": "South, left",
+        "pronunciation": "HEH-mah"
+      },
       "audio": {
         "wind": 0.7,
         "birds": 0.2
@@ -604,12 +1838,19 @@
       "nearby": ["Ka Lae (South Point)"]
     },
     {
+      "id": 42,
       "name": "Ka Lae (South Point)",
-      "description": "Southernmost point in the United States",
+      "description": "Southernmost point in the United States - windswept cliffs where Polynesians first landed in Hawaii.",
+      "extended_description": "Ka Lae ('The Point') is the southernmost point in all 50 United States. Archaeological evidence suggests Polynesian voyagers landed here around 400-800 AD, making it the oldest known Hawaiian settlement. The area features ancient canoe mooring holes carved into the rock, stone fishing temples, and strong winds that power nearby wind farms. Local fishermen still use the cliff to access prime fishing grounds via ropes and ladders.",
       "lat": 18.914,
       "lng": -155.682,
       "region": "Ka'u",
       "route": "south_point",
+      "hawaiian_word": {
+        "word": "ka lae",
+        "meaning": "The point",
+        "pronunciation": "kah LAH-eh"
+      },
       "audio": {
         "wind": 0.8,
         "ocean": 0.5
@@ -618,15 +1859,29 @@
         "mist": false,
         "volcanic": false
       },
+      "visitor_tips": {
+        "parking": "Dirt lot",
+        "hours": "Always open",
+        "fees": "Free",
+        "best_time": "Clear days for best views",
+        "accessibility": "Dirt road and uneven terrain"
+      },
       "nearby": ["South Point Road", "Green Sand Beach Trailhead"]
     },
     {
+      "id": 43,
       "name": "Green Sand Beach Trailhead",
-      "description": "Starting point for hike to Papakolea Green Sand Beach",
+      "description": "Starting point for hike to Papakōlea Green Sand Beach - one of only four green sand beaches in the world.",
+      "extended_description": "From this trailhead, a 2.5-mile hike (each way) leads to Papakōlea, one of Earth's rarest beaches. The green color comes from olivine, a semi-precious mineral created in volcanic eruptions. The olivine crystals are heavier than other particles and concentrate here in a cinder cone eroded by waves. The hike traverses windswept coastal terrain with no shade. Some visitors arrange rides with local shuttle operators.",
       "lat": 18.935,
       "lng": -155.652,
       "region": "Ka'u",
       "route": "south_point",
+      "hawaiian_word": {
+        "word": "papakōlea",
+        "meaning": "Plover flat (bird that frequents the area)",
+        "pronunciation": "pah-pah-KOH-leh-ah"
+      },
       "audio": {
         "wind": 0.7,
         "ocean": 0.3
@@ -635,15 +1890,29 @@
         "mist": false,
         "volcanic": false
       },
+      "visitor_tips": {
+        "parking": "Dirt lot",
+        "hours": "Always open",
+        "fees": "Free (shuttles are unofficial)",
+        "best_time": "Early morning to avoid heat",
+        "accessibility": "Difficult 5-mile round trip hike on uneven terrain"
+      },
       "nearby": ["Ka Lae (South Point)", "Punalu'u Black Sand Beach"]
     },
     {
+      "id": 44,
       "name": "Punalu'u Black Sand Beach",
-      "description": "Famous black sand beach with sea turtles",
+      "description": "Famous black sand beach where Hawaiian green sea turtles frequently rest. One of Hawaii's most photographed beaches.",
+      "extended_description": "Punalu'u is the Big Island's most accessible black sand beach. The striking black sand was created by basaltic lava fragmenting as it met the ocean. Hawaiian green sea turtles (honu) frequently haul out on this beach to rest, making it a premier wildlife viewing spot. Please maintain a 10-foot distance from turtles and never touch them. The beach park has facilities, freshwater springs bubble up through the sand.",
       "lat": 19.136,
       "lng": -155.505,
       "region": "Ka'u",
       "route": "south_point",
+      "hawaiian_word": {
+        "word": "punalu'u",
+        "meaning": "Springs diving together",
+        "pronunciation": "poo-nah-LOO-oo"
+      },
       "audio": {
         "ocean": 0.7,
         "birds": 0.3,
@@ -653,14 +1922,512 @@
         "mist": false,
         "volcanic": false
       },
-      "nearby": ["Green Sand Beach Trailhead"]
+      "visitor_tips": {
+        "parking": "Free lot",
+        "hours": "7am-7pm",
+        "fees": "Free",
+        "best_time": "Morning for turtle sightings",
+        "accessibility": "Paved to beach edge; sand walking required"
+      },
+      "nearby": ["Green Sand Beach Trailhead", "Na'alehu Town"]
+    },
+    {
+      "id": 45,
+      "name": "Na'alehu Town",
+      "description": "Southernmost town in the United States. Small community with local bakeries and authentic Hawaiian atmosphere.",
+      "extended_description": "Nā'ālehu is America's southernmost town. This small community on Highway 11 serves the surrounding ranching area. The town's main draw is the Punalu'u Bake Shop, famous for its malasadas and sweetbread, and other local eateries. The area has a laid-back, authentic Hawaiian feel far from the tourist centers. Mark Twain reputedly planted a monkeypod tree here in 1866 (it was sadly vandalized but regrew).",
+      "lat": 19.066,
+      "lng": -155.586,
+      "region": "Ka'u",
+      "route": "south_point",
+      "hawaiian_word": {
+        "word": "nāʻālehu",
+        "meaning": "The volcanic ashes",
+        "pronunciation": "nah-ah-LEH-hoo"
+      },
+      "audio": {
+        "birds": 0.3,
+        "wind": 0.2
+      },
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "nearby": ["Punalu'u Black Sand Beach", "South Point Road"]
+    },
+    {
+      "id": 46,
+      "name": "Hapuna Beach",
+      "description": "Consistently rated one of America's best beaches. Half mile of white sand with perfect swimming conditions.",
+      "extended_description": "Hapuna Beach is widely considered the Big Island's finest white sand beach and regularly appears on 'best beaches' lists. The half-mile crescent of fine white sand slopes gently into crystal-clear water perfect for swimming, bodyboarding, and snorkeling. The beach park has excellent facilities including restrooms, showers, and a food concession. Winter waves can be powerful - check conditions before swimming.",
+      "lat": 19.9914,
+      "lng": -155.8247,
+      "region": "Kohala",
+      "route": "beach_hopper",
+      "hawaiian_word": {
+        "word": "hapuna",
+        "meaning": "Spring of water",
+        "pronunciation": "hah-POO-nah"
+      },
+      "audio": {
+        "ocean": 0.8,
+        "wind": 0.3
+      },
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "visitor_tips": {
+        "parking": "$5 per vehicle (free for Hawaii residents)",
+        "hours": "7am-7pm",
+        "fees": "Parking fee only",
+        "best_time": "Morning for calm water; avoid winter high surf",
+        "accessibility": "Paved to sand; lifeguards on duty"
+      },
+      "nearby": ["Spencer Beach Park", "Puukohola Heiau", "Mauna Kea Beach"],
+      "official_links": ["https://dlnr.hawaii.gov/dsp/parks/hawaii/hapuna-beach-state-recreation-area/"]
+    },
+    {
+      "id": 47,
+      "name": "Spencer Beach Park",
+      "description": "Family-friendly beach with calm, protected waters perfect for keiki (children) and beginning snorkelers.",
+      "extended_description": "Spencer Beach is one of the safest swimming beaches on the Big Island. A fringing reef protects the shore, creating calm water perfect for families with young children. The beach has excellent facilities including pavilions, restrooms, showers, and camping sites. Historically, ancient Hawaiian royalty used this area, and the famous Puʻukoholā Heiau is just north of the beach. The calm waters offer easy snorkeling.",
+      "lat": 20.0252,
+      "lng": -155.8196,
+      "region": "Kohala",
+      "route": "beach_hopper",
+      "hawaiian_word": {
+        "word": "keiki",
+        "meaning": "Child, children",
+        "pronunciation": "KAY-kee"
+      },
+      "audio": {
+        "ocean": 0.6,
+        "birds": 0.3,
+        "wind": 0.2
+      },
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "visitor_tips": {
+        "parking": "Free lot",
+        "hours": "6am-11pm",
+        "fees": "Free",
+        "best_time": "Any time; water is almost always calm",
+        "accessibility": "Paved paths, accessible restrooms"
+      },
+      "nearby": ["Hapuna Beach", "Puukohola Heiau", "Kawaihae Harbor"]
+    },
+    {
+      "id": 48,
+      "name": "Puukohola Heiau",
+      "description": "Massive temple built by King Kamehameha I to fulfill prophecy and unite the Hawaiian Islands.",
+      "extended_description": "Puʻukoholā Heiau National Historic Site preserves one of Hawaii's most significant cultural places. King Kamehameha I built this massive temple between 1790-1791 after a prophet told him that doing so would ensure his conquest of the islands. The walls are 224 feet long by 100 feet wide, built without mortar using water-worn basalt stones. After sacrificing his rival Keōua here, Kamehameha did unite Hawaii. The site remains sacred.",
+      "lat": 20.0270,
+      "lng": -155.8203,
+      "region": "Kohala",
+      "route": "historical_hawaii",
+      "hawaiian_word": {
+        "word": "heiau",
+        "meaning": "Temple, place of worship",
+        "pronunciation": "HEY-ee-ow"
+      },
+      "audio": {
+        "wind": 0.5,
+        "ocean": 0.3
+      },
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "visitor_tips": {
+        "parking": "Free lot",
+        "hours": "7:30am-5pm",
+        "fees": "Free",
+        "best_time": "Morning for cooler temperatures",
+        "accessibility": "Paved paths; temple viewing area accessible"
+      },
+      "nearby": ["Spencer Beach Park", "Kawaihae Harbor"],
+      "official_links": ["https://www.nps.gov/puhe/index.htm"]
+    },
+    {
+      "id": 49,
+      "name": "Kawaihae Harbor",
+      "description": "Main commercial harbor for West Hawaii and departure point for many ocean adventures.",
+      "extended_description": "Kawaihae Harbor serves as the primary port for the Kohala Coast and northern Big Island. Container ships, fuel barges, and cruise ship tenders use the commercial port. The small boat harbor is departure point for snorkel cruises, fishing charters, and whale watching tours. The harbor area includes a few restaurants and shops. King Kamehameha landed his invasion fleet here when conquering Maui.",
+      "lat": 20.0350,
+      "lng": -155.8287,
+      "region": "Kohala",
+      "route": "kohala_coast",
+      "hawaiian_word": {
+        "word": "kawaihae",
+        "meaning": "The water of wrath (referring to ancient battle)",
+        "pronunciation": "kah-WAI-hay"
+      },
+      "audio": {
+        "ocean": 0.6,
+        "wind": 0.4
+      },
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "nearby": ["Puukohola Heiau", "Spencer Beach Park"]
+    },
+    {
+      "id": 50,
+      "name": "Mauna Lani Resort",
+      "description": "Luxury resort area with ancient Hawaiian fishponds, petroglyph fields, and world-class golf.",
+      "extended_description": "Mauna Lani ('mountain reaching heaven') resort sits on 3,200 acres of the Kohala Coast. The area preserves significant cultural sites including ancient fishponds still in use, extensive petroglyph fields, and historic trails. The resort developers worked with Hawaiian cultural practitioners to ensure respectful stewardship. Walking trails allow visitors to explore the Kalāhuipua'a Fishponds and Puakō Petroglyph Archaeological Preserve.",
+      "lat": 19.9283,
+      "lng": -155.8742,
+      "region": "Kohala",
+      "route": "kohala_coast",
+      "hawaiian_word": {
+        "word": "mauna lani",
+        "meaning": "Mountain reaching heaven",
+        "pronunciation": "MOW-nah LAH-nee"
+      },
+      "audio": {
+        "ocean": 0.5,
+        "birds": 0.3,
+        "wind": 0.2
+      },
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "visitor_tips": {
+        "parking": "Resort parking (fees vary)",
+        "hours": "Public areas accessible during daylight",
+        "fees": "Free for walking trails; resort amenities for guests",
+        "best_time": "Early morning for petroglyph viewing",
+        "accessibility": "Some paved trails; others on rough lava"
+      },
+      "nearby": ["Puako Petroglyph Fields", "Hapuna Beach"],
+      "official_links": ["https://www.maunalani.com/"]
+    },
+    {
+      "id": 51,
+      "name": "Puako Petroglyph Fields",
+      "description": "One of Hawaii's largest collections of ancient petroglyphs - over 3,000 rock carvings on coastal lava.",
+      "extended_description": "The Puakō Petroglyph Archaeological Preserve contains over 3,000 rock carvings, one of the largest concentrations in Hawaii. The images include human figures, animals, circles, and cryptic symbols whose meanings are debated. Many were carved by travelers along the ancient trail. A 1.4-mile trail from Mauna Lani leads to the viewing area. Stay on the designated path to protect this irreplaceable cultural heritage.",
+      "lat": 19.9543,
+      "lng": -155.8601,
+      "region": "Kohala",
+      "route": "kohala_coast",
+      "hawaiian_word": {
+        "word": "ki'i pōhaku",
+        "meaning": "Rock images/petroglyphs",
+        "pronunciation": "KEE-ee POH-hah-koo"
+      },
+      "audio": {
+        "wind": 0.4,
+        "birds": 0.2
+      },
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "visitor_tips": {
+        "parking": "Mauna Lani parking lot",
+        "hours": "Sunrise to sunset",
+        "fees": "Free",
+        "best_time": "Morning or late afternoon for best lighting",
+        "accessibility": "Uneven lava rock trail; 1.4 miles round trip"
+      },
+      "nearby": ["Mauna Lani Resort", "Hapuna Beach"]
+    },
+    {
+      "id": 52,
+      "name": "Waimea Town",
+      "description": "Upcountry cowboy town on the green slopes of Mauna Kea. Home to Hawaii's paniolo (cowboy) heritage.",
+      "extended_description": "Waimea (also called Kamuela) is a unique upcountry town at 2,700 feet elevation with a decidedly Western feel. This is paniolo (Hawaiian cowboy) country - working ranches have operated here since the 1840s when Mexican vaqueros taught Hawaiians to herd cattle. The town features excellent restaurants, locally made chocolates, and the original location of the famous Parker Ranch, one of America's largest cattle ranches.",
+      "lat": 20.0234,
+      "lng": -155.6722,
+      "region": "Kohala",
+      "route": "north_kohala",
+      "hawaiian_word": {
+        "word": "paniolo",
+        "meaning": "Hawaiian cowboy",
+        "pronunciation": "pah-nee-OH-loh"
+      },
+      "audio": {
+        "birds": 0.4,
+        "wind": 0.4
+      },
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "visitor_tips": {
+        "parking": "Free lots in town",
+        "hours": "Most businesses 9am-5pm",
+        "fees": "Free",
+        "best_time": "Any time; cooler temperatures than coast",
+        "accessibility": "Mostly accessible"
+      },
+      "nearby": ["Kohala Mountain Road Lookout", "Mauna Kea Access Road"]
+    },
+    {
+      "id": 53,
+      "name": "Kohala Mountain Road Lookout",
+      "description": "Scenic viewpoint on Highway 250 with sweeping views of the Kohala Coast and five volcanoes.",
+      "extended_description": "Highway 250 (Kohala Mountain Road) traverses the western slopes of the Kohala Mountains, providing some of the Big Island's most spectacular vistas. On clear days, you can see five volcanoes: Mauna Kea, Mauna Loa, Hualālai, Kohala, and distant Haleakalā on Maui. The road passes through pastoral ranch country with rolling green hills that look more like Ireland than tropical Hawaii. Multiple pullouts offer photo opportunities.",
+      "lat": 20.1123,
+      "lng": -155.7561,
+      "region": "Kohala",
+      "route": "north_kohala",
+      "hawaiian_word": {
+        "word": "kohala",
+        "meaning": "Perhaps 'whale' or 'growing large'",
+        "pronunciation": "koh-HAH-lah"
+      },
+      "audio": {
+        "wind": 0.6,
+        "birds": 0.3
+      },
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "nearby": ["Waimea Town", "Hawi Town"]
+    },
+    {
+      "id": 54,
+      "name": "Hawi Town",
+      "description": "Artsy former sugar plantation town at the northern tip of the island with galleries, cafes, and aloha spirit.",
+      "extended_description": "Hāwī was once the commercial center for the Kohala Sugar Company. When the plantation closed in 1975, the town nearly died but was reborn as an artist community. Today, colorful restored buildings house galleries, boutiques, and restaurants. The town has a funky, laid-back vibe far from tourist centers. It serves as the gateway to Pololu Valley and the end of the King Kamehameha statue tour.",
+      "lat": 20.2415,
+      "lng": -155.8347,
+      "region": "Kohala",
+      "route": "north_kohala",
+      "hawaiian_word": {
+        "word": "hāwī",
+        "meaning": "Fragile (origin uncertain)",
+        "pronunciation": "HAH-vee"
+      },
+      "audio": {
+        "birds": 0.4,
+        "wind": 0.3
+      },
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "visitor_tips": {
+        "parking": "Free street parking",
+        "hours": "Most shops 10am-5pm",
+        "fees": "Free",
+        "best_time": "Any time",
+        "accessibility": "Flat main street"
+      },
+      "nearby": ["Kapaau (Original King Kamehameha Statue)", "Pololu Valley Lookout"]
+    },
+    {
+      "id": 55,
+      "name": "King Kamehameha Statue (Kapaau)",
+      "description": "Original King Kamehameha statue - the one that was lost at sea and later recovered. Most photographed in Honolulu is a replica of this.",
+      "extended_description": "This is the original King Kamehameha statue, commissioned in 1878 and created in Paris by American sculptor Thomas Gould. The statue was lost at sea off the Falkland Islands but was later recovered and brought here to Kapaʻau, Kamehameha's birthplace in North Kohala. Meanwhile, a replica was made and stands in Honolulu - that one is more famous, but this original has deeper significance. Each year on Kamehameha Day (June 11), the statue is draped with flower lei.",
+      "lat": 20.2316,
+      "lng": -155.8009,
+      "region": "Kohala",
+      "route": "historical_hawaii",
+      "hawaiian_word": {
+        "word": "kamehameha",
+        "meaning": "The lonely one / the one set apart",
+        "pronunciation": "kah-MEH-hah-MEH-hah"
+      },
+      "audio": {
+        "birds": 0.3,
+        "wind": 0.2
+      },
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "visitor_tips": {
+        "parking": "Free lot across street",
+        "hours": "Always visible",
+        "fees": "Free",
+        "best_time": "Kamehameha Day (June 11) for lei draping",
+        "accessibility": "Viewing from sidewalk"
+      },
+      "nearby": ["Hawi Town", "Pololu Valley Lookout"]
+    },
+    {
+      "id": 56,
+      "name": "Pololu Valley Lookout",
+      "description": "Dramatic viewpoint overlooking remote black sand beach and rugged sea cliffs at the end of Highway 270.",
+      "extended_description": "Pololū Valley marks the northern end of the highway and the beginning of a series of remote, inaccessible valleys extending to Waipiʻo. From the lookout, see the black sand beach, valley floor, and dramatic sea cliffs stretching into the distance. A steep 20-minute trail descends to the beach, but swimming is dangerous due to strong currents. The valley was once populated and cultivated with taro, now it's wild and windswept.",
+      "lat": 20.2042,
+      "lng": -155.7323,
+      "region": "Kohala",
+      "route": "north_kohala",
+      "hawaiian_word": {
+        "word": "pololū",
+        "meaning": "Long spear (shape of the valley)",
+        "pronunciation": "poh-loh-LOO"
+      },
+      "audio": {
+        "ocean": 0.5,
+        "wind": 0.6,
+        "birds": 0.3
+      },
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "visitor_tips": {
+        "parking": "Small free lot",
+        "hours": "Always open",
+        "fees": "Free",
+        "best_time": "Morning for clearest views",
+        "accessibility": "Lookout accessible; trail to beach is very steep"
+      },
+      "nearby": ["King Kamehameha Statue (Kapaau)", "Hawi Town"]
+    },
+    {
+      "id": 57,
+      "name": "Lapakahi State Historical Park",
+      "description": "Preserved 600-year-old Hawaiian fishing village with restored structures and interpretive trails.",
+      "extended_description": "Lapakahi preserves the remains of a 600-year-old Hawaiian fishing village. The self-guided trail (about 1 mile) passes through restored house sites, fishing shrines, canoe sheds, and salt-making pans. Interpretive signs explain traditional Hawaiian coastal life. The park sits on an arid, windswept coast that looks much as it did centuries ago. The site is sacred - stay on marked trails and don't disturb any rocks.",
+      "lat": 20.1756,
+      "lng": -155.8923,
+      "region": "Kohala",
+      "route": "historical_hawaii",
+      "hawaiian_word": {
+        "word": "lawaiʻa",
+        "meaning": "Fisherman, to fish",
+        "pronunciation": "lah-WAI-ah"
+      },
+      "audio": {
+        "ocean": 0.4,
+        "wind": 0.5
+      },
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "visitor_tips": {
+        "parking": "Free lot",
+        "hours": "8am-4pm (closed state holidays)",
+        "fees": "Free",
+        "best_time": "Morning for cooler temperatures",
+        "accessibility": "Unpaved trail with some uneven terrain"
+      },
+      "nearby": ["Kawaihae Harbor"],
+      "official_links": ["https://dlnr.hawaii.gov/dsp/parks/hawaii/lapakahi-state-historical-park/"]
+    },
+    {
+      "id": 58,
+      "name": "Mookini Heiau",
+      "description": "One of Hawaii's oldest and most sacred temples, built around 480 AD. Accessible only by dirt road.",
+      "extended_description": "Moʻokini Heiau is among Hawaii's most sacred and ancient sites, built around 480 AD according to legend. The heiau (temple) was used for human sacrifices and restricted to high chiefs and priests. It's near Kamehameha's birthplace. The current kahuna nui (high priestess), a descendant of the Moʻokini family, lifted the kapu (restriction) in 1978, allowing public visits. Approach with utmost respect.",
+      "lat": 20.2491,
+      "lng": -155.8825,
+      "region": "Kohala",
+      "route": "historical_hawaii",
+      "hawaiian_word": {
+        "word": "moʻokini",
+        "meaning": "Many lineages (family name)",
+        "pronunciation": "moh-oh-KEE-nee"
+      },
+      "audio": {
+        "wind": 0.6,
+        "ocean": 0.2
+      },
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "visitor_tips": {
+        "parking": "Dirt area near heiau",
+        "hours": "Sunrise to sunset",
+        "fees": "Free",
+        "best_time": "Any time; come with respectful intention",
+        "accessibility": "Dirt road access; 4WD recommended"
+      },
+      "nearby": ["Pololu Valley Lookout"]
+    },
+    {
+      "id": 59,
+      "name": "Mauna Kea Beach",
+      "description": "Pristine crescent beach at the historic Mauna Kea Beach Hotel, open to the public with limited parking.",
+      "extended_description": "Kauna'oa Beach at the Mauna Kea Beach Hotel is one of the Big Island's most beautiful white sand beaches. The crescent bay offers excellent swimming and snorkeling. While the hotel is private, Hawaiian law requires public beach access. Public parking is limited to 30 spaces, available first-come-first-served. Arrive early, especially on weekends, as parking fills by 9am. The beach has restrooms and the hotel allows beach goers to purchase food.",
+      "lat": 19.9982,
+      "lng": -155.8183,
+      "region": "Kohala",
+      "route": "beach_hopper",
+      "hawaiian_word": {
+        "word": "kaunaʻoa",
+        "meaning": "Native orange dodder vine",
+        "pronunciation": "kow-nah-OH-ah"
+      },
+      "audio": {
+        "ocean": 0.7,
+        "birds": 0.2,
+        "wind": 0.2
+      },
+      "atmosphere": {
+        "mist": false,
+        "volcanic": false
+      },
+      "visitor_tips": {
+        "parking": "30 public spaces (free); arrive before 9am",
+        "hours": "7am-8pm for public",
+        "fees": "Free (parking limited)",
+        "best_time": "Early morning for parking",
+        "accessibility": "Beach access via hotel grounds"
+      },
+      "nearby": ["Hapuna Beach", "Spencer Beach Park"]
+    },
+    {
+      "id": 60,
+      "name": "Umauma Falls",
+      "description": "Three-tiered 100-foot waterfall viewable from a private garden, with zipline and swimming options.",
+      "extended_description": "Umauma Falls is a spectacular three-tiered waterfall plunging 100 feet through lush tropical vegetation. Located on private land, the falls are accessible through the World Botanical Gardens or Umauma Experience tour operators. Options include simple garden tours, swimming at the base of the falls, and ziplines over the cascades. The area receives abundant rainfall, keeping the falls flowing year-round.",
+      "lat": 19.8787,
+      "lng": -155.1456,
+      "region": "Hamakua",
+      "route": "waterfalls",
+      "hawaiian_word": {
+        "word": "wailele",
+        "meaning": "Waterfall, leaping water",
+        "pronunciation": "WAI-leh-leh"
+      },
+      "audio": {
+        "waterfall": 0.8,
+        "birds": 0.4,
+        "wind": 0.2
+      },
+      "atmosphere": {
+        "mist": true,
+        "volcanic": false
+      },
+      "visitor_tips": {
+        "parking": "Private lot",
+        "hours": "9am-5pm",
+        "fees": "Varies by activity ($15-150)",
+        "best_time": "Morning for photos",
+        "accessibility": "Varies by tour; some accessible options"
+      },
+      "nearby": ["Akaka Falls", "Pepeekeo Scenic Drive"],
+      "official_links": ["https://umaumaexperience.com/"]
     }
   ],
+
   "metadata": {
-    "total_locations": 32,
-    "regions": ["Hilo", "Volcano", "Saddle", "Kona", "Hamakua", "Ka'u"],
-    "audio_tracks": 6,
+    "total_locations": 60,
+    "regions": ["Hilo", "Volcano", "Saddle", "Mauna Kea", "Kona", "Hamakua", "Ka'u", "Kohala"],
+    "total_tours": 14,
+    "audio_tracks": 7,
     "atmosphere_effects": 3,
+    "educational_hawaiian_words": 20,
+    "cultural_tips": 10,
+    "flora_species": 8,
+    "fauna_species": 8,
     "api_key": "AIzaSyBmSDHrsQunVjxhZ4UHQ0asdUY6vZVFszY",
     "coordinate_system": "WGS84",
     "projection": "equirectangular"
