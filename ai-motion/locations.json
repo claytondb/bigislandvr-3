@@ -1,0 +1,64 @@
+{
+  "locations": [
+    {
+      "id": 10,
+      "slug": "keaau",
+      "name": "Keaʻau Town Center",
+      "lat": 19.6222,
+      "lng": -155.0386,
+      "heading": 0,
+      "motionPrompt": "small town scene with trees swaying gently in tropical breeze, scattered clouds drifting, dappled sunlight through leaves, peaceful atmosphere, no people or vehicles",
+      "motionElements": ["trees swaying", "clouds drifting", "light breeze on vegetation"],
+      "motionIntensity": "gentle"
+    },
+    {
+      "id": 20,
+      "slug": "alii-drive",
+      "name": "Aliʻi Drive, Kailua-Kona",
+      "lat": 19.6400,
+      "lng": -155.9969,
+      "heading": 270,
+      "motionPrompt": "ocean waves gently lapping shore, palm fronds swaying in breeze, clouds reflecting on calm water, golden hour coastal light, peaceful tropical beach scene",
+      "motionElements": ["ocean waves", "palm trees swaying", "clouds moving", "water reflections"],
+      "motionIntensity": "moderate"
+    },
+    {
+      "id": 33,
+      "slug": "saddle-road",
+      "name": "Saddle Road Viewpoint",
+      "lat": 19.6833,
+      "lng": -155.4667,
+      "heading": 270,
+      "motionPrompt": "high altitude volcanic landscape, clouds rolling slowly across sky, tall grass swaying in mountain wind, mist drifting over slopes, dramatic mountain vista",
+      "motionElements": ["clouds drifting across sky", "grass swaying", "mountain haze shifting"],
+      "motionIntensity": "slow"
+    },
+    {
+      "id": 1,
+      "slug": "hilo-bayfront",
+      "name": "Hilo Bayfront",
+      "lat": 19.7235,
+      "lng": -155.0720,
+      "heading": 45,
+      "motionPrompt": "bay water rippling gently, coconut palms swaying in light breeze, clouds drifting over distant mountains, peaceful morning light on water, view toward small island",
+      "motionElements": ["bay water rippling", "palm trees swaying", "clouds moving", "reflections on water"],
+      "motionIntensity": "gentle",
+      "notes": "Near Liliʻuokalani Park looking toward Coconut Island (Moku Ola)"
+    }
+  ],
+  "defaultSettings": {
+    "videoDuration": 5,
+    "videoFps": 24,
+    "loopType": "pingpong",
+    "outputFormat": "webm",
+    "resolution": {
+      "width": 1280,
+      "height": 720
+    }
+  },
+  "apiConfig": {
+    "preferredModel": "kling-v2.5-turbo-pro",
+    "fallbackModel": "stable-video-diffusion",
+    "maxCostPerVideo": 0.50
+  }
+}

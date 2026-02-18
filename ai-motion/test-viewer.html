@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Motion Test Viewer</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: #1a1a1a; 
+            color: #faf8f5; 
+            font-family: system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #7fcdcd;
+        }
+        
+        .subtitle {
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 30px;
+        }
+        
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            width: 100%;
+        }
+        
+        .video-card {
+            background: #2d2d2d;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .video-card video {
+            width: 100%;
+            display: block;
+        }
+        
+        .video-info {
+            padding: 15px;
+        }
+        
+        .video-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .video-desc {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.6);
+        }
+        
+        .video-status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-top: 10px;
+        }
+        
+        .status-demo {
+            background: rgba(244, 162, 97, 0.2);
+            color: #f4a261;
+        }
+        
+        .status-ai {
+            background: rgba(42, 157, 143, 0.2);
+            color: #2a9d8f;
+        }
+        
+        .placeholder {
+            background: linear-gradient(135deg, #3d3d3d, #2d2d2d);
+            aspect-ratio: 16/9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255,255,255,0.4);
+            font-size: 0.9rem;
+        }
+        
+        .controls {
+            margin-top: 30px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #1a6b7c, #2a9d8f);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .btn:hover {
+            filter: brightness(1.1);
+        }
+        
+        .info-box {
+            background: rgba(42, 157, 143, 0.1);
+            border: 1px solid rgba(42, 157, 143, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 30px;
+            max-width: 600px;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+        
+        .info-box code {
+            background: rgba(0,0,0,0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎬 Big Island VR - AI Motion POC</h1>
+    <p class="subtitle">Preview animated panoramas</p>
+    
+    <div class="video-grid">
+        <div class="video-card">
+            <video src="output/sample_motion_demo.webm" loop muted autoplay playsinline></video>
+            <div class="video-info">
+                <div class="video-title">Sample Motion Demo</div>
+                <div class="video-desc">FFmpeg-generated demo showing subtle zoom/pan motion effect</div>
+                <span class="video-status status-demo">Demo (FFmpeg)</span>
+            </div>
+        </div>
+        
+        <div class="video-card">
+            <div class="placeholder">
+                🌴 Keaʻau Town Center<br>
+                <small>AI video pending</small>
+            </div>
+            <div class="video-info">
+                <div class="video-title">Keaʻau Town Center</div>
+                <div class="video-desc">Trees swaying, clouds drifting, tropical breeze</div>
+                <span class="video-status status-ai">Awaiting AI Generation</span>
+            </div>
+        </div>
+        
+        <div class="video-card">
+            <div class="placeholder">
+                🌊 Aliʻi Drive, Kona<br>
+                <small>AI video pending</small>
+            </div>
+            <div class="video-info">
+                <div class="video-title">Aliʻi Drive, Kailua-Kona</div>
+                <div class="video-desc">Ocean waves, palm trees, water reflections</div>
+                <span class="video-status status-ai">Awaiting AI Generation</span>
+            </div>
+        </div>
+        
+        <div class="video-card">
+            <div class="placeholder">
+                🏔️ Saddle Road<br>
+                <small>AI video pending</small>
+            </div>
+            <div class="video-info">
+                <div class="video-title">Saddle Road Viewpoint</div>
+                <div class="video-desc">Clouds over Mauna Kea, grass swaying, mountain haze</div>
+                <span class="video-status status-ai">Awaiting AI Generation</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="controls">
+        <a href="../index.html" class="btn">← Back to Viewer</a>
+        <button class="btn" onclick="toggleVideos()">⏯️ Play/Pause All</button>
+    </div>
+    
+    <div class="info-box">
+        <strong>📋 Next Steps:</strong><br>
+        1. Set Replicate API token: <code>export REPLICATE_API_TOKEN=r8_xxx</code><br>
+        2. Capture panorama screenshots from the viewer<br>
+        3. Run: <code>node generate-single.js --location keaau</code><br>
+        4. Videos will appear here automatically once generated
+    </div>
+    
+    <script>
+        let playing = true;
+        
+        function toggleVideos() {
+            const videos = document.querySelectorAll('video');
+            videos.forEach(v => {
+                if (playing) v.pause();
+                else v.play();
+            });
+            playing = !playing;
+        }
+        
+        // Auto-play videos on load
+        document.querySelectorAll('video').forEach(v => {
+            v.play().catch(e => console.log('Autoplay blocked'));
+        });
+    </script>
+</body>
+</html>

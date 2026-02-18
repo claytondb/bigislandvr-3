@@ -660,7 +660,7 @@
         
         const LOCATIONS = [
             // HILO REGION (5 locations)
-            { id: 1, name: "Hilo Bayfront", desc: "Downtown Hilo along Kamehameha Avenue with views of Hilo Bay", region: "Hilo", lat: 19.7297, lng: -155.0900, heading: 45, pitch: 0, audio: { ocean: 0.7, birds: 0.5, wind: 0.2 }, atmosphere: { mist: false, volcanic: false } },
+            { id: 1, name: "Hilo Bayfront", desc: "Liliʻuokalani Park looking toward Coconut Island (Moku Ola)", region: "Hilo", lat: 19.7235, lng: -155.0720, heading: 45, pitch: 0, audio: { ocean: 0.8, birds: 0.5, wind: 0.2 }, atmosphere: { mist: false, volcanic: false } },
             { id: 2, name: "Banyan Drive", desc: "Historic avenue lined with banyan trees planted by celebrities", region: "Hilo", lat: 19.7235, lng: -155.0772, heading: 180, pitch: 0, audio: { ocean: 0.4, birds: 0.8, wind: 0.1 }, atmosphere: { mist: false, volcanic: false } },
             { id: 3, name: "Rainbow Falls Viewpoint", desc: "Waiānuenue — iconic 80-foot waterfall just outside Hilo", region: "Hilo", lat: 19.7189, lng: -155.1065, heading: 270, pitch: -10, audio: { waterfall: 0.8, birds: 0.6, wind: 0.2 }, atmosphere: { mist: true, volcanic: false }, treasure: { id: 'rainbow', name: 'Rainbow Spirit', message: 'You found the spirit of Waiānuenue! 🌈' } },
             { id: 4, name: "Hilo Farmers Market", desc: "Vibrant outdoor market in downtown Hilo", region: "Hilo", lat: 19.7244, lng: -155.0896, heading: 90, pitch: 0, audio: { birds: 0.3, wind: 0.1 }, atmosphere: { mist: false, volcanic: false } },
@@ -2246,6 +2246,7 @@
                 case 'ArrowRight': nextLocation(); break;
                 case 'ArrowLeft': prevLocation(); break;
                 case ' ': e.preventDefault(); toggleAutoPlay(); break;
+                case 'h': case 'H': toggleUIVisibility(); break;
                 case 'f': case 'F': toggleFullscreen(); break;
                 case 'p': case 'P': perfMonitor.toggle(); break;
                 case 'w': case 'W': navigator_.moveForward(); break;
@@ -2270,6 +2271,25 @@
         function toggleFullscreen() {
             if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(err => console.log('Fullscreen error:', err));
             else document.exitFullscreen();
+        }
+        
+        let uiHidden = false;
+        function toggleUIVisibility() {
+            uiHidden = !uiHidden;
+            const elements = ['#controls', '#info', '#mini-map-container', '#effects-panel', '#achievements-panel', 
+                             '#nav-arrows', '#keyboard-help', '#weather-panel', '#vignette-layer', '#bloom-layer', 
+                             '#lens-flare', '.nav-arrow', '#treasure-popup'];
+            elements.forEach(sel => {
+                document.querySelectorAll(sel).forEach(el => {
+                    el.style.display = uiHidden ? 'none' : '';
+                });
+            });
+            if (!uiHidden) {
+                // Restore default display values
+                document.querySelectorAll('#controls, #info').forEach(el => el.style.display = 'block');
+            }
+            showTreasure(uiHidden ? '👁️ UI Hidden' : '👁️ UI Visible', 
+                        uiHidden ? 'Press H again to show. Take screenshot now!' : 'All controls restored');
         }
         
         // =====================================================
