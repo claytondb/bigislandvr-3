@@ -471,31 +471,31 @@
         </div>
         
         <div id="effects">
-            <div class="effects-header"><span>🎛️</span><span>Ambient Effects</span></div>
+            <div class="effects-header"><span>🎛️</span><span>Effects</span></div>
             
+            <!-- AUDIO SECTION -->
             <div class="effects-section">
-                <div class="section-title">🔊 Ambient Sounds</div>
-                <div class="effect-row"><span class="effect-label"><span class="effect-icon">🌊</span><span>Ocean</span></span><div class="toggle-switch on" data-effect="ocean" role="switch" aria-checked="true" tabindex="0"></div></div>
-                <div class="effect-row"><span class="effect-label"><span class="effect-icon">🐦</span><span>Birds</span></span><div class="toggle-switch on" data-effect="birds" role="switch" aria-checked="true" tabindex="0"></div></div>
+                <div class="section-title">🔊 Audio</div>
+                <div class="effect-row"><span class="effect-label"><span class="effect-icon">🌊</span><span>Ocean Waves</span></span><div class="toggle-switch on" data-effect="ocean" role="switch" aria-checked="true" tabindex="0"></div></div>
+                <div class="effect-row"><span class="effect-label"><span class="effect-icon">🐦</span><span>Birdsong</span></span><div class="toggle-switch on" data-effect="birds" role="switch" aria-checked="true" tabindex="0"></div></div>
                 <div class="effect-row"><span class="effect-label"><span class="effect-icon">💨</span><span>Wind</span></span><div class="toggle-switch" data-effect="wind" role="switch" aria-checked="false" tabindex="0"></div></div>
-                <div class="effect-row"><span class="effect-label"><span class="effect-icon">🌋</span><span>Volcanic</span></span><div class="toggle-switch" data-effect="volcanic" role="switch" aria-checked="false" tabindex="0"></div></div>
+                <div class="effect-row"><span class="effect-label"><span class="effect-icon">🌧️</span><span>Rain</span></span><div class="toggle-switch" data-effect="rain-audio" role="switch" aria-checked="false" tabindex="0"></div></div>
+                <div class="effect-row"><span class="effect-label"><span class="effect-icon">🌋</span><span>Volcanic Rumble</span></span><div class="toggle-switch" data-effect="volcanic" role="switch" aria-checked="false" tabindex="0"></div></div>
             </div>
             
+            <!-- VISUAL: WEATHER OVERLAY -->
             <div class="effects-section">
-                <div class="section-title">🌦️ Weather</div>
+                <div class="section-title">🌦️ Weather Overlay</div>
                 <div class="slider-row">
-                    <div class="slider-label"><span>🌧️ Rain Intensity</span><span class="slider-value" id="rain-value">0%</span></div>
+                    <div class="slider-label"><span>🌧️ Rain</span><span class="slider-value" id="rain-value">0%</span></div>
                     <input type="range" class="effect-slider" id="rain-slider" min="0" max="100" value="0" aria-label="Rain intensity">
-                </div>
-                <div class="slider-row">
-                    <div class="slider-label"><span>💨 Wind Strength</span><span class="slider-value" id="wind-value">20%</span></div>
-                    <input type="range" class="effect-slider" id="wind-slider" min="0" max="100" value="20" aria-label="Wind strength">
                 </div>
                 <div class="effect-row"><span class="effect-label"><span class="effect-icon">🌫️</span><span>Mist/Fog</span></span><div class="toggle-switch" data-effect="mist" role="switch" aria-checked="false" tabindex="0"></div></div>
             </div>
             
+            <!-- VISUAL: TIME OF DAY -->
             <div class="effects-section">
-                <div class="section-title">☀️ Time of Day</div>
+                <div class="section-title">☀️ Time of Day <span style="opacity:0.5;font-size:0.6rem">(color overlay)</span></div>
                 <div class="time-selector">
                     <button class="time-btn" data-time="dawn" aria-label="Dawn"><span class="time-btn-icon">🌅</span>Dawn</button>
                     <button class="time-btn active" data-time="day" aria-label="Day"><span class="time-btn-icon">☀️</span>Day</button>
@@ -503,10 +503,14 @@
                     <button class="time-btn" data-time="dusk" aria-label="Dusk"><span class="time-btn-icon">🌆</span>Dusk</button>
                     <button class="time-btn" data-time="night" aria-label="Night"><span class="time-btn-icon">🌙</span>Night</button>
                 </div>
+                <div class="ai-coming-soon" style="margin-top:8px;padding:6px 8px;background:linear-gradient(90deg,rgba(155,93,229,0.15),rgba(61,165,217,0.15));border-radius:6px;font-size:0.7rem;color:var(--color-orchid);display:flex;align-items:center;gap:6px;">
+                    <span>🤖</span><span>AI Time Transform coming soon — actual image transformation, not just overlays</span>
+                </div>
             </div>
             
+            <!-- VISUAL: POST-PROCESSING -->
             <div class="effects-section">
-                <div class="section-title">✨ Visual Effects</div>
+                <div class="section-title">✨ Visual Post-Processing</div>
                 <div class="effect-row"><span class="effect-label"><span class="effect-icon">🔆</span><span>Vignette</span></span><div class="toggle-switch on" data-effect="vignette" role="switch" aria-checked="true" tabindex="0"></div></div>
                 <div class="effect-row"><span class="effect-label"><span class="effect-icon">☀️</span><span>Lens Flare</span></span><div class="toggle-switch" data-effect="lensflare" role="switch" aria-checked="false" tabindex="0"></div></div>
                 <div class="effect-row"><span class="effect-label"><span class="effect-icon">💫</span><span>Bloom</span></span><div class="toggle-switch" data-effect="bloom" role="switch" aria-checked="false" tabindex="0"></div></div>
@@ -522,13 +526,27 @@
                 </div>
             </div>
             
+            <!-- VISUAL: PARTICLES -->
             <div class="effects-section">
-                <div class="section-title">🦋 Particles</div>
+                <div class="section-title">🦋 Animated Particles</div>
                 <div class="effect-row"><span class="effect-label"><span class="effect-icon">🦋</span><span>Butterflies</span></span><div class="toggle-switch" data-effect="butterflies" role="switch" aria-checked="false" tabindex="0"></div></div>
                 <div class="effect-row"><span class="effect-label"><span class="effect-icon">✨</span><span>Fireflies</span></span><div class="toggle-switch" data-effect="fireflies" role="switch" aria-checked="false" tabindex="0"></div></div>
                 <div class="effect-row"><span class="effect-label"><span class="effect-icon">🍂</span><span>Falling Leaves</span></span><div class="toggle-switch" data-effect="leaves" role="switch" aria-checked="false" tabindex="0"></div></div>
                 <div class="effect-row"><span class="effect-label"><span class="effect-icon">🌋</span><span>Volcanic Ash</span></span><div class="toggle-switch" data-effect="ash" role="switch" aria-checked="false" tabindex="0"></div></div>
                 <div class="effect-row"><span class="effect-label"><span class="effect-icon">🌊</span><span>Ocean Spray</span></span><div class="toggle-switch" data-effect="spray" role="switch" aria-checked="false" tabindex="0"></div></div>
+            </div>
+            
+            <!-- VISUAL: SCENE ANIMATION (COMING SOON) -->
+            <div class="effects-section">
+                <div class="section-title">🎬 Scene Animation <span style="opacity:0.5;font-size:0.6rem">(coming soon)</span></div>
+                <div class="ai-coming-soon" style="padding:10px;background:linear-gradient(135deg,rgba(155,93,229,0.1),rgba(42,157,143,0.1));border-radius:8px;font-size:0.75rem;color:rgba(255,255,255,0.7);line-height:1.5;">
+                    <div style="margin-bottom:6px;color:var(--color-orchid);font-weight:500;">🤖 AI-Powered Motion</div>
+                    <div>• Trees swaying in breeze</div>
+                    <div>• Clouds drifting across sky</div>
+                    <div>• Water rippling & waves</div>
+                    <div>• Leaves rustling in wind</div>
+                    <div style="margin-top:6px;font-size:0.65rem;opacity:0.6;">Requires pre-processing with Stable Video Diffusion</div>
+                </div>
             </div>
             
             <div class="effects-section">
