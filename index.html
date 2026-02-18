@@ -44,26 +44,83 @@
         #viewer { width: 100vw; height: 100vh; position: relative; }
         #street-view-container { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
         
-        #loading { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, var(--color-kona-blue) 0%, var(--color-pacific-teal) 50%, var(--color-lava-black) 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; transition: opacity var(--duration-slow) var(--ease-out-expo); }
-        #loading.hidden { opacity: 0; pointer-events: none; }
-        .loading-logo { font-size: 4rem; margin-bottom: var(--space-4); animation: float 3s ease-in-out infinite; }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-        #loading h1 { font-family: var(--font-display); font-size: 2.5rem; font-weight: 600; margin-bottom: var(--space-2); background: linear-gradient(135deg, var(--color-plumeria), var(--color-seafoam)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-        .loading-subtitle { font-family: var(--font-accent); font-style: italic; color: var(--color-seafoam); font-size: 1.1rem; margin-bottom: var(--space-6); opacity: 0.9; }
-        .loading-progress { width: 280px; height: 4px; background: rgba(255, 255, 255, 0.1); border-radius: 2px; overflow: hidden; margin-bottom: var(--space-4); }
-        .loading-progress-bar { height: 100%; background: linear-gradient(90deg, var(--color-pacific-teal), var(--color-ti-leaf), var(--color-seafoam)); border-radius: 2px; width: 0%; animation: progress 2s ease-out forwards, shimmer 1.5s ease-in-out infinite; background-size: 200% 100%; }
-        @keyframes progress { 0% { width: 0%; } 50% { width: 70%; } 100% { width: 100%; } }
-        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-        .loading-location { color: rgba(255, 255, 255, 0.6); font-size: 0.875rem; }
+        /* =====================================================
+           ENHANCED LOADING SCREEN
+           ===================================================== */
+        #loading { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, var(--color-kona-blue) 0%, var(--color-pacific-teal) 30%, var(--color-lava-black) 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; transition: opacity 1.2s var(--ease-out-expo), filter 0.8s ease; overflow: hidden; }
+        #loading.hidden { opacity: 0; pointer-events: none; filter: blur(10px); }
+        #loading::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200'%3E%3Cpath d='M0 200 L50 180 Q100 120 150 140 Q180 160 200 100 Q220 60 250 80 Q280 100 320 60 Q350 30 380 50 L400 40 L400 200 Z' fill='%23000' fill-opacity='0.3'/%3E%3C/svg%3E") center bottom/100% auto no-repeat; animation: islandShimmer 4s ease-in-out infinite; }
+        @keyframes islandShimmer { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+        .loading-stars { position: absolute; top: 0; left: 0; right: 0; bottom: 50%; pointer-events: none; }
+        .loading-stars::before { content: '✦'; position: absolute; top: 15%; left: 20%; font-size: 0.5rem; color: rgba(255,255,255,0.4); animation: starTwinkle 2s ease-in-out infinite; }
+        .loading-stars::after { content: '✦'; position: absolute; top: 25%; right: 30%; font-size: 0.3rem; color: rgba(255,255,255,0.3); animation: starTwinkle 2.5s ease-in-out 0.5s infinite; }
+        @keyframes starTwinkle { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
+        .loading-logo { font-size: 5rem; margin-bottom: var(--space-4); animation: floatRotate 4s ease-in-out infinite; filter: drop-shadow(0 0 20px rgba(127, 205, 205, 0.5)); }
+        @keyframes floatRotate { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-15px) rotate(3deg); } }
+        #loading h1 { font-family: var(--font-display); font-size: 3rem; font-weight: 600; margin-bottom: var(--space-2); background: linear-gradient(135deg, var(--color-plumeria) 0%, var(--color-seafoam) 50%, var(--color-pikake) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-shadow: 0 4px 30px rgba(127, 205, 205, 0.3); background-size: 200% 100%; animation: gradientShift 3s ease infinite; }
+        @keyframes gradientShift { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+        .loading-subtitle { font-family: var(--font-accent); font-style: italic; color: var(--color-seafoam); font-size: 1.2rem; margin-bottom: var(--space-5); opacity: 0.9; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        .loading-progress { width: 320px; height: 8px; background: rgba(255, 255, 255, 0.1); border-radius: 4px; overflow: hidden; margin-bottom: var(--space-3); position: relative; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3); }
+        .loading-progress::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: repeating-linear-gradient(90deg, transparent, transparent 8px, rgba(255,255,255,0.05) 8px, rgba(255,255,255,0.05) 16px); }
+        .loading-progress-bar { height: 100%; background: linear-gradient(90deg, var(--color-pacific-teal), var(--color-ti-leaf), var(--color-pikake), var(--color-hibiscus)); border-radius: 4px; width: 0%; animation: progressEnhanced 2.5s ease-out forwards; background-size: 300% 100%; position: relative; }
+        .loading-progress-bar::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%); animation: shimmerSlide 1.5s ease-in-out infinite; }
+        @keyframes progressEnhanced { 0% { width: 0%; } 30% { width: 40%; } 60% { width: 75%; } 100% { width: 100%; } }
+        @keyframes shimmerSlide { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+        .loading-tip { color: rgba(255, 255, 255, 0.7); font-size: 0.85rem; max-width: 300px; text-align: center; line-height: 1.4; animation: tipFade 4s ease-in-out infinite; margin-bottom: var(--space-3); }
+        @keyframes tipFade { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+        .loading-location { color: var(--color-seafoam); font-size: 0.9rem; font-weight: 500; }
         
-        #transition-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: var(--color-lava-black); z-index: 15; opacity: 0; pointer-events: none; transition: opacity 0.5s ease-in-out; }
+        /* =====================================================
+           VISUAL EFFECTS LAYERS
+           ===================================================== */
+        #transition-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: var(--color-lava-black); z-index: 15; opacity: 0; pointer-events: none; transition: opacity 0.8s ease-in-out, filter 0.5s ease; }
         #transition-overlay.active { opacity: 1; }
+        #transition-overlay.blur-active { filter: blur(20px); backdrop-filter: blur(10px); }
+        #transition-overlay.flyover { background: linear-gradient(180deg, rgba(135,206,235,0.3) 0%, rgba(13,59,102,0.6) 100%); opacity: 0.7; }
         
-        #atmosphere-layer { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 18; transition: all 0.8s ease; }
-        .time-dawn { background: linear-gradient(180deg, rgba(255, 180, 120, 0.15) 0%, rgba(255, 100, 50, 0.1) 30%, transparent 60%); }
-        .time-day { background: transparent; }
-        .time-dusk { background: linear-gradient(180deg, rgba(255, 120, 80, 0.2) 0%, rgba(180, 80, 120, 0.15) 40%, rgba(60, 40, 80, 0.1) 100%); }
-        .time-night { background: linear-gradient(180deg, rgba(10, 15, 40, 0.5) 0%, rgba(20, 25, 50, 0.4) 100%); }
+        /* Vignette Effect */
+        #vignette-layer { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 16; opacity: 0; transition: opacity var(--duration-normal) ease; background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.3) 80%, rgba(0,0,0,0.6) 100%); }
+        #vignette-layer.active { opacity: 1; }
+        #vignette-layer.strong { background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.4) 70%, rgba(0,0,0,0.8) 100%); }
+        
+        /* Lens Flare Effect */
+        #lens-flare { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 19; opacity: 0; transition: opacity 0.5s ease; }
+        #lens-flare.active { opacity: 1; }
+        .flare-main { position: absolute; width: 150px; height: 150px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,200,0.8) 0%, rgba(255,200,100,0.4) 30%, transparent 70%); filter: blur(2px); animation: flareGlow 3s ease-in-out infinite; }
+        .flare-secondary { position: absolute; width: 80px; height: 80px; border-radius: 50%; background: radial-gradient(circle, rgba(255,180,100,0.6) 0%, transparent 70%); filter: blur(4px); }
+        .flare-streak { position: absolute; width: 200px; height: 4px; background: linear-gradient(90deg, transparent, rgba(255,255,200,0.6), transparent); transform-origin: left center; filter: blur(1px); }
+        .flare-hexagon { position: absolute; width: 30px; height: 30px; background: rgba(100,200,255,0.3); clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); filter: blur(2px); }
+        @keyframes flareGlow { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; } }
+        
+        /* Bloom/Glow Effect */
+        #bloom-layer { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 14; opacity: 0; transition: opacity var(--duration-normal) ease; mix-blend-mode: screen; }
+        #bloom-layer.active { opacity: 1; }
+        #bloom-layer.day { background: radial-gradient(ellipse at 30% 20%, rgba(255,255,220,0.15) 0%, transparent 50%); }
+        #bloom-layer.golden { background: radial-gradient(ellipse at 70% 30%, rgba(255,200,100,0.2) 0%, transparent 40%), radial-gradient(ellipse at 30% 60%, rgba(255,180,80,0.1) 0%, transparent 50%); }
+        
+        /* Color Grading Filters */
+        #color-grade { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 13; opacity: 0; transition: opacity var(--duration-normal) ease; mix-blend-mode: overlay; }
+        #color-grade.active { opacity: 1; }
+        #color-grade.vivid { background: linear-gradient(135deg, rgba(0,100,150,0.1) 0%, rgba(255,100,50,0.1) 100%); filter: saturate(1.3) contrast(1.1); }
+        #color-grade.cinematic { background: linear-gradient(180deg, rgba(0,30,60,0.15) 0%, rgba(40,20,0,0.1) 100%); filter: contrast(1.15) saturate(0.9); }
+        #color-grade.vintage { background: linear-gradient(135deg, rgba(100,80,60,0.2) 0%, rgba(60,40,30,0.15) 100%); filter: sepia(0.2) contrast(1.05) saturate(0.85); }
+        #color-grade.tropical { background: linear-gradient(180deg, rgba(0,150,200,0.08) 0%, rgba(100,200,100,0.08) 100%); filter: saturate(1.4) brightness(1.05); }
+        
+        /* Enhanced Time-of-Day Atmosphere */
+        #atmosphere-layer { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 18; transition: all 1.2s ease; }
+        .time-dawn { background: linear-gradient(180deg, rgba(255, 140, 80, 0.25) 0%, rgba(255, 180, 120, 0.2) 20%, rgba(255, 100, 80, 0.15) 40%, rgba(180, 100, 150, 0.1) 60%, transparent 80%); }
+        .time-dawn::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(ellipse at 80% 10%, rgba(255,200,100,0.3) 0%, transparent 40%); animation: sunRise 10s ease-in-out infinite; }
+        @keyframes sunRise { 0%, 100% { opacity: 0.8; } 50% { opacity: 1; } }
+        .time-day { background: linear-gradient(180deg, rgba(135, 206, 250, 0.05) 0%, transparent 30%); }
+        .time-golden { background: linear-gradient(180deg, rgba(255, 180, 50, 0.3) 0%, rgba(255, 140, 60, 0.25) 25%, rgba(255, 100, 80, 0.15) 50%, transparent 75%); }
+        .time-golden::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(ellipse at 70% 40%, rgba(255,200,100,0.4) 0%, transparent 50%); }
+        .time-dusk { background: linear-gradient(180deg, rgba(255, 100, 60, 0.3) 0%, rgba(200, 80, 100, 0.25) 25%, rgba(120, 60, 140, 0.2) 50%, rgba(40, 30, 80, 0.15) 100%); }
+        .time-dusk::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(ellipse at 20% 60%, rgba(255,120,80,0.3) 0%, transparent 50%); animation: sunSet 8s ease-in-out infinite; }
+        @keyframes sunSet { 0%, 100% { opacity: 0.7; transform: translateY(0); } 50% { opacity: 1; transform: translateY(5%); } }
+        .time-night { background: linear-gradient(180deg, rgba(5, 10, 30, 0.6) 0%, rgba(10, 15, 40, 0.55) 40%, rgba(15, 20, 50, 0.5) 100%); }
+        .time-night::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 50%; background: radial-gradient(ellipse at 30% 20%, rgba(200, 220, 255, 0.08) 0%, transparent 50%), radial-gradient(ellipse at 70% 10%, rgba(180, 200, 255, 0.05) 0%, transparent 30%); }
+        .time-night::after { content: '🌙'; position: absolute; top: 10%; right: 15%; font-size: 2rem; opacity: 0.4; filter: drop-shadow(0 0 10px rgba(200,220,255,0.5)); animation: moonGlow 5s ease-in-out infinite; }
+        @keyframes moonGlow { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.05); } }
         
         #mist-layer { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 17; opacity: 0; transition: opacity 1s ease; background: radial-gradient(ellipse at 50% 120%, rgba(200, 210, 220, 0.6) 0%, rgba(180, 190, 200, 0.3) 40%, transparent 70%); }
         #mist-layer.active { opacity: 1; animation: mistDrift 20s ease-in-out infinite; }
@@ -141,6 +198,54 @@
         
         #rain-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 20; opacity: 0; transition: opacity var(--duration-slow) var(--ease-natural); }
         #rain-canvas.active { opacity: 1; }
+        
+        /* =====================================================
+           PARTICLE SYSTEMS
+           ===================================================== */
+        #particles-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 21; }
+        
+        /* Firefly container */
+        #fireflies-container { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 22; opacity: 0; transition: opacity 1s ease; }
+        #fireflies-container.active { opacity: 1; }
+        .firefly { position: absolute; width: 6px; height: 6px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,150,1) 0%, rgba(200,255,100,0.8) 40%, transparent 70%); box-shadow: 0 0 10px 4px rgba(255,255,100,0.6), 0 0 20px 8px rgba(200,255,100,0.3); animation: fireflyFloat 8s ease-in-out infinite, fireflyGlow 2s ease-in-out infinite; }
+        @keyframes fireflyFloat { 0% { transform: translate(0, 0); } 25% { transform: translate(30px, -20px); } 50% { transform: translate(10px, 30px); } 75% { transform: translate(-20px, 10px); } 100% { transform: translate(0, 0); } }
+        @keyframes fireflyGlow { 0%, 100% { opacity: 0.3; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.2); } }
+        
+        /* Butterfly container */
+        #butterflies-container { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 22; opacity: 0; transition: opacity 1s ease; }
+        #butterflies-container.active { opacity: 1; }
+        .butterfly { position: absolute; font-size: 1.5rem; animation: butterflyFly 15s ease-in-out infinite; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); }
+        @keyframes butterflyFly { 0% { transform: translate(0, 0) rotate(0deg) scale(1); } 20% { transform: translate(100px, -50px) rotate(10deg) scale(1.1); } 40% { transform: translate(50px, 20px) rotate(-5deg) scale(0.9); } 60% { transform: translate(150px, -30px) rotate(15deg) scale(1.05); } 80% { transform: translate(80px, 40px) rotate(-10deg) scale(0.95); } 100% { transform: translate(0, 0) rotate(0deg) scale(1); } }
+        
+        /* Falling leaves container */
+        #leaves-container { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 22; opacity: 0; transition: opacity 1s ease; overflow: hidden; }
+        #leaves-container.active { opacity: 1; }
+        .leaf { position: absolute; font-size: 1.2rem; top: -30px; animation: leafFall linear infinite; }
+        @keyframes leafFall { 0% { transform: translateY(-30px) rotate(0deg) translateX(0); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(110vh) rotate(720deg) translateX(100px); opacity: 0; } }
+        
+        /* Volcanic ash container */
+        #ash-container { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 22; opacity: 0; transition: opacity 1s ease; overflow: hidden; }
+        #ash-container.active { opacity: 1; }
+        .ash-particle { position: absolute; width: 3px; height: 3px; background: rgba(80, 70, 60, 0.7); border-radius: 50%; top: -10px; animation: ashFall linear infinite; }
+        @keyframes ashFall { 0% { transform: translateY(-10px) translateX(0); opacity: 0; } 10% { opacity: 0.8; } 90% { opacity: 0.6; } 100% { transform: translateY(110vh) translateX(50px); opacity: 0; } }
+        
+        /* Ocean spray container */
+        #spray-container { position: absolute; bottom: 0; left: 0; right: 0; height: 30%; pointer-events: none; z-index: 22; opacity: 0; transition: opacity 1s ease; }
+        #spray-container.active { opacity: 1; }
+        .spray-particle { position: absolute; bottom: 0; width: 4px; height: 4px; background: rgba(255, 255, 255, 0.6); border-radius: 50%; animation: sprayRise 3s ease-out infinite; }
+        @keyframes sprayRise { 0% { transform: translateY(0) scale(1); opacity: 0.8; } 100% { transform: translateY(-150px) scale(0.3); opacity: 0; } }
+        
+        /* Screenshot overlay styles */
+        #screenshot-watermark { position: absolute; bottom: 20px; right: 20px; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); padding: 8px 16px; border-radius: 8px; color: white; font-family: var(--font-display); font-size: 0.9rem; z-index: 500; display: none; }
+        #screenshot-watermark.visible { display: flex; align-items: center; gap: 8px; }
+        #screenshot-stamp { position: absolute; bottom: 20px; left: 20px; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); padding: 8px 16px; border-radius: 8px; color: white; font-family: var(--font-primary); font-size: 0.8rem; z-index: 500; display: none; }
+        #screenshot-stamp.visible { display: block; }
+        #screenshot-flash { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: white; z-index: 600; opacity: 0; pointer-events: none; transition: opacity 0.1s ease; }
+        #screenshot-flash.flash { opacity: 0.8; }
+        
+        .screenshot-btn { width: 100%; padding: 12px; background: linear-gradient(135deg, var(--color-pacific-teal), var(--color-ti-leaf)); border: none; border-radius: var(--radius-md); color: white; font-family: var(--font-primary); font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: transform var(--duration-fast), box-shadow var(--duration-fast); box-shadow: 0 4px 15px rgba(42, 157, 143, 0.3); }
+        .screenshot-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(42, 157, 143, 0.4); }
+        .screenshot-btn:active { transform: translateY(0); }
         
         #fullscreen-btn { position: absolute; bottom: var(--space-5); right: var(--space-5); background: linear-gradient(135deg, var(--color-orchid), #7B4BC4); border: none; color: var(--color-plumeria); padding: var(--space-3) var(--space-5); border-radius: var(--radius-md); cursor: pointer; font-family: var(--font-primary); font-size: 0.875rem; font-weight: 500; display: flex; align-items: center; gap: var(--space-2); z-index: 50; box-shadow: 0 4px 20px rgba(155, 93, 229, 0.4); transition: all var(--duration-fast) var(--ease-natural); animation: fadeUp var(--duration-slow) var(--ease-out-expo) 0.3s both; }
         #fullscreen-btn:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 6px 25px rgba(155, 93, 229, 0.5); }
@@ -247,17 +352,27 @@
             #mini-map-container { display: none; }
             #weather-widget { top: auto; bottom: 260px; right: var(--space-4); left: var(--space-4); }
             #achievements-panel { top: auto; bottom: 320px; left: var(--space-4); right: var(--space-4); }
-            #effects { position: fixed; top: auto; bottom: 0; left: 0; right: 0; border-radius: var(--radius-lg) var(--radius-lg) 0 0; transform: translateY(100%); transition: transform var(--duration-normal) var(--ease-out-expo); max-height: 60vh; }
+            #effects { position: fixed; top: auto; bottom: 0; left: 0; right: 0; border-radius: var(--radius-lg) var(--radius-lg) 0 0; transform: translateY(100%); transition: transform var(--duration-normal) var(--ease-out-expo); max-height: 70vh; overflow-y: auto; }
             #effects.open { transform: translateY(0); }
             #controls { bottom: var(--space-4); }
             .control-btn { padding: var(--space-3) var(--space-4); }
             #hints { bottom: 80px; font-size: 0.7rem; }
             #fullscreen-btn { bottom: auto; top: var(--space-4); right: var(--space-4); }
-            #loading h1 { font-size: 1.75rem; }
-            .loading-subtitle { font-size: 0.95rem; padding: 0 var(--space-4); }
+            #loading h1 { font-size: 2rem; }
+            .loading-subtitle { font-size: 1rem; padding: 0 var(--space-4); }
+            .loading-tip { font-size: 0.8rem; padding: 0 var(--space-4); }
             #nav-arrows { bottom: 100px; }
             .nav-arrow { width: 40px; height: 40px; font-size: 1.2rem; }
             #perf-dashboard { left: var(--space-4); bottom: 140px; }
+            .time-selector { flex-wrap: wrap; }
+            .time-btn { min-width: 50px; padding: var(--space-2); }
+            #screenshot-watermark, #screenshot-stamp { font-size: 0.7rem; padding: 6px 10px; }
+        }
+        
+        @media (max-width: 480px) {
+            #loading h1 { font-size: 1.75rem; }
+            .loading-logo { font-size: 3.5rem; }
+            .loading-progress { width: 260px; }
         }
         
         @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; } }
@@ -268,18 +383,39 @@
 <body>
     <div id="viewer">
         <div id="loading">
+            <div class="loading-stars"></div>
             <div class="loading-logo">🌴</div>
             <h1>Big Island VR</h1>
-            <p class="loading-subtitle">"E komo mai" — Welcome</p>
+            <p class="loading-subtitle">"E komo mai" — Welcome to Hawaiʻi</p>
             <div class="loading-progress"><div class="loading-progress-bar"></div></div>
+            <p class="loading-tip" id="loading-tip">💡 Use arrow keys to navigate between locations</p>
             <p class="loading-location">Loading <span id="loading-location-name">Street View</span>...</p>
         </div>
         
         <div id="transition-overlay"></div>
+        <div id="color-grade"></div>
+        <div id="bloom-layer"></div>
         <div id="atmosphere-layer" class="time-day"></div>
+        <div id="vignette-layer" class="active"></div>
+        <div id="lens-flare">
+            <div class="flare-main" style="top: 15%; left: 70%;"></div>
+            <div class="flare-secondary" style="top: 25%; left: 60%;"></div>
+            <div class="flare-streak" style="top: 20%; left: 65%; transform: rotate(-15deg);"></div>
+            <div class="flare-hexagon" style="top: 35%; left: 45%;"></div>
+            <div class="flare-hexagon" style="top: 40%; left: 35%; width: 20px; height: 20px;"></div>
+        </div>
         <div id="mist-layer"></div>
         <div id="street-view-container"></div>
         <canvas id="rain-canvas"></canvas>
+        <canvas id="particles-canvas"></canvas>
+        <div id="fireflies-container"></div>
+        <div id="butterflies-container"></div>
+        <div id="leaves-container"></div>
+        <div id="ash-container"></div>
+        <div id="spray-container"></div>
+        <div id="screenshot-flash"></div>
+        <div id="screenshot-watermark">🌴 Big Island VR</div>
+        <div id="screenshot-stamp"></div>
         
         <div id="error-message"><h3>📍 No Street View Here</h3><p>Trying nearby location...</p></div>
         <div id="coverage-status">⚠️ Limited coverage - showing nearest available view</div>
@@ -362,9 +498,45 @@
                 <div class="time-selector">
                     <button class="time-btn" data-time="dawn" aria-label="Dawn"><span class="time-btn-icon">🌅</span>Dawn</button>
                     <button class="time-btn active" data-time="day" aria-label="Day"><span class="time-btn-icon">☀️</span>Day</button>
+                    <button class="time-btn" data-time="golden" aria-label="Golden Hour"><span class="time-btn-icon">🌇</span>Golden</button>
                     <button class="time-btn" data-time="dusk" aria-label="Dusk"><span class="time-btn-icon">🌆</span>Dusk</button>
                     <button class="time-btn" data-time="night" aria-label="Night"><span class="time-btn-icon">🌙</span>Night</button>
                 </div>
+            </div>
+            
+            <div class="effects-section">
+                <div class="section-title">✨ Visual Effects</div>
+                <div class="effect-row"><span class="effect-label"><span class="effect-icon">🔆</span><span>Vignette</span></span><div class="toggle-switch on" data-effect="vignette" role="switch" aria-checked="true" tabindex="0"></div></div>
+                <div class="effect-row"><span class="effect-label"><span class="effect-icon">☀️</span><span>Lens Flare</span></span><div class="toggle-switch" data-effect="lensflare" role="switch" aria-checked="false" tabindex="0"></div></div>
+                <div class="effect-row"><span class="effect-label"><span class="effect-icon">💫</span><span>Bloom</span></span><div class="toggle-switch" data-effect="bloom" role="switch" aria-checked="false" tabindex="0"></div></div>
+                <div class="slider-row">
+                    <div class="slider-label"><span>🎨 Color Grade</span></div>
+                    <select id="color-grade-select" class="color-grade-dropdown" style="width: 100%; padding: 6px; background: var(--color-pahoehoe); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: var(--color-plumeria); font-size: 0.8rem;">
+                        <option value="none">None</option>
+                        <option value="vivid">Vivid</option>
+                        <option value="cinematic">Cinematic</option>
+                        <option value="vintage">Vintage</option>
+                        <option value="tropical">Tropical</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="effects-section">
+                <div class="section-title">🦋 Particles</div>
+                <div class="effect-row"><span class="effect-label"><span class="effect-icon">🦋</span><span>Butterflies</span></span><div class="toggle-switch" data-effect="butterflies" role="switch" aria-checked="false" tabindex="0"></div></div>
+                <div class="effect-row"><span class="effect-label"><span class="effect-icon">✨</span><span>Fireflies</span></span><div class="toggle-switch" data-effect="fireflies" role="switch" aria-checked="false" tabindex="0"></div></div>
+                <div class="effect-row"><span class="effect-label"><span class="effect-icon">🍂</span><span>Falling Leaves</span></span><div class="toggle-switch" data-effect="leaves" role="switch" aria-checked="false" tabindex="0"></div></div>
+                <div class="effect-row"><span class="effect-label"><span class="effect-icon">🌋</span><span>Volcanic Ash</span></span><div class="toggle-switch" data-effect="ash" role="switch" aria-checked="false" tabindex="0"></div></div>
+                <div class="effect-row"><span class="effect-label"><span class="effect-icon">🌊</span><span>Ocean Spray</span></span><div class="toggle-switch" data-effect="spray" role="switch" aria-checked="false" tabindex="0"></div></div>
+            </div>
+            
+            <div class="effects-section">
+                <div class="section-title">📸 Screenshot</div>
+                <div class="effect-row"><span class="effect-label"><span class="effect-icon">🏷️</span><span>Watermark</span></span><div class="toggle-switch" data-effect="watermark" role="switch" aria-checked="false" tabindex="0"></div></div>
+                <div class="effect-row"><span class="effect-label"><span class="effect-icon">📍</span><span>Location Stamp</span></span><div class="toggle-switch" data-effect="stamp" role="switch" aria-checked="false" tabindex="0"></div></div>
+                <button id="take-screenshot-btn" class="screenshot-btn">
+                    <span>📷</span><span>Take Screenshot</span>
+                </button>
             </div>
             
             <div class="volume-section">
@@ -639,11 +811,25 @@
             setTimeOfDay(time) {
                 this.currentTime = time;
                 this.atmosphereLayer.className = `time-${time}`;
+                
+                // Notify visual effects manager
+                if (typeof visualEffects !== 'undefined') {
+                    visualEffects.applyTimeOfDayEffects(time);
+                }
+                
+                // Auto-enable fireflies at night/dusk
+                if (typeof particleManager !== 'undefined') {
+                    if ((time === 'night' || time === 'dusk') && effectStates.fireflies) {
+                        particleManager.toggleFireflies(true);
+                    }
+                }
+                
                 if (audioManager.initialized && audioManager.tracks.birds) {
                     let birdMod = 1;
                     switch(time) {
                         case 'dawn': birdMod = 1.2; break;
                         case 'day': birdMod = 1; break;
+                        case 'golden': birdMod = 0.9; break;
                         case 'dusk': birdMod = 0.6; break;
                         case 'night': birdMod = 0.1; break;
                     }
@@ -1177,6 +1363,434 @@
         }
         
         // =====================================================
+        // LOADING TIPS
+        // =====================================================
+        const LOADING_TIPS = [
+            "💡 Use arrow keys to navigate between locations",
+            "🌴 The Big Island is larger than all other Hawaiian islands combined",
+            "🌋 Kīlauea is one of the world's most active volcanoes",
+            "🎵 Click 'Enable Audio' for ambient sounds",
+            "⏱️ Press Space to start/stop auto-tour",
+            "🌅 Try different times of day in the Effects panel",
+            "📸 Take screenshots with filters and watermarks",
+            "🦋 Enable particle effects for extra immersion",
+            "🏆 Visit all locations to unlock achievements",
+            "🤙 'Aloha' means love, affection, and peace",
+            "🌺 Hawaii's state flower is the yellow hibiscus",
+            "🐢 Sea turtles (honu) are sacred in Hawaiian culture",
+            "☕ Kona coffee is world-famous for its smooth flavor",
+            "🌈 Rainbow Falls gets its name from morning rainbows"
+        ];
+        
+        // =====================================================
+        // VISUAL EFFECTS MANAGER
+        // =====================================================
+        class VisualEffectsManager {
+            constructor() {
+                this.vignetteEnabled = true;
+                this.lensFlareEnabled = false;
+                this.bloomEnabled = false;
+                this.colorGrade = 'none';
+                this.sunPosition = { x: 70, y: 15 };
+                
+                this.vignetteLayer = document.getElementById('vignette-layer');
+                this.lensFlare = document.getElementById('lens-flare');
+                this.bloomLayer = document.getElementById('bloom-layer');
+                this.colorGradeLayer = document.getElementById('color-grade');
+            }
+            
+            setVignette(enabled) {
+                this.vignetteEnabled = enabled;
+                this.vignetteLayer.classList.toggle('active', enabled);
+            }
+            
+            setLensFlare(enabled) {
+                this.lensFlareEnabled = enabled;
+                this.lensFlare.classList.toggle('active', enabled);
+            }
+            
+            setBloom(enabled, style = 'day') {
+                this.bloomEnabled = enabled;
+                this.bloomLayer.className = enabled ? `active ${style}` : '';
+            }
+            
+            setColorGrade(grade) {
+                this.colorGrade = grade;
+                this.colorGradeLayer.className = grade !== 'none' ? `active ${grade}` : '';
+            }
+            
+            updateSunPosition(heading) {
+                // Calculate sun position based on camera heading
+                const normalizedHeading = ((heading % 360) + 360) % 360;
+                const sunX = 50 + Math.sin((normalizedHeading - 90) * Math.PI / 180) * 40;
+                const sunY = 20;
+                
+                this.sunPosition = { x: sunX, y: sunY };
+                
+                if (this.lensFlareEnabled) {
+                    const flareMain = this.lensFlare.querySelector('.flare-main');
+                    const flareSecondary = this.lensFlare.querySelector('.flare-secondary');
+                    if (flareMain) {
+                        flareMain.style.left = `${sunX}%`;
+                        flareMain.style.top = `${sunY}%`;
+                    }
+                    if (flareSecondary) {
+                        flareSecondary.style.left = `${sunX - 10}%`;
+                        flareSecondary.style.top = `${sunY + 10}%`;
+                    }
+                }
+            }
+            
+            applyTimeOfDayEffects(time) {
+                // Adjust bloom based on time
+                if (this.bloomEnabled) {
+                    switch(time) {
+                        case 'dawn':
+                        case 'golden':
+                            this.setBloom(true, 'golden');
+                            break;
+                        case 'day':
+                            this.setBloom(true, 'day');
+                            break;
+                        default:
+                            this.setBloom(false);
+                    }
+                }
+                
+                // Auto-enable lens flare for day/golden
+                if (time === 'day' || time === 'golden') {
+                    if (this.lensFlareEnabled) {
+                        this.lensFlare.classList.add('active');
+                    }
+                } else {
+                    this.lensFlare.classList.remove('active');
+                }
+            }
+        }
+        
+        // =====================================================
+        // PARTICLE SYSTEM MANAGER
+        // =====================================================
+        class ParticleManager {
+            constructor() {
+                this.butterflies = [];
+                this.fireflies = [];
+                this.leaves = [];
+                this.ashParticles = [];
+                this.sprayParticles = [];
+                
+                this.butterfliesEnabled = false;
+                this.firefliesEnabled = false;
+                this.leavesEnabled = false;
+                this.ashEnabled = false;
+                this.sprayEnabled = false;
+                
+                this.containers = {
+                    butterflies: document.getElementById('butterflies-container'),
+                    fireflies: document.getElementById('fireflies-container'),
+                    leaves: document.getElementById('leaves-container'),
+                    ash: document.getElementById('ash-container'),
+                    spray: document.getElementById('spray-container')
+                };
+            }
+            
+            toggleButterflies(enabled) {
+                this.butterfliesEnabled = enabled;
+                this.containers.butterflies.classList.toggle('active', enabled);
+                if (enabled && this.butterflies.length === 0) {
+                    this.createButterflies();
+                }
+            }
+            
+            createButterflies() {
+                const container = this.containers.butterflies;
+                container.innerHTML = '';
+                const butterflyEmojis = ['🦋', '🦋', '🦋'];
+                const colors = ['hue-rotate(0deg)', 'hue-rotate(30deg)', 'hue-rotate(180deg)', 'hue-rotate(270deg)'];
+                
+                for (let i = 0; i < 8; i++) {
+                    const butterfly = document.createElement('div');
+                    butterfly.className = 'butterfly';
+                    butterfly.textContent = butterflyEmojis[Math.floor(Math.random() * butterflyEmojis.length)];
+                    butterfly.style.left = `${Math.random() * 80 + 10}%`;
+                    butterfly.style.top = `${Math.random() * 60 + 20}%`;
+                    butterfly.style.animationDelay = `${Math.random() * 5}s`;
+                    butterfly.style.animationDuration = `${12 + Math.random() * 8}s`;
+                    butterfly.style.filter = colors[Math.floor(Math.random() * colors.length)];
+                    container.appendChild(butterfly);
+                    this.butterflies.push(butterfly);
+                }
+            }
+            
+            toggleFireflies(enabled) {
+                this.firefliesEnabled = enabled;
+                this.containers.fireflies.classList.toggle('active', enabled);
+                if (enabled && this.fireflies.length === 0) {
+                    this.createFireflies();
+                }
+            }
+            
+            createFireflies() {
+                const container = this.containers.fireflies;
+                container.innerHTML = '';
+                
+                for (let i = 0; i < 25; i++) {
+                    const firefly = document.createElement('div');
+                    firefly.className = 'firefly';
+                    firefly.style.left = `${Math.random() * 90 + 5}%`;
+                    firefly.style.top = `${Math.random() * 70 + 15}%`;
+                    firefly.style.animationDelay = `${Math.random() * 4}s, ${Math.random() * 2}s`;
+                    firefly.style.animationDuration = `${6 + Math.random() * 4}s, ${1.5 + Math.random() * 1}s`;
+                    container.appendChild(firefly);
+                    this.fireflies.push(firefly);
+                }
+            }
+            
+            toggleLeaves(enabled) {
+                this.leavesEnabled = enabled;
+                this.containers.leaves.classList.toggle('active', enabled);
+                if (enabled && this.leaves.length === 0) {
+                    this.createLeaves();
+                }
+            }
+            
+            createLeaves() {
+                const container = this.containers.leaves;
+                container.innerHTML = '';
+                const leafEmojis = ['🍂', '🍃', '🌿', '🍁'];
+                
+                for (let i = 0; i < 15; i++) {
+                    const leaf = document.createElement('div');
+                    leaf.className = 'leaf';
+                    leaf.textContent = leafEmojis[Math.floor(Math.random() * leafEmojis.length)];
+                    leaf.style.left = `${Math.random() * 100}%`;
+                    leaf.style.animationDelay = `${Math.random() * 10}s`;
+                    leaf.style.animationDuration = `${8 + Math.random() * 6}s`;
+                    container.appendChild(leaf);
+                    this.leaves.push(leaf);
+                }
+            }
+            
+            toggleAsh(enabled) {
+                this.ashEnabled = enabled;
+                this.containers.ash.classList.toggle('active', enabled);
+                if (enabled && this.ashParticles.length === 0) {
+                    this.createAsh();
+                }
+            }
+            
+            createAsh() {
+                const container = this.containers.ash;
+                container.innerHTML = '';
+                
+                for (let i = 0; i < 50; i++) {
+                    const ash = document.createElement('div');
+                    ash.className = 'ash-particle';
+                    ash.style.left = `${Math.random() * 100}%`;
+                    ash.style.width = `${2 + Math.random() * 3}px`;
+                    ash.style.height = ash.style.width;
+                    ash.style.animationDelay = `${Math.random() * 8}s`;
+                    ash.style.animationDuration = `${5 + Math.random() * 5}s`;
+                    ash.style.opacity = 0.3 + Math.random() * 0.5;
+                    container.appendChild(ash);
+                    this.ashParticles.push(ash);
+                }
+            }
+            
+            toggleSpray(enabled) {
+                this.sprayEnabled = enabled;
+                this.containers.spray.classList.toggle('active', enabled);
+                if (enabled && this.sprayParticles.length === 0) {
+                    this.createSpray();
+                }
+            }
+            
+            createSpray() {
+                const container = this.containers.spray;
+                container.innerHTML = '';
+                
+                for (let i = 0; i < 30; i++) {
+                    const spray = document.createElement('div');
+                    spray.className = 'spray-particle';
+                    spray.style.left = `${Math.random() * 100}%`;
+                    spray.style.animationDelay = `${Math.random() * 3}s`;
+                    spray.style.animationDuration = `${2 + Math.random() * 2}s`;
+                    container.appendChild(spray);
+                    this.sprayParticles.push(spray);
+                }
+            }
+            
+            applyLocationParticles(location) {
+                // Auto-enable particles based on location
+                const isVolcanic = location.atmosphere?.volcanic;
+                const isCoastal = location.audio?.ocean > 0.6;
+                const isForest = location.audio?.birds > 0.5 && !isCoastal;
+                const isNight = atmosphereManager.currentTime === 'night' || atmosphereManager.currentTime === 'dusk';
+                
+                // Suggest particles but don't force them
+                if (isVolcanic && !this.ashEnabled) {
+                    // Could auto-enable, but let user control
+                }
+            }
+        }
+        
+        // =====================================================
+        // SCREENSHOT MANAGER
+        // =====================================================
+        class ScreenshotManager {
+            constructor() {
+                this.watermarkEnabled = false;
+                this.stampEnabled = false;
+                this.flashElement = document.getElementById('screenshot-flash');
+                this.watermarkElement = document.getElementById('screenshot-watermark');
+                this.stampElement = document.getElementById('screenshot-stamp');
+            }
+            
+            setWatermark(enabled) {
+                this.watermarkEnabled = enabled;
+            }
+            
+            setStamp(enabled) {
+                this.stampEnabled = enabled;
+            }
+            
+            async takeScreenshot() {
+                const location = LOCATIONS[currentIndex];
+                const now = new Date();
+                
+                // Show watermark/stamp if enabled
+                if (this.watermarkEnabled) {
+                    this.watermarkElement.classList.add('visible');
+                }
+                if (this.stampEnabled) {
+                    this.stampElement.textContent = `📍 ${location.name} • ${now.toLocaleDateString()} ${now.toLocaleTimeString()}`;
+                    this.stampElement.classList.add('visible');
+                }
+                
+                // Flash effect
+                this.flashElement.classList.add('flash');
+                setTimeout(() => this.flashElement.classList.remove('flash'), 150);
+                
+                // Wait for elements to render
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                try {
+                    // Use html2canvas if available, otherwise basic approach
+                    const viewer = document.getElementById('viewer');
+                    
+                    if (typeof html2canvas !== 'undefined') {
+                        const canvas = await html2canvas(viewer, {
+                            useCORS: true,
+                            allowTaint: true,
+                            scale: 2
+                        });
+                        this.downloadCanvas(canvas, location.name);
+                    } else {
+                        // Fallback: just notify user
+                        showTreasure('📸 Screenshot Ready!', 'Press Ctrl+Shift+S or use browser screenshot');
+                    }
+                } catch (error) {
+                    console.warn('Screenshot failed:', error);
+                    showTreasure('📸 Screenshot', 'Use Ctrl+Shift+S for browser screenshot');
+                }
+                
+                // Hide overlays
+                setTimeout(() => {
+                    this.watermarkElement.classList.remove('visible');
+                    this.stampElement.classList.remove('visible');
+                }, 500);
+            }
+            
+            downloadCanvas(canvas, locationName) {
+                const link = document.createElement('a');
+                link.download = `BigIslandVR-${locationName.replace(/\s+/g, '-')}-${Date.now()}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                showTreasure('📸 Screenshot Saved!', `${locationName} captured`);
+            }
+        }
+        
+        // =====================================================
+        // TRANSITION MANAGER
+        // =====================================================
+        class TransitionManager {
+            constructor() {
+                this.overlay = document.getElementById('transition-overlay');
+                this.currentTransition = 'fade';
+            }
+            
+            async transitionTo(type = 'fade') {
+                this.currentTransition = type;
+                this.overlay.className = '';
+                
+                switch(type) {
+                    case 'blur':
+                        this.overlay.classList.add('active', 'blur-active');
+                        break;
+                    case 'flyover':
+                        this.overlay.classList.add('active', 'flyover');
+                        break;
+                    default:
+                        this.overlay.classList.add('active');
+                }
+                
+                return new Promise(resolve => setTimeout(resolve, CONFIG.transitionDuration / 2));
+            }
+            
+            async complete() {
+                await new Promise(resolve => setTimeout(resolve, 300));
+                this.overlay.classList.remove('active', 'blur-active', 'flyover');
+            }
+            
+            getTransitionType(fromLocation, toLocation) {
+                // Calculate distance
+                const distance = getDistanceFromLatLng(
+                    fromLocation.lat, fromLocation.lng,
+                    toLocation.lat, toLocation.lng
+                );
+                
+                // Use flyover for distant locations (>20km)
+                if (distance > 20000) return 'flyover';
+                // Use blur for medium distances
+                if (distance > 5000) return 'blur';
+                // Simple fade for nearby
+                return 'fade';
+            }
+        }
+        
+        // =====================================================
+        // LOADING MANAGER
+        // =====================================================
+        class LoadingManager {
+            constructor() {
+                this.tipIndex = 0;
+                this.tipElement = document.getElementById('loading-tip');
+                this.tipInterval = null;
+            }
+            
+            start() {
+                this.rotateTips();
+                this.tipInterval = setInterval(() => this.rotateTips(), 4000);
+            }
+            
+            rotateTips() {
+                this.tipElement.style.opacity = '0';
+                setTimeout(() => {
+                    this.tipIndex = (this.tipIndex + 1) % LOADING_TIPS.length;
+                    this.tipElement.textContent = LOADING_TIPS[this.tipIndex];
+                    this.tipElement.style.opacity = '1';
+                }, 300);
+            }
+            
+            stop() {
+                if (this.tipInterval) {
+                    clearInterval(this.tipInterval);
+                    this.tipInterval = null;
+                }
+            }
+        }
+        
+        // =====================================================
         // STATE
         // =====================================================
         let streetViewPanorama = null, streetViewService = null, miniMap = null, currentMarker = null, allMarkers = [];
@@ -1189,7 +1803,12 @@
         const sharingManager = new SharingManager();
         const navigator_ = new StreetViewNavigator();
         const timeTravelManager = new TimeTravelManager();
-        let effectStates = { ocean: true, birds: true, wind: false, volcanic: false, mist: false };
+        const visualEffects = new VisualEffectsManager();
+        const particleManager = new ParticleManager();
+        const screenshotManager = new ScreenshotManager();
+        const transitionManager = new TransitionManager();
+        const loadingManager = new LoadingManager();
+        let effectStates = { ocean: true, birds: true, wind: false, volcanic: false, mist: false, vignette: true, lensflare: false, bloom: false, butterflies: false, fireflies: false, leaves: false, ash: false, spray: false, watermark: false, stamp: false };
         
         // =====================================================
         // HELPERS
@@ -1230,6 +1849,7 @@
             
             streetViewPanorama.addListener('pano_changed', () => {
                 document.getElementById('loading').classList.add('hidden');
+                loadingManager.stop();
                 perfMonitor.setLoading(false);
                 navigator_.updateLinks();
                 timeTravelManager.checkAvailability();
@@ -1237,6 +1857,9 @@
             
             streetViewPanorama.addListener('pov_changed', () => {
                 navigator_.updateArrows();
+                // Update lens flare position based on heading
+                const pov = streetViewPanorama.getPov();
+                visualEffects.updateSunPosition(pov.heading);
             });
             
             document.getElementById('audio-unlock').classList.add('visible');
@@ -1328,9 +1951,12 @@
             isTransitioning = true;
             perfMonitor.setLoading(true);
             const location = LOCATIONS[index];
+            const fromLocation = LOCATIONS[currentIndex];
             document.getElementById('loading-location-name').textContent = location.name;
-            const overlay = document.getElementById('transition-overlay');
-            overlay.classList.add('active');
+            
+            // Determine transition type based on distance
+            const transitionType = transitionManager.getTransitionType(fromLocation, location);
+            transitionManager.transitionTo(transitionType);
             
             setTimeout(() => {
                 const searchLocation = new google.maps.LatLng(location.lat, location.lng);
@@ -1359,7 +1985,7 @@
                         const foundLat = data.location.latLng.lat(), foundLng = data.location.latLng.lng();
                         const distance = getDistanceFromLatLng(location.lat, location.lng, foundLat, foundLng);
                         distance > 100 ? showCoverageStatus() : hideCoverageStatus();
-                        setTimeout(() => { overlay.classList.remove('active'); isTransitioning = false; }, 300);
+                        transitionManager.complete().then(() => { isTransitioning = false; });
                     } else {
                         streetViewService.getPanorama({ location: searchLocation, radius: 1000, preference: google.maps.StreetViewPreference.NEAREST }, (data2, status2) => {
                             if (status2 === google.maps.StreetViewStatus.OK) {
@@ -1374,10 +2000,10 @@
                                 atmosphereManager.applyLocationAtmosphere(location);
                                 achievementsManager.visitLocation(location);
                                 showCoverageStatus();
-                                setTimeout(() => { overlay.classList.remove('active'); isTransitioning = false; }, 300);
+                                transitionManager.complete().then(() => { isTransitioning = false; });
                             } else {
                                 showError(`No Street View coverage near ${location.name}`);
-                                overlay.classList.remove('active');
+                                transitionManager.complete();
                                 isTransitioning = false;
                                 perfMonitor.setLoading(false);
                                 setTimeout(() => { hideError(); nextLocation(); }, 2000);
@@ -1441,11 +2067,59 @@
                     const isOn = toggle.classList.contains('on');
                     toggle.setAttribute('aria-checked', isOn);
                     effectStates[effect] = isOn;
-                    if (effect === 'mist') atmosphereManager.setMist(isOn, LOCATIONS[currentIndex]?.atmosphere?.volcanic);
-                    else audioManager.toggleTrack(effect, isOn);
+                    
+                    // Handle different effect types
+                    switch(effect) {
+                        case 'mist':
+                            atmosphereManager.setMist(isOn, LOCATIONS[currentIndex]?.atmosphere?.volcanic);
+                            break;
+                        case 'vignette':
+                            visualEffects.setVignette(isOn);
+                            break;
+                        case 'lensflare':
+                            visualEffects.setLensFlare(isOn);
+                            break;
+                        case 'bloom':
+                            visualEffects.setBloom(isOn, atmosphereManager.currentTime === 'golden' ? 'golden' : 'day');
+                            break;
+                        case 'butterflies':
+                            particleManager.toggleButterflies(isOn);
+                            break;
+                        case 'fireflies':
+                            particleManager.toggleFireflies(isOn);
+                            break;
+                        case 'leaves':
+                            particleManager.toggleLeaves(isOn);
+                            break;
+                        case 'ash':
+                            particleManager.toggleAsh(isOn);
+                            break;
+                        case 'spray':
+                            particleManager.toggleSpray(isOn);
+                            break;
+                        case 'watermark':
+                            screenshotManager.setWatermark(isOn);
+                            break;
+                        case 'stamp':
+                            screenshotManager.setStamp(isOn);
+                            break;
+                        default:
+                            // Audio tracks
+                            audioManager.toggleTrack(effect, isOn);
+                    }
                 };
                 toggle.addEventListener('click', handleToggle);
                 toggle.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleToggle(); } });
+            });
+            
+            // Color grade selector
+            document.getElementById('color-grade-select').addEventListener('change', (e) => {
+                visualEffects.setColorGrade(e.target.value);
+            });
+            
+            // Screenshot button
+            document.getElementById('take-screenshot-btn').addEventListener('click', () => {
+                screenshotManager.takeScreenshot();
             });
             
             document.getElementById('rain-slider').addEventListener('input', (e) => {
@@ -1600,6 +2274,7 @@
         // INITIALIZE
         // =====================================================
         initRain();
+        loadingManager.start();
         
         function loadGoogleMapsAPI() {
             const script = document.createElement('script');

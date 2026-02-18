@@ -2,7 +2,7 @@
 
 > **E komo mai** — Welcome to an immersive 360° virtual reality experience of the Big Island of Hawaii!
 
-[![Version](https://img.shields.io/badge/version-3.0.0-blue.svg)](https://github.com/claytondb/dc-bigislandvr-3)
+[![Version](https://img.shields.io/badge/version-3.1.0-blue.svg)](https://github.com/claytondb/dc-bigislandvr-3)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Made with Aloha](https://img.shields.io/badge/Made%20with-Aloha%20🌺-ff69b4.svg)](#)
 
@@ -52,8 +52,41 @@ Location-aware ambient soundscapes that crossfade smoothly:
 
 - **Rain Effect** — Canvas-rendered raindrops with wind influence
 - **Mist/Fog** — Animated atmospheric overlay for misty locations
-- **Time of Day** — Dawn, Day, Dusk, and Night filters
+- **Time of Day** — Dawn, Day, Golden Hour, Dusk, and Night filters
 - **Volcanic Haze** — Special atmosphere for volcano areas
+
+### ✨ Visual Effects Suite (NEW in 3.1)
+
+**Cinematic Effects:**
+- 🔆 **Vignette** — Immersive edge darkening for focus
+- ☀️ **Lens Flare** — Dynamic sun flare that follows camera
+- 💫 **Bloom** — Subtle glow effect for daylight scenes
+
+**Color Grading Presets:**
+- **Vivid** — Enhanced saturation for tropical vibrancy
+- **Cinematic** — Film-style contrast and color
+- **Vintage** — Warm sepia-toned aesthetic
+- **Tropical** — Optimized for island colors
+
+**Particle Systems:**
+- 🦋 **Butterflies** — Animated butterflies for garden areas
+- ✨ **Fireflies** — Glowing particles for dusk/night scenes
+- 🍂 **Falling Leaves** — Drifting leaves for forested areas
+- 🌋 **Volcanic Ash** — Realistic ash particles near Kīlauea
+- 🌊 **Ocean Spray** — Mist particles for coastal cliffs
+
+### 🎬 Cinematic Transitions
+
+- **Fade** — Smooth fade for nearby locations
+- **Blur** — Motion blur effect for medium distances
+- **Flyover** — Aerial transition for distant locations
+
+### 📸 Enhanced Screenshot Mode
+
+- **Watermark** — Optional "Big Island VR" branding
+- **Location Stamp** — Automatic location & date overlay
+- **Color Filters** — Apply grading before capture
+- **Flash Effect** — Visual feedback on capture
 
 ### ❤️ Favorites System
 
@@ -193,7 +226,19 @@ This project uses the Google Maps JavaScript API and Street View API. The includ
 
 ## 📝 Changelog
 
-### Version 3.0.0 (Current)
+### Version 3.1.0 (Current)
+- ✨ **Visual Effects Suite** — Vignette, lens flare, and bloom effects
+- 🎨 **Color Grading** — Four cinematic presets (Vivid, Cinematic, Vintage, Tropical)
+- 🦋 **Particle Systems** — Butterflies, fireflies, leaves, volcanic ash, ocean spray
+- 🌇 **Golden Hour** — New time-of-day option with warm lighting
+- 🎬 **Cinematic Transitions** — Blur and flyover effects based on distance
+- 📸 **Screenshot Enhancements** — Watermarks, location stamps, flash effect
+- 🌴 **Enhanced Loading Screen** — Island silhouette, rotating tips, smooth animations
+- ☀️ **Dynamic Lens Flare** — Sun position follows camera heading
+- 🌙 **Night Atmosphere** — Moon and enhanced night lighting
+- 📱 **Improved Mobile Support** — Better responsive effects panel
+
+### Version 3.0.0
 - ✨ Expanded to 32 locations across all regions
 - 🎯 6 guided tour routes
 - ❤️ Favorites system with localStorage persistence
