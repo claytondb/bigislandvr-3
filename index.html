@@ -2839,46 +2839,73 @@
                 toggle.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleToggle(); } });
             });
             
-            // Scene Animation sliders
-            document.getElementById('cloud-drift-slider').addEventListener('input', (e) => {
-                const value = parseInt(e.target.value);
-                document.getElementById('cloud-drift-value').textContent = `${value}%`;
-                shaderAnimationManager.cloudDrift = value / 100;
-            });
+            // Scene Animation sliders (with null checks)
+            const cloudSlider = document.getElementById('cloud-drift-slider');
+            const waterSlider = document.getElementById('water-ripple-slider');
+            const vegSlider = document.getElementById('veg-sway-slider');
             
-            document.getElementById('water-ripple-slider').addEventListener('input', (e) => {
-                const value = parseInt(e.target.value);
-                document.getElementById('water-ripple-value').textContent = `${value}%`;
-                shaderAnimationManager.waterRipple = value / 100;
-            });
+            if (cloudSlider) {
+                cloudSlider.addEventListener('input', (e) => {
+                    const value = parseInt(e.target.value);
+                    const valueEl = document.getElementById('cloud-drift-value');
+                    if (valueEl) valueEl.textContent = `${value}%`;
+                    shaderAnimationManager.cloudDrift = value / 100;
+                });
+            }
             
-            document.getElementById('veg-sway-slider').addEventListener('input', (e) => {
-                const value = parseInt(e.target.value);
-                document.getElementById('veg-sway-value').textContent = `${value}%`;
-                shaderAnimationManager.vegSway = value / 100;
-            });
+            if (waterSlider) {
+                waterSlider.addEventListener('input', (e) => {
+                    const value = parseInt(e.target.value);
+                    const valueEl = document.getElementById('water-ripple-value');
+                    if (valueEl) valueEl.textContent = `${value}%`;
+                    shaderAnimationManager.waterRipple = value / 100;
+                });
+            }
             
-            // Color grade selector
-            document.getElementById('color-grade-select').addEventListener('change', (e) => {
-                visualEffects.setColorGrade(e.target.value);
-            });
+            if (vegSlider) {
+                vegSlider.addEventListener('input', (e) => {
+                    const value = parseInt(e.target.value);
+                    const valueEl = document.getElementById('veg-sway-value');
+                    if (valueEl) valueEl.textContent = `${value}%`;
+                    shaderAnimationManager.vegSway = value / 100;
+                });
+            }
+            
+            // Color grade selector (if it exists)
+            const colorGradeSelect = document.getElementById('color-grade-select');
+            if (colorGradeSelect) {
+                colorGradeSelect.addEventListener('change', (e) => {
+                    visualEffects.setColorGrade(e.target.value);
+                });
+            }
             
             // Screenshot button
-            document.getElementById('take-screenshot-btn').addEventListener('click', () => {
-                screenshotManager.takeScreenshot();
-            });
+            const screenshotBtn = document.getElementById('take-screenshot-btn');
+            if (screenshotBtn) {
+                screenshotBtn.addEventListener('click', () => {
+                    screenshotManager.takeScreenshot();
+                });
+            }
             
-            document.getElementById('rain-slider').addEventListener('input', (e) => {
-                const value = parseInt(e.target.value);
-                document.getElementById('rain-value').textContent = `${value}%`;
-                updateRainIntensity(value);
-            });
+            const rainSlider = document.getElementById('rain-slider');
+            if (rainSlider) {
+                rainSlider.addEventListener('input', (e) => {
+                    const value = parseInt(e.target.value);
+                    const rainValue = document.getElementById('rain-value');
+                    if (rainValue) rainValue.textContent = `${value}%`;
+                    updateRainIntensity(value);
+                });
+            }
             
-            document.getElementById('wind-slider').addEventListener('input', (e) => {
-                const value = parseInt(e.target.value);
-                document.getElementById('wind-value').textContent = `${value}%`;
-                updateWindStrength(value);
-            });
+            const windSlider = document.getElementById('wind-slider');
+            if (windSlider) {
+                windSlider.addEventListener('input', (e) => {
+                    const value = parseInt(e.target.value);
+                    const windValue = document.getElementById('wind-value');
+                    if (windValue) windValue.textContent = `${value}%`;
+                    updateWindStrength(value);
+                });
+            }
             
             document.querySelectorAll('.time-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
@@ -2889,11 +2916,14 @@
             });
             
             const volumeSlider = document.getElementById('volume-slider');
-            volumeSlider.addEventListener('input', (e) => {
-                const value = parseInt(e.target.value);
-                document.getElementById('volume-value').textContent = `${value}%`;
-                audioManager.setMasterVolume(value / 100);
-            });
+            if (volumeSlider) {
+                volumeSlider.addEventListener('input', (e) => {
+                    const value = parseInt(e.target.value);
+                    const volumeValue = document.getElementById('volume-value');
+                    if (volumeValue) volumeValue.textContent = `${value}%`;
+                    audioManager.setMasterVolume(value / 100);
+                });
+            }
             
             document.addEventListener('visibilitychange', () => {
                 if (document.hidden && isAutoPlaying) clearInterval(autoPlayTimer);
