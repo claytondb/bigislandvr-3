@@ -2498,6 +2498,23 @@
                 timeTravelManager.checkAvailability();
             });
             
+            // Timeout fallback - if Street View doesn't load in 15 seconds, show error
+            setTimeout(() => {
+                const loading = document.getElementById('loading');
+                if (!loading.classList.contains('hidden')) {
+                    console.warn('Street View load timeout - API key may be restricted');
+                    showError('Street View is taking too long to load. The Google API key may need to be configured for this domain. Try refreshing or check console for errors.');
+                }
+            }, 15000);
+            
+            // Handle Street View status errors
+            streetViewPanorama.addListener('status_changed', () => {
+                const status = streetViewPanorama.getStatus();
+                if (status === google.maps.StreetViewStatus.ZERO_RESULTS) {
+                    console.warn('No Street View imagery found for this location');
+                }
+            });
+            
             streetViewPanorama.addListener('pov_changed', () => {
                 navigator_.updateArrows();
                 // Update lens flare position based on heading
@@ -2740,7 +2757,14 @@
             const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng/2) * Math.sin(dLng/2);
             return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
         }
-        function showError(message) { const el = document.getElementById('error-message'); el.querySelector('p').textContent = message; el.classList.add('visible'); }
+        function showError(message) { 
+            const el = document.getElementById('error-message'); 
+            el.querySelector('p').textContent = message; 
+            el.classList.add('visible'); 
+            // Also hide loading screen when showing error
+            document.getElementById('loading').classList.add('hidden');
+            loadingManager.stop();
+        }
         function hideError() { document.getElementById('error-message').classList.remove('visible'); }
         function showCoverageStatus() { document.getElementById('coverage-status').classList.add('visible'); setTimeout(hideCoverageStatus, 3000); }
         function hideCoverageStatus() { document.getElementById('coverage-status').classList.remove('visible'); }
