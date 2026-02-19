@@ -3011,21 +3011,27 @@
             if (google.maps.places) {
                 autocompleteService = new google.maps.places.AutocompleteService();
                 placesService = new google.maps.places.PlacesService(miniMap);
+                console.log('✅ Places API initialized successfully');
+            } else {
+                console.error('❌ Places API not available - check if library loaded');
             }
             
             searchInput.addEventListener('input', (e) => {
                 const query = e.target.value.trim();
+                console.log('🔍 Search input:', query);
                 if (query.length < 2) {
                     suggestionsBox.style.display = 'none';
                     return;
                 }
                 
                 if (autocompleteService) {
+                    console.log('📡 Calling getPlacePredictions...');
                     autocompleteService.getPlacePredictions({
                         input: query,
                         locationBias: { center: { lat: 19.6, lng: -155.5 }, radius: 100000 }, // Big Island area
                         types: ['establishment', 'geocode', 'point_of_interest']
                     }, (predictions, status) => {
+                        console.log('📨 Places API response:', status, predictions?.length || 0, 'results');
                         if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
                             suggestionsBox.innerHTML = '';
                             predictions.slice(0, 5).forEach(pred => {
@@ -3048,9 +3054,12 @@
                             });
                             suggestionsBox.style.display = 'block';
                         } else {
+                            console.warn('⚠️ Places API returned status:', status);
                             suggestionsBox.style.display = 'none';
                         }
                     });
+                } else {
+                    console.error('❌ autocompleteService not initialized');
                 }
             });
             
