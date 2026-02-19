@@ -195,6 +195,19 @@
         #mini-map { width: 100%; height: 100%; }
         .mini-map-label { position: absolute; bottom: 0; left: 0; right: 0; padding: var(--space-2); background: linear-gradient(transparent, rgba(0,0,0,0.7)); font-size: 0.7rem; color: var(--color-seafoam); text-align: center; pointer-events: none; }
         
+        /* Tour Guide Panel */
+        #tour-guide { position: absolute; top: 180px; left: var(--space-5); background: rgba(26, 26, 26, 0.85); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); padding: var(--space-4); border-radius: var(--radius-lg); border: 1px solid rgba(255, 255, 255, 0.08); z-index: 50; width: 320px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05); animation: fadeUp var(--duration-slow) var(--ease-out-expo) 0.15s both; }
+        .tour-header { display: flex; align-items: center; gap: var(--space-2); font-size: 0.875rem; font-weight: 500; color: var(--color-seafoam); margin-bottom: var(--space-3); padding-bottom: var(--space-3); border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+        #tour-dropdown { width: 100%; background: rgba(45, 45, 45, 0.9); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: var(--radius-md); color: var(--color-plumeria); padding: var(--space-3); font-family: var(--font-primary); font-size: 0.9rem; cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237FCDCD' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; margin-bottom: var(--space-3); transition: all var(--duration-fast) var(--ease-natural); }
+        #tour-dropdown:hover { border-color: var(--color-seafoam); }
+        #tour-dropdown:focus { outline: 2px solid var(--color-shallow-water); outline-offset: 2px; }
+        #tour-dropdown option { background: var(--color-pahoehoe); color: var(--color-plumeria); padding: var(--space-2); }
+        #tour-dropdown optgroup { background: var(--color-lava-black); color: var(--color-seafoam); font-weight: 600; }
+        #tour-history { font-size: 0.85rem; color: rgba(255, 255, 255, 0.85); line-height: 1.5; padding: var(--space-3); background: rgba(42, 157, 143, 0.1); border-radius: var(--radius-sm); border-left: 3px solid var(--color-ti-leaf); }
+        .tour-nav { display: flex; gap: var(--space-2); margin-top: var(--space-3); }
+        .tour-nav-btn { flex: 1; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: var(--radius-sm); padding: var(--space-2); cursor: pointer; font-size: 0.85rem; color: var(--color-plumeria); transition: all var(--duration-fast) var(--ease-natural); display: flex; align-items: center; justify-content: center; gap: var(--space-1); }
+        .tour-nav-btn:hover { background: rgba(42, 157, 143, 0.2); border-color: var(--color-seafoam); }
+        
         #effects { position: absolute; top: var(--space-5); right: var(--space-5); background: rgba(26, 26, 26, 0.85); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); padding: var(--space-4); border-radius: var(--radius-lg); border: 1px solid rgba(255, 255, 255, 0.08); z-index: 50; min-width: 240px; max-height: 80vh; overflow-y: auto; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05); animation: fadeUp var(--duration-slow) var(--ease-out-expo) 0.1s both; }
         .effects-header { display: flex; align-items: center; gap: var(--space-2); font-size: 0.875rem; font-weight: 500; color: var(--color-seafoam); margin-bottom: var(--space-3); padding-bottom: var(--space-3); border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
         .effects-section { margin-bottom: var(--space-4); padding-bottom: var(--space-3); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
@@ -411,6 +424,7 @@
             #location-selector { top: var(--space-4); width: calc(100% - 32px); }
             #location-dropdown { width: 100%; min-width: auto; }
             #mini-map-container { display: none; }
+            #tour-guide { top: 70px; left: var(--space-4); right: var(--space-4); width: auto; }
             #weather-widget { top: auto; bottom: 260px; right: var(--space-4); left: var(--space-4); }
             #achievements-panel { top: auto; bottom: 320px; left: var(--space-4); right: var(--space-4); }
             #effects { position: fixed; top: auto; bottom: 0; left: 0; right: 0; border-radius: var(--radius-lg) var(--radius-lg) 0 0; transform: translateY(100%); transition: transform var(--duration-normal) var(--ease-out-expo); max-height: 70vh; overflow-y: auto; }
@@ -538,6 +552,19 @@
         <div id="mini-map-container">
             <div id="mini-map"></div>
             <div class="mini-map-label">Click to teleport</div>
+        </div>
+        
+        <!-- Tour Guide Panel -->
+        <div id="tour-guide">
+            <div class="tour-header"><span>🗺️</span><span>Tour Guide</span></div>
+            <select id="tour-dropdown" aria-label="Select tour location">
+                <option value="" disabled selected>Choose a destination...</option>
+            </select>
+            <div id="tour-history">Select a location above to learn about its history and significance.</div>
+            <div class="tour-nav">
+                <button class="tour-nav-btn" id="tour-prev">◀ Previous</button>
+                <button class="tour-nav-btn" id="tour-next">Next ▶</button>
+            </div>
         </div>
         
         <div id="effects">
@@ -2527,6 +2554,7 @@
             initMiniMap();
             createLocationDots();
             populateDropdown();
+            populateTourDropdown();
             
             // Check for URL params (shared link)
             const params = sharingManager.parseUrlParams();
@@ -2634,6 +2662,41 @@
             dropdown.addEventListener('change', (e) => goToLocation(parseInt(e.target.value)));
         }
         
+        function populateTourDropdown() {
+            const dropdown = document.getElementById('tour-dropdown');
+            const regions = {};
+            LOCATIONS.forEach((loc, index) => { if (!regions[loc.region]) regions[loc.region] = []; regions[loc.region].push({ ...loc, index }); });
+            Object.keys(regions).forEach(region => {
+                const optgroup = document.createElement('optgroup');
+                optgroup.label = `📍 ${region}`;
+                regions[region].forEach(loc => { const option = document.createElement('option'); option.value = loc.index; option.textContent = loc.name; optgroup.appendChild(option); });
+                dropdown.appendChild(optgroup);
+            });
+            dropdown.value = '0';
+            dropdown.addEventListener('change', (e) => {
+                const index = parseInt(e.target.value);
+                goToLocation(index);
+                updateTourHistory(index);
+            });
+            // Prev/Next buttons
+            document.getElementById('tour-prev').addEventListener('click', () => {
+                const newIndex = (currentIndex - 1 + LOCATIONS.length) % LOCATIONS.length;
+                goToLocation(newIndex);
+            });
+            document.getElementById('tour-next').addEventListener('click', () => {
+                const newIndex = (currentIndex + 1) % LOCATIONS.length;
+                goToLocation(newIndex);
+            });
+        }
+        
+        function updateTourHistory(index) {
+            const loc = LOCATIONS[index];
+            const historyEl = document.getElementById('tour-history');
+            const dropdown = document.getElementById('tour-dropdown');
+            dropdown.value = index;
+            historyEl.innerHTML = loc.summary || `<em>Explore ${loc.name} in ${loc.region}.</em>`;
+        }
+        
         function updateLocationDots() {
             document.querySelectorAll('.location-dot').forEach((dot, index) => {
                 dot.classList.remove('active');
@@ -2680,6 +2743,7 @@
                         updateUI(location);
                         updateLocationDots();
                         updateMiniMapMarkers();
+                        updateTourHistory(index);
                         document.getElementById('location-dropdown').value = index;
                         updateAudioForLocation(location);
                         atmosphereManager.applyLocationAtmosphere(location);
@@ -2704,6 +2768,7 @@
                                 updateUI(location);
                                 updateLocationDots();
                                 updateMiniMapMarkers();
+                                updateTourHistory(index);
                                 document.getElementById('location-dropdown').value = index;
                                 updateAudioForLocation(location);
                                 atmosphereManager.applyLocationAtmosphere(location);
