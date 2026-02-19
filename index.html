@@ -94,10 +94,53 @@
         @keyframes flareGlow { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; } }
         
         /* Bloom/Glow Effect */
-        #bloom-layer { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 14; opacity: 0; transition: opacity var(--duration-normal) ease; mix-blend-mode: screen; }
-        #bloom-layer.active { opacity: 1; }
-        #bloom-layer.day { background: radial-gradient(ellipse at 50% 15%, rgba(255,255,240,0.5) 0%, rgba(255,250,220,0.3) 20%, transparent 60%), radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.4) 0%, transparent 40%); }
-        #bloom-layer.golden { background: radial-gradient(ellipse at 70% 25%, rgba(255,200,100,0.6) 0%, rgba(255,150,50,0.3) 25%, transparent 55%), radial-gradient(ellipse at 30% 40%, rgba(255,180,80,0.25) 0%, transparent 45%); }
+        /* Real bloom post-processing effect */
+        #bloom-layer { display: none; /* Not using overlay anymore */ }
+        
+        /* Bloom is applied via filter on the street view container */
+        #street-view-container.bloom-active {
+            filter: brightness(1.05) contrast(1.02) saturate(1.05);
+        }
+        
+        /* Bloom glow overlay - blurred bright areas simulation */
+        #bloom-glow {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            z-index: 13;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            background: transparent;
+            mix-blend-mode: screen;
+        }
+        
+        #bloom-glow.active {
+            opacity: 1;
+            /* This creates a real bloom effect by duplicating and blurring bright areas */
+            backdrop-filter: blur(0px);
+            -webkit-backdrop-filter: blur(0px);
+        }
+        
+        #bloom-glow.active::before {
+            content: '';
+            position: absolute;
+            top: -10%; left: -10%; right: -10%; bottom: -10%;
+            background: inherit;
+            filter: blur(30px) brightness(1.5) saturate(1.3);
+            mix-blend-mode: screen;
+            opacity: 0.4;
+            z-index: -1;
+        }
+        
+        /* Sun glow hotspot for bloom */
+        #bloom-glow.active::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 40%;
+            background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255,255,240,0.35) 0%, rgba(255,250,220,0.15) 40%, transparent 70%);
+            mix-blend-mode: screen;
+        }
         
         /* Color Grading Filters */
         #color-grade { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 13; opacity: 0; transition: opacity var(--duration-normal) ease; mix-blend-mode: overlay; }
@@ -413,6 +456,7 @@
         <div id="transition-overlay"></div>
         <div id="color-grade"></div>
         <div id="bloom-layer"></div>
+        <div id="bloom-glow"></div>
         <div id="atmosphere-layer" class="time-day"></div>
         <div id="vignette-layer"></div>
         <div id="lens-flare">
@@ -1559,6 +1603,8 @@
                 this.vignetteLayer = document.getElementById('vignette-layer');
                 this.lensFlare = document.getElementById('lens-flare');
                 this.bloomLayer = document.getElementById('bloom-layer');
+                this.bloomGlow = document.getElementById('bloom-glow');
+                this.streetViewContainer = document.getElementById('street-view-container');
                 this.colorGradeLayer = document.getElementById('color-grade');
             }
             
@@ -1574,7 +1620,9 @@
             
             setBloom(enabled, style = 'day') {
                 this.bloomEnabled = enabled;
-                this.bloomLayer.className = enabled ? `active ${style}` : '';
+                // Apply real bloom effect via CSS filters on the container
+                this.streetViewContainer.classList.toggle('bloom-active', enabled);
+                this.bloomGlow.classList.toggle('active', enabled);
             }
             
             setColorGrade(grade) {
