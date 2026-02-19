@@ -96,8 +96,8 @@
         /* Bloom/Glow Effect */
         #bloom-layer { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 14; opacity: 0; transition: opacity var(--duration-normal) ease; mix-blend-mode: screen; }
         #bloom-layer.active { opacity: 1; }
-        #bloom-layer.day { background: radial-gradient(ellipse at 30% 20%, rgba(255,255,220,0.15) 0%, transparent 50%); }
-        #bloom-layer.golden { background: radial-gradient(ellipse at 70% 30%, rgba(255,200,100,0.2) 0%, transparent 40%), radial-gradient(ellipse at 30% 60%, rgba(255,180,80,0.1) 0%, transparent 50%); }
+        #bloom-layer.day { background: radial-gradient(ellipse at 50% 15%, rgba(255,255,240,0.5) 0%, rgba(255,250,220,0.3) 20%, transparent 60%), radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.4) 0%, transparent 40%); }
+        #bloom-layer.golden { background: radial-gradient(ellipse at 70% 25%, rgba(255,200,100,0.6) 0%, rgba(255,150,50,0.3) 25%, transparent 55%), radial-gradient(ellipse at 30% 40%, rgba(255,180,80,0.25) 0%, transparent 45%); }
         
         /* Color Grading Filters */
         #color-grade { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 13; opacity: 0; transition: opacity var(--duration-normal) ease; mix-blend-mode: overlay; }
@@ -499,9 +499,9 @@
         <div id="effects">
             <div class="effects-header" id="effects-header" style="cursor: pointer; user-select: none;">
                 <span>🎛️</span><span>Effects</span>
-                <span id="effects-toggle" style="margin-left: auto; font-size: 0.8rem; opacity: 0.6;">▼</span>
+                <span id="effects-toggle" style="margin-left: auto; font-size: 0.8rem; opacity: 0.6;">▶</span>
             </div>
-            <div id="effects-content">
+            <div id="effects-content" style="display: none;">
             
             <!-- AUDIO SECTION -->
             <div class="effects-section">
@@ -545,7 +545,7 @@
             <!-- VISUAL: POST-PROCESSING -->
             <div class="effects-section">
                 <div class="section-title">✨ Visual Post-Processing</div>
-                <div class="effect-row"><span class="effect-label"><span class="effect-icon">🔆</span><span>Vignette</span></span><div class="toggle-switch on" data-effect="vignette" role="switch" aria-checked="true" tabindex="0"></div></div>
+                <div class="effect-row"><span class="effect-label"><span class="effect-icon">🔆</span><span>Vignette</span></span><div class="toggle-switch" data-effect="vignette" role="switch" aria-checked="false" tabindex="0"></div></div>
                 <div class="effect-row"><span class="effect-label"><span class="effect-icon">💫</span><span>Bloom</span></span><div class="toggle-switch" data-effect="bloom" role="switch" aria-checked="false" tabindex="0"></div></div>
             </div>
             
@@ -1550,7 +1550,7 @@
         // =====================================================
         class VisualEffectsManager {
             constructor() {
-                this.vignetteEnabled = true;
+                this.vignetteEnabled = false;
                 this.lensFlareEnabled = false;
                 this.bloomEnabled = false;
                 this.colorGrade = 'none';
@@ -2451,7 +2451,7 @@
         const transitionManager = new TransitionManager();
         const loadingManager = new LoadingManager();
         const shaderAnimationManager = new ShaderAnimationManager();
-        let effectStates = { ocean: true, birds: true, wind: false, volcanic: false, mist: false, vignette: true, lensflare: false, bloom: false, butterflies: false, fireflies: false, leaves: false, ash: false, spray: false, watermark: false, stamp: false, 'scene-animation': false };
+        let effectStates = { ocean: true, birds: true, wind: false, volcanic: false, mist: false, vignette: false, lensflare: false, bloom: false, butterflies: false, fireflies: false, leaves: false, ash: false, spray: false, watermark: false, stamp: false, 'scene-animation': false };
         
         // =====================================================
         // HELPERS
